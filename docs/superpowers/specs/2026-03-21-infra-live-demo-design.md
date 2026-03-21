@@ -27,6 +27,7 @@ On April 5, the Open Data Portal launches at an AI Day event. The presenter will
 | Database | MySQL on AWS EC2 |
 | Auth | Existing system (Google + email/password, JWT) |
 | Elo Engine | Python batch job (daily cron) |
+| LLM Inference | Live API calls to providers (OpenAI, Google, Anthropic, Meta, xAI, DeepSeek, Qwen) — API keys managed centrally by Sonny |
 | Response Store | MySQL + S3 |
 | Deployment | Docker on EC2, Cloudflare CDN — single-instance |
 | Monitoring | Sentry (error tracking + performance) |
@@ -208,6 +209,94 @@ Sentry is the existing monitoring tool. Configure for demo day:
 - [ ] Dry run EVENT_MODE toggle: flip to true, run 5 minutes, flip to false, verify daily cron resumes
 - [ ] Sentry alerts configured and backstage laptop ready
 - [ ] Redis `maxmemory-policy` set to `noeviction`
+
+### LLM API Rate Limits (Critical)
+
+**The system uses live inference, not pre-computed responses.** Every battle requires 2 simultaneous LLM API calls (one per model). Every follow-up turn is 2 more calls.
+
+**Peak burst estimate:**
+- 500 users × 2 models = 1,000 API calls in the first wave
+- If each user does 2-3 turns: 2,000-3,000 calls in the first few minutes
+- Over 2-hour event: ~5,000-10,000 total LLM API calls
+
+**12 Arena models (confirmed by Katie, Mar 19):**
+- `deepseek/deepseek-r1`
+- `google/gemini-2.5-flash`
+- `google/gemini-3.1-pro-preview`
+- `meta-llama/llama-3-70b-instruct`
+- `openai/gpt-4o-mini`
+- `openai/gpt-5-mini`
+- `openai/gpt-5.4`
+- `qwen/qwen-vl-plus`
+- `xai/grok-3-mini`
+- `xai/grok-3-fast-latest`
+- `anthropic/[TBD]`
+- `[TBD — Katie requested 2 more from Sonny]`
+
+**Rate limit risks per provider:**
+
+| Provider | Typical RPM Limit (Tier 1-2) | Calls Needed (500 users, 2 turns avg) | Risk |
+|----------|------------------------------|---------------------------------------|------|
+| OpenAI (3 models) | 500-5,000 RPM | ~500 calls in burst | Medium — may hit limit with 3 models sharing one key |
+| Google (2 models) | 1,000-2,000 RPM | ~330 calls in burst | Low-Medium |
+| Anthropic (1 model) | 1,000-4,000 RPM | ~170 calls in burst | Low |
+| xAI (2 models) | Varies | ~330 calls in burst | Unknown — verify |
+| DeepSeek (1 model) | Varies | ~170 calls in burst | Unknown — verify |
+| Qwen (1 model) | Varies | ~170 calls in burst | Unknown — verify |
+| Meta/Llama (1 model) | Hosted provider limits | ~170 calls in burst | Depends on hosting |
+
+**Mitigations:**
+1. **Pre-event rate limit audit:** Test each API key with a burst of 100 concurrent requests. Verify the tier/quota is sufficient. Request quota increases from providers if needed (OpenAI and Google allow this with 24-48hr notice).
+2. **Response caching layer:** Cache LLM responses in Redis by (prompt_hash + model_id). If the same prompt is sent to the same model twice, serve from cache. During the demo, many users will use suggested prompts — high cache hit rate expected.
+3. **Request queuing per provider:** If a provider returns 429 (rate limit), queue the request and retry with exponential backoff. Show "Đang tải..." (Loading) to the user instead of an error.
+4. **Fallback model rotation:** If one model's API is rate-limited or down, automatically swap it out of the random pair selection. The battle continues with a different model instead of failing.
+5. **Timeout handling:** Set 30-second timeout per LLM call. If a model is slow, show a timeout message and offer "Thử lại" (Retry) or auto-select a different model pair.
+
+**Pre-demo checklist additions:**
+- [ ] Burst test each of the 12 API keys with 100 concurrent requests
+- [ ] Verify provider tier/quota supports expected call volume
+- [ ] Request quota increases from OpenAI and Google if on low tier
+- [ ] Test response caching: same suggested prompt should return cached response on second call
+- [ ] Verify fallback model rotation works when one provider returns 429
+
+### Application Rate Limiting (Critical)
+
+**Problem:** All 500 venue attendees share the same external IP address through venue WiFi/portable routers. IP-based rate limiting will treat 500 people as one abusive user.
+
+**Affected endpoints:**
+- `POST /api/votes` — vote submission
+- `POST /api/auth/signup` — account creation
+- `POST /api/auth/login` — authentication
+- `GET /api/arena/next-battle` — battle initiation (triggers 2 LLM calls)
+- `ws://api/leaderboard/live` — WebSocket connections
+
+**Fix:** Under `EVENT_MODE=true`:
+- **Disable IP-based rate limiting entirely** on all endpoints
+- **Switch to session-based limiting:** Rate limit by `guest_sessionId` or `user_id` (from JWT), not by IP
+- **Session limits:** 100 votes/session/hour, 10 signups/session/hour, 60 battle initiations/session/hour
+- **WebSocket:** No rate limit on connection (one per client is natural)
+
+**After event:** `EVENT_MODE=false` restores IP-based rate limiting for production.
+
+### Demo Risk Register
+
+| # | Risk | Likelihood | Impact | Category | Mitigation |
+|---|------|-----------|--------|----------|------------|
+| 1 | University WiFi can't handle 500 devices | **High** | Critical | Network | Do NOT use university WiFi. Deploy 3-5 portable WiFi routers with 4G/5G SIMs spread across the hall (~100-150 devices each). Display SSID names on stage screen. |
+| 2 | Portable routers saturate under load | **Medium** | Critical | Network | 3-5 routers for redundancy. Pre-load React app as PWA (only API calls need network after first load). Fallback: presenter continues demo from own device if audience connectivity collapses. |
+| 3 | QR code → page load too slow on congested network | **Medium** | High | Network/UX | Cloudflare CDN caches all static assets. Landing page must load < 2 seconds on 3G. Minimize initial JS bundle. |
+| 4 | LLM API rate limits hit during burst | **High** | Critical | LLM | Response caching in Redis, per-provider request queuing with retry, fallback model rotation, pre-event quota verification. |
+| 5 | IP-based rate limiting blocks all attendees | **High** | Critical | Rate Limit | EVENT_MODE disables IP-based limits; switches to session-based limiting. |
+| 6 | Presenter's screen freezes mid-demo | **Low** | Critical | Demo flow | Presenter on wired ethernet or dedicated hotspot (NOT audience WiFi). Backup laptop pre-loaded. Rehearse full flow twice before event. |
+| 7 | Pre-computed responses not seeded / LLM responses too slow | **Medium** | Critical | Data/LLM | Response cache warms from suggested prompts. Set 30s timeout per LLM call with retry. |
+| 8 | API keys for 12 models not ready or expired | **Medium** | Critical | Data | Burst test all 12 keys 48 hours before event. Sonny manages keys centrally — verify with him. |
+| 9 | Google OAuth fails (venue network blocks OAuth popup) | **Medium** | Medium | Auth | Guest voting works without OAuth. Most audience won't hit the 4th battle gate. |
+| 10 | Audience doesn't understand how to vote | **Low** | High | UX | Presenter walks through "how to vote" on screen before opening to audience. Test with 3-5 non-technical people before event. |
+| 11 | Audience loses interest before leaderboard updates | **Low** | Medium | Engagement | Live vote counter on screen ("342 votes so far!"). Presenter narrates ranking changes. |
+| 12 | EC2 instance crashes during demo | **Low** | Critical | Infra | Docker `restart: unless-stopped`. Sentry monitoring backstage. |
+| 13 | Domain (vieteval.ai) DNS not propagated | **Low** | Critical | Ops | Verify 72 hours before. Fallback: vigen.ztolabs.dev as backup URL. |
+| 14 | Power outage / projector failure | **Low** | Critical | Venue | Confirm power outlets. Bring power strips. Test projector connection (HDMI/USB-C) before event. |
+| 15 | One LLM provider goes down entirely | **Low** | Medium | LLM | Fallback model rotation removes downed model from pair selection. Arena continues with 11 models. |
 
 ### What NOT to Build
 
