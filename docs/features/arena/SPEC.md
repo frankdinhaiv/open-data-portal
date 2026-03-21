@@ -22,6 +22,38 @@ Live evaluation platform where users compare AI model responses through three mo
 
 ## Functional Requirements
 
+### Battle Mode
+
+The core Arena experience: blind pairwise evaluation. Users submit Vietnamese prompts, receive responses from two anonymous models, and vote for the better one. Model identities hidden until after vote. Primary vote collection mechanism — gates the Q2 2026 OKR.
+
+**User Flow:**
+1. User lands on Arena or selects "Đấu Trường" → 3 random suggested prompts displayed
+2. User clicks a prompt or types their own → backend selects random model pair, randomizes A/B position server-side
+3. Two anonymous response cards displayed ("Mô hình A" / "Mô hình B")
+4. Optional multi-turn: up to 5 follow-up turns, both models receive identical history
+5. User votes: "A tốt hơn" / "B tốt hơn" / "Hòa" / "Cả hai đều tệ" — vote is immutable
+6. Elo reveal: 1.5s animated delay → model identities shown with Elo delta
+7. "Trận Mới" resets to fresh prompt + new model pair
+
+**Prompt handling:** 3 random prompts from seed dataset via API. User-typed prompts fuzzy-matched (Levenshtein < 10%). Minimum 30 seed prompts at launch. No category chips at P0.
+
+**Response display:** Side-by-side (desktop) or stacked (mobile). Model names hidden. Markdown rendered. Token count shown.
+
+**Voting mechanics:** 4-point scale. Buttons disabled 1s post-click. Optimistic Elo update within 500ms. Offline votes queued in localStorage.
+
+**Multi-turn:** Max 5 turns. Same model pair throughout. Vote allowed at any turn.
+
+**Guest gate:** 3 free battles → sign-up modal on 4th. Battle count in localStorage. Guest votes linked on signup.
+
+**Model pair selection:** Random from 12 models. Balanced: no pair >1.5× any other in first 100 battles. Position randomized server-side.
+
+**Edge cases:**
+- Page refresh mid-battle → restored from localStorage (30-min TTL)
+- 4th battle as guest → sign-up modal blocks
+- Network drop during vote → queued in localStorage
+- No fuzzy match → error, try different wording
+- Mobile (< 768px) → stacked cards, full-width vote buttons
+
 ### Side-by-Side Mode
 
 Users explicitly select two models from the registry and compare their responses to the same prompt. Models are visible by name and organization (unlike Battle Mode's blind evaluation).
@@ -133,6 +165,17 @@ Persistent record of Arena activity in the left sidebar.
 
 ## Design Decisions
 
+### Battle Mode
+- Blind pairwise evaluation — model identities hidden until after vote (prevents brand bias, produces scientifically credible data)
+- Position randomization server-side (prevents client-side manipulation; position logged for statistical correction)
+- Vote immutable once submitted (no undo — protects data integrity)
+- Elo reveal with 1.5-second delay (makes reveal feel meaningful, reinforces "game" metaphor)
+- "Both bad" treated as draw in Elo (S = 0.5)
+- Turn limit of 5 per battle (caps multi-turn complexity)
+- Conversation state in localStorage with 30-minute TTL
+- Guest gate at 3 completed battles (mirrors Arena.ai onboarding)
+- Suggested prompts randomized across all categories at P0 (no category filtering at battle time)
+
 ### Side-by-Side Mode
 - Models visible (unlike blind Battle) — SBS is for explicit comparison, not unbiased signal generation
 - No Elo reveal panel after vote — models already visible, reveal adds no information
@@ -197,7 +240,6 @@ Persistent record of Arena activity in the left sidebar.
 
 - **Figma:** https://www.figma.com/design/s58LWGpASUoNlHMT51CghO/ViGen-Product-Release-R1
 - **Prototype:** `docs/prototype/arena-prototype.html`
-- **Sub-feature detail:** `docs/features/arena/battle-mode.md`
 
 ## Edge Cases & Constraints
 
