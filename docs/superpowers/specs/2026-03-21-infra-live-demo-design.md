@@ -91,10 +91,11 @@ User Phone (500+)          Presenter Screen (same app)
 
 Most audience members will scan a QR code and vote without creating an account. The guest voting path is critical for demo success:
 
-- **Entry:** QR code on stage screen → Arena URL → 1 free guest vote → sign-up modal on 2nd vote (changed from 3 for event — maximize signups from captive audience)
+- **Entry:** QR code on stage screen → Arena URL → 3 free battles without signing up → sign-up modal on 4th battle
+- **All guest votes count for the leaderboard.** There is no distinction between guest votes and authenticated votes in Elo calculation. Every vote feeds the ranking regardless of login status.
 - **Guest dedup:** By `guest_sessionId` stored in Redis (in-memory set). No MySQL query on the fast path.
-- **Guest vote storage:** Vote pushed to Redis queue with `guest_sessionId`. Worker inserts to MySQL with session reference.
-- **No auth required to vote once:** First battle is friction-free. This is the path 90% of the audience will take.
+- **Guest vote storage:** Vote pushed to Redis queue with `guest_sessionId`. Worker inserts to MySQL with session reference. Votes retroactively linked to account if user signs up.
+- **3 free battles is unchanged for the event** — same rule as normal operation. Most audience members will vote 1-3 times; power users will sign up and continue.
 
 ### Live Leaderboard via WebSocket
 
@@ -149,9 +150,9 @@ Config flag `EVENT_MODE=true` that switches:
 - Elo recalc: daily cron → micro-batch every 2-5 seconds
 - WebSocket endpoint: enabled
 - Rate limiting: **disabled for IP-based limits** (venue WiFi shares a single external IP across all 500 attendees — IP-based limiting would 429 everyone). Switch to session-based limiting with high ceiling (100 votes/session/hour).
-- Guest gate: 1 free vote (tighter than normal 3 — maximize signups from captive audience)
+- Guest gate: unchanged at 3 free battles (same as normal operation)
 
-After event: flip to `EVENT_MODE=false` → daily cron, IP-based rate limiting restored, guest gate back to 3.
+After event: flip to `EVENT_MODE=false` → daily cron, IP-based rate limiting restored.
 
 ### Graceful Degradation
 
