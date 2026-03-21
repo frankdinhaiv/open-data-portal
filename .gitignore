@@ -1,0 +1,9 @@
+backend/venv/
+backend/arena.db
+backend/__pycache__/
+backend/**/__pycache__/
+frontend/node_modules/
+frontend/dist/
+.env
+*.pyc
+*.zip

@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ViGen Arena — Đấu Trường GenAI Việt Nam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafbfc;--bg-card:#ffffff;--bg-sidebar:#ffffff;--bg-input:#f4f5f7;
+  --bg-hover:#f0f1f4;--bg-active:#eef5ff;--bg-glass:rgba(255,255,255,0.85);
+  --border:#e2e5ea;--border-light:#eceef2;--border-accent:rgba(59,130,246,0.25);
+  --text:#1a1d23;--text-secondary:#5a6070;--text-muted:#8b90a0;--text-dim:#b0b5c0;
+  --accent:#3b82f6;--accent-light:#dbeafe;--accent-hover:#2563eb;
+  --green:#10b981;--green-light:#d1fae5;--green-bg:rgba(16,185,129,0.08);
+  --red:#ef4444;--red-light:#fee2e2;--gold:#f59e0b;--gold-light:#fef3c7;
+  --purple:#8b5cf6;--purple-light:#ede9fe;
+  --orange:#f97316;--orange-light:#ffedd5;
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --shadow-xs:0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.1);
+  --shadow-xl:0 16px 48px rgba(0,0,0,0.12);
+  --transition:all 0.2s cubic-bezier(0.4,0,0.2,1);
+  --sidebar-w:280px;
+}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
+@keyframes eloSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== APP LAYOUT ===== */
+.app{display:flex;height:100vh}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--sidebar-w);background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:16px 20px;cursor:pointer;transition:var(--transition)}
+.sidebar-logo:hover{background:var(--bg-hover)}
+.sidebar-logo .logo-icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.9rem;letter-spacing:-0.03em;box-shadow:0 2px 8px rgba(59,130,246,0.3)}
+.sidebar-logo .logo-text{font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-0.02em}
+.sidebar-logo .logo-badge{font-size:0.6rem;color:var(--accent);font-weight:600;background:var(--accent-light);padding:1px 6px;border-radius:10px;margin-left:2px}
+
+/* Mode selector dropdown (topbar, arena.ai style) */
+.mode-sel{position:relative}
+.mode-btn{display:flex;align-items:center;gap:8px;padding:6px 14px;background:transparent;border:1px solid transparent;color:var(--text);font-size:0.9rem;font-weight:600;cursor:pointer;border-radius:var(--radius-lg);transition:var(--transition);font-family:var(--font)}
+.mode-btn:hover{background:var(--bg-hover);border-color:var(--border)}
+.mode-btn .caret{font-size:0.55rem;color:var(--text-muted);transition:transform 0.2s}
+.mode-btn.open .caret{transform:rotate(180deg)}
+.mode-dd{position:absolute;top:calc(100% + 6px);left:0;min-width:320px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:6px;z-index:100;display:none;box-shadow:var(--shadow-xl)}
+.mode-dd.show{display:block;animation:slideDown 0.15s ease}
+.mode-opt{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:var(--radius-lg);cursor:pointer;transition:var(--transition);border:1px solid transparent}
+.mode-opt:hover{background:var(--bg-hover)}
+.mode-opt.active{background:var(--accent-light);border-color:var(--border-accent)}
+.mode-opt .mo-icon{width:36px;height:36px;border-radius:10px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.mode-opt.active .mo-icon{background:var(--accent-light);color:var(--accent)}
+.mode-opt .mo-title{font-size:0.88rem;font-weight:600;color:var(--text)}
+.mode-opt .mo-desc{font-size:0.75rem;color:var(--text-muted);margin-top:1px}
+
+.sidebar-divider{height:1px;background:var(--border-light);margin:6px 16px}
+
+/* Sidebar search */
+.sidebar-search{padding:6px 12px}
+.sidebar-search input{width:100%;padding:7px 10px 7px 30px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-input);font-size:0.78rem;color:var(--text);font-family:var(--font);outline:none;transition:var(--transition)}
+.sidebar-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.sidebar-search{position:relative}
+.sidebar-search::before{content:'🔍';position:absolute;left:22px;top:50%;transform:translateY(-50%);font-size:0.72rem;pointer-events:none}
+
+/* Sidebar history */
+.sidebar-history{flex:1;overflow-y:auto;padding:0 8px 8px}
+.history-group-label{font-size:0.68rem;color:var(--text-muted);padding:10px 12px 4px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.history-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;color:var(--text-secondary);transition:var(--transition);position:relative}
+.history-item:hover{background:var(--bg-hover);color:var(--text)}
+.history-item .hi-icon{flex-shrink:0;font-size:0.85rem}
+.history-item .hi-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-item .hi-badge{flex-shrink:0;font-size:0.65rem;padding:1px 5px;border-radius:8px;font-weight:600}
+.history-item .hi-delete{display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:0.7rem;color:var(--red);cursor:pointer;background:var(--bg-card);padding:2px 6px;border-radius:4px;border:1px solid var(--border-light)}
+.history-item:hover .hi-delete{display:block}
+.history-empty{padding:16px;text-align:center;font-size:0.78rem;color:var(--text-dim)}
+
+/* Sidebar footer */
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border-light);font-size:0.68rem;color:var(--text-muted);display:flex;gap:8px}
+.sidebar-footer a{color:var(--text-muted);text-decoration:none;transition:var(--transition)}
+.sidebar-footer a:hover{color:var(--accent)}
+
+/* Undo toast */
+.undo-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1d23;color:#fff;padding:10px 20px;border-radius:var(--radius-lg);font-size:0.82rem;display:none;align-items:center;gap:12px;z-index:2000;box-shadow:var(--shadow-lg);animation:slideUp 0.2s ease}
+.undo-toast.show{display:flex}
+.undo-toast button{background:var(--accent);color:#fff;border:none;padding:4px 12px;border-radius:var(--radius);font-size:0.78rem;cursor:pointer;font-family:var(--font);font-weight:600}
+
+/* ===== MAIN ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ===== TOP BAR ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--border);background:var(--bg-card);flex-shrink:0;height:52px}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.topbar-center{display:flex;align-items:center;gap:4px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+
+/* Vote counter badge (topbar) */
+.vote-counter{display:flex;align-items:center;gap:5px;padding:4px 12px;background:var(--green-bg);border-radius:20px;font-size:0.78rem;color:var(--green);font-weight:600}
+.vote-counter .vc-num{font-variant-numeric:tabular-nums}
+
+/* Nav tabs (Đấu Trường | Bảng Xếp Hạng) */
+.nav-tab{padding:6px 16px;border-radius:var(--radius-lg);font-size:0.85rem;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border:none;background:transparent;color:var(--text-secondary)}
+.nav-tab:hover{background:var(--bg-hover);color:var(--text)}
+.nav-tab.active{background:var(--accent-light);color:var(--accent);font-weight:600}
+
+/* Model selectors (SBS/Direct) */
+.model-selectors{display:none;align-items:center;gap:8px;margin-left:8px}
+.model-selectors.show{display:flex}
+.model-dd{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);padding:5px 28px 5px 10px;color:var(--text);font-size:0.82rem;font-family:var(--font);cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%238b90a0' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:var(--transition);max-width:180px}
+.model-dd:hover{border-color:var(--accent)}
+.model-dd.error{border-color:var(--red);box-shadow:0 0 0 2px rgba(239,68,68,0.15)}
+.vs-label{font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+
+/* Topbar buttons */
+.tb-btn{height:34px;padding:0 14px;border-radius:var(--radius);font-size:0.8rem;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);display:flex;align-items:center;gap:6px;border:none;background:transparent;color:var(--text-secondary)}
+.tb-btn:hover{background:var(--bg-hover);color:var(--text)}
+.tb-btn-primary{background:var(--accent);color:#fff}
+.tb-btn-primary:hover{background:var(--accent-hover);box-shadow:0 2px 8px rgba(59,130,246,0.3)}
+
+/* User avatar + dropdown */
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:0.75rem;cursor:pointer;transition:var(--transition);border:2px solid transparent;position:relative}
+.user-avatar:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.avatar-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:240px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:12px;z-index:200;display:none;box-shadow:var(--shadow-xl);animation:slideDown 0.15s ease}
+.avatar-dropdown.show{display:block}
+.avatar-dropdown .ad-stat{font-size:0.78rem;color:var(--text-secondary);padding:4px 0;display:flex;justify-content:space-between}
+.avatar-dropdown .ad-stat strong{color:var(--text)}
+.avatar-dropdown .ad-divider{height:1px;background:var(--border-light);margin:8px 0}
+.avatar-dropdown .ad-logout{padding:6px 0;font-size:0.82rem;color:var(--red);cursor:pointer;font-weight:500}
+.avatar-dropdown .ad-logout:hover{text-decoration:underline}
+
+/* ===== CONTENT AREA ===== */
+.content{flex:1;overflow-y:auto;padding:0;display:flex;flex-direction:column}
+
+/* ===== ARENA VIEW ===== */
+.arena-view{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.arena-chat{flex:1;overflow-y:auto;min-height:0;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+
+/* Welcome state */
+.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;animation:fadeIn 0.5s ease}
+.welcome-icon{font-size:3rem;margin-bottom:16px;filter:drop-shadow(0 4px 12px rgba(59,130,246,0.2))}
+.welcome h2{font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-0.02em}
+.welcome p{color:var(--text-secondary);font-size:0.92rem;max-width:480px;text-align:center;margin-bottom:28px}
+
+/* Suggested prompt cards (3-5 randomized) */
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;max-width:640px;width:100%}
+.prompt-card{padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;font-size:0.82rem;color:var(--text-secondary);transition:var(--transition);text-align:left;line-height:1.45}
+.prompt-card:hover{border-color:var(--accent);color:var(--text);background:var(--accent-light);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.prompt-card .pc-cat{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:4px;font-weight:600}
+
+/* Chat messages */
+.msg-row{display:flex;gap:16px;animation:slideUp 0.3s ease}
+.msg-row.user{justify-content:flex-end}
+.msg-row.user .msg-bubble{background:var(--accent);color:#fff;border-radius:var(--radius-xl) var(--radius-xl) 4px var(--radius-xl);max-width:600px}
+.msg-row.system .msg-bubble{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);max-width:100%}
+.msg-bubble{padding:14px 18px;font-size:0.9rem;line-height:1.65;box-shadow:var(--shadow-xs)}
+.msg-bubble p{margin-bottom:8px}
+.msg-bubble p:last-child{margin-bottom:0}
+
+/* Dual response panel */
+.dual-panel{display:grid;grid-template-columns:1fr 1fr;gap:16px;animation:slideUp 0.3s ease}
+.response-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;transition:var(--transition)}
+.response-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-accent)}
+.rc-header{padding:12px 16px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.rc-label{font-size:0.82rem;font-weight:700;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
+.rc-label .rc-badge{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff}
+.rc-badge-a{background:var(--accent)}
+.rc-badge-b{background:var(--orange)}
+.rc-model{font-size:0.72rem;color:var(--text-dim);font-weight:500}
+/* Bug #3: expandable on click instead of fixed max-height */
+.rc-body{padding:16px;font-size:0.88rem;line-height:1.7;color:var(--text);max-height:600px;overflow:hidden;cursor:pointer;position:relative;transition:max-height 0.3s ease}
+.rc-body.expanded{max-height:none;cursor:default}
+.rc-body:not(.expanded)::after{content:'Xem thêm';display:block;text-align:center;font-size:0.72rem;color:var(--accent);padding-top:8px;background:linear-gradient(transparent,var(--bg-card) 60%);position:absolute;bottom:0;left:0;right:0;padding:24px 0 8px}
+
+/* Vote result highlights */
+.response-card.vote-winner{border-color:var(--green);background:linear-gradient(to bottom,#f0fdf4,#fff);box-shadow:0 0 0 2px rgba(16,185,129,0.15)}
+.response-card.vote-winner .rc-header{background:var(--green-light);border-bottom-color:rgba(16,185,129,0.2)}
+.response-card.vote-winner .rc-header::after{content:'🏆 Thắng';font-size:0.7rem;font-weight:700;color:#065f46;background:var(--green-light);padding:2px 8px;border-radius:10px}
+.response-card.vote-loser{border-color:var(--red);background:linear-gradient(to bottom,#fef2f2,#fff);opacity:0.75}
+.response-card.vote-loser .rc-header{background:var(--red-light);border-bottom-color:rgba(239,68,68,0.15)}
+.response-card.vote-loser .rc-header::after{content:'Thua';font-size:0.7rem;font-weight:700;color:#991b1b;background:var(--red-light);padding:2px 8px;border-radius:10px}
+.response-card.vote-tie{border-color:var(--green);background:linear-gradient(to bottom,#f0fdf4,#fff)}
+.response-card.vote-tie .rc-header{background:var(--green-light);border-bottom-color:rgba(16,185,129,0.2)}
+.response-card.vote-tie .rc-header::after{content:'🤝 Hòa';font-size:0.7rem;font-weight:700;color:#065f46;background:var(--green-light);padding:2px 8px;border-radius:10px}
+.response-card.vote-bad{border-color:var(--red);background:linear-gradient(to bottom,#fef2f2,#fff);opacity:0.7}
+.response-card.vote-bad .rc-header{background:var(--red-light);border-bottom-color:rgba(239,68,68,0.15)}
+.response-card.vote-bad .rc-header::after{content:'👎 Tệ';font-size:0.7rem;font-weight:700;color:#991b1b;background:var(--red-light);padding:2px 8px;border-radius:10px}
+
+/* Typing indicator — skeleton shimmer loaders (Bug #5) */
+.typing-dots{display:flex;gap:4px;padding:8px 0}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--text-muted);animation:dotBounce 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:0.15s}
+.typing-dots span:nth-child(3){animation-delay:0.3s}
+.skeleton-loader{padding:16px;display:flex;flex-direction:column;gap:10px}
+.skeleton-line{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg-input) 25%,var(--bg-hover) 50%,var(--bg-input) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.skeleton-line:nth-child(1){width:90%}
+.skeleton-line:nth-child(2){width:75%}
+.skeleton-line:nth-child(3){width:60%}
+
+/* Vote buttons */
+.vote-bar{padding:16px 24px;border-top:1px solid var(--border);background:var(--bg-card);display:none;animation:slideUp 0.2s ease;flex-shrink:0}
+.vote-bar.show{display:block}
+.vote-bar-inner{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.vote-btn{height:40px;padding:0 20px;border-radius:var(--radius-lg);font-size:0.85rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font);display:flex;align-items:center;gap:8px;border:1px solid var(--border)}
+.vote-btn:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
+.vote-btn-a{background:var(--accent-light);color:var(--accent);border-color:rgba(59,130,246,0.2)}
+.vote-btn-a:hover{background:var(--accent);color:#fff;box-shadow:0 2px 12px rgba(59,130,246,0.3)}
+.vote-btn-b{background:var(--orange-light);color:var(--orange);border-color:rgba(249,115,22,0.2)}
+.vote-btn-b:hover{background:var(--orange);color:#fff;box-shadow:0 2px 12px rgba(249,115,22,0.3)}
+.vote-btn-tie{background:var(--bg-input);color:var(--text-secondary)}
+.vote-btn-tie:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.vote-btn-bad{background:var(--bg-input);color:var(--text-muted)}
+.vote-btn-bad:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.vote-btn-continue{background:transparent;color:var(--text-muted);border-color:var(--border-light);font-weight:500}
+.vote-btn-continue:hover{background:var(--bg-hover);color:var(--text)}
+
+/* Elo reveal panel */
+.elo-reveal{padding:20px 24px;background:var(--bg-card);border-top:1px solid var(--border);display:none;flex-shrink:0}
+.elo-reveal.show{display:block;animation:eloSlideUp 0.4s ease}
+.elo-reveal-inner{display:flex;align-items:center;justify-content:center;gap:40px;padding:12px 0}
+.elo-model{text-align:center}
+.elo-model-name{font-size:0.92rem;font-weight:700;color:var(--text)}
+.elo-model-org{font-size:0.72rem;color:var(--text-muted)}
+.elo-score{font-size:1.4rem;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+.elo-delta{font-size:0.8rem;font-weight:600;margin-top:2px}
+.elo-delta.pos{color:var(--green)}
+.elo-delta.neg{color:var(--red)}
+.elo-crown{font-size:1.2rem;margin-top:4px}
+.elo-vs{font-size:0.8rem;font-weight:700;color:var(--text-dim);text-transform:uppercase}
+.new-battle-btn{margin-top:16px;display:flex;justify-content:center}
+.new-battle-btn button{padding:8px 24px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-lg);font-size:0.85rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:var(--transition)}
+.new-battle-btn button:hover{background:var(--accent-hover);box-shadow:0 4px 16px rgba(59,130,246,0.3)}
+
+/* Star rating + quality tags for Direct mode */
+.star-rating{display:flex;align-items:center;gap:4px}
+.star-rating .star{font-size:1.5rem;cursor:pointer;color:var(--border);transition:var(--transition)}
+.star-rating .star.active,.star-rating .star:hover{color:var(--gold)}
+.quality-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.quality-tag{padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:500;border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);cursor:pointer;transition:var(--transition)}
+.quality-tag:hover,.quality-tag.selected{background:var(--accent-light);color:var(--accent);border-color:var(--border-accent)}
+.save-rating-btn{padding:8px 20px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-lg);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:var(--transition);margin-top:8px}
+.save-rating-btn:hover{background:var(--accent-hover)}
+
+/* Bug #11/#18: Searchable dropdown styles */
+.searchable-dd{position:relative;min-width:180px}
+.searchable-dd .sdd-trigger{display:flex;align-items:center;gap:6px;padding:5px 28px 5px 10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-input);font-size:0.82rem;color:var(--text);cursor:pointer;transition:var(--transition);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%238b90a0' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.searchable-dd .sdd-trigger:hover{border-color:var(--accent)}
+.searchable-dd .sdd-trigger.error{border-color:var(--red);box-shadow:0 0 0 2px rgba(239,68,68,0.15)}
+.searchable-dd .sdd-panel{position:absolute;top:calc(100% + 4px);left:0;min-width:240px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:6px;z-index:150;display:none;box-shadow:var(--shadow-xl);animation:slideDown 0.15s ease;max-height:280px;overflow:hidden;flex-direction:column}
+.searchable-dd .sdd-panel.show{display:flex}
+.searchable-dd .sdd-search{width:100%;padding:6px 10px;border:1px solid var(--border-light);border-radius:var(--radius);font-size:0.8rem;font-family:var(--font);outline:none;margin-bottom:4px;background:var(--bg-input);color:var(--text)}
+.searchable-dd .sdd-search:focus{border-color:var(--accent)}
+.searchable-dd .sdd-list{overflow-y:auto;max-height:220px;display:flex;flex-direction:column;gap:1px}
+.searchable-dd .sdd-item{padding:7px 10px;border-radius:var(--radius);cursor:pointer;font-size:0.8rem;color:var(--text-secondary);transition:var(--transition);display:flex;align-items:center;gap:8px}
+.searchable-dd .sdd-item:hover{background:var(--bg-hover);color:var(--text)}
+.searchable-dd .sdd-item.active{background:var(--accent-light);color:var(--accent);font-weight:600}
+.searchable-dd .sdd-item .sdd-org{font-size:0.68rem;color:var(--text-muted);margin-left:auto}
+.sdd-error-msg{font-size:0.72rem;color:var(--red);font-weight:500;display:none;align-items:center;gap:4px;padding:2px 0}
+.sdd-error-msg.show{display:flex}
+
+/* Bug #19: Inline star rating below each Direct response */
+.inline-rating{padding:12px 16px;border-top:1px solid var(--border-light);display:flex;flex-direction:column;gap:8px;animation:slideUp 0.2s ease}
+.inline-rating .ir-label{font-size:0.75rem;color:var(--text-muted);font-weight:600}
+.inline-rating .ir-stars{display:flex;gap:2px}
+.inline-rating .ir-stars .star{font-size:1.3rem;cursor:pointer;color:var(--border);transition:var(--transition)}
+.inline-rating .ir-stars .star.active,.inline-rating .ir-stars .star:hover{color:var(--gold)}
+.inline-rating .ir-tags{display:flex;flex-wrap:wrap;gap:4px}
+.inline-rating .ir-tags .quality-tag{font-size:0.7rem;padding:3px 10px}
+.inline-rating .ir-actions{display:flex;gap:6px;align-items:center}
+.inline-rating .ir-saved{font-size:0.75rem;color:var(--green);font-weight:500;display:none}
+.inline-rating .ir-saved.show{display:block}
+/* Bug #22: Previous rating display */
+.prev-rating{padding:8px 16px;border-top:1px solid var(--border-light);font-size:0.75rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.prev-rating .pr-stars{color:var(--gold)}
+.prev-rating .pr-tag{background:var(--accent-light);color:var(--accent);padding:1px 6px;border-radius:10px;font-size:0.65rem;font-weight:500}
+
+/* ===== INPUT BAR ===== */
+.input-bar{padding:12px 20px 16px;background:var(--bg);border-top:1px solid var(--border-light);flex-shrink:0}
+.input-wrap{max-width:800px;margin:0 auto;display:flex;align-items:center;gap:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:4px 6px 4px 16px;transition:var(--transition);box-shadow:var(--shadow-sm)}
+.input-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.input-wrap input{flex:1;background:none;border:none;outline:none;font-size:0.92rem;color:var(--text);font-family:var(--font);padding:8px 0}
+.input-wrap input::placeholder{color:var(--text-dim)}
+.send-btn{width:36px;height:36px;border-radius:var(--radius-lg);background:var(--accent);border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
+.send-btn:hover{background:var(--accent-hover);transform:scale(1.05)}
+.send-btn:disabled{background:var(--bg-input);color:var(--text-dim);cursor:not-allowed;transform:none}
+.turn-indicator{font-size:0.72rem;color:var(--text-muted);text-align:center;margin-top:6px}
+.turn-limit-msg{text-align:center;padding:8px;font-size:0.82rem;color:var(--orange);font-weight:500;animation:slideUp 0.3s}
+
+/* ===== LEADERBOARD VIEW ===== */
+.leaderboard-view{display:none;flex:1;overflow-y:auto;padding:24px}
+.lb-container{max-width:1100px;margin:0 auto}
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.lb-header h2{font-size:1.4rem;font-weight:700;letter-spacing:-0.02em}
+.lb-updated{font-size:0.72rem;color:var(--text-muted)}
+
+/* Leaderboard category filter tabs (P1-2 preview) */
+.lb-cat-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.lb-cat-tab{padding:6px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg-input);color:var(--text-secondary);transition:var(--transition);font-family:var(--font);white-space:nowrap}
+.lb-cat-tab:hover{background:var(--bg-hover);color:var(--text);border-color:var(--border)}
+.lb-cat-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(59,130,246,0.25)}
+
+/* Leaderboard table */
+.lb-table-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);overflow-x:auto;box-shadow:var(--shadow-sm)}
+.lb-table{width:100%;border-collapse:collapse;font-size:0.85rem}
+.lb-table th{padding:12px 16px;text-align:left;font-weight:600;color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--border);background:var(--bg-input);cursor:pointer;transition:var(--transition);user-select:none;white-space:nowrap}
+.lb-table th:hover{color:var(--text)}
+.lb-table th .sort-icon{margin-left:4px;font-size:0.6rem;opacity:0.5}
+.lb-table td{padding:12px 16px;border-bottom:1px solid var(--border-light);vertical-align:middle;transition:var(--transition)}
+.lb-table tr:last-child td{border-bottom:none}
+.lb-table tr:hover td{background:var(--bg-hover)}
+.lb-table .rank-cell{font-weight:700;width:48px;text-align:center}
+.rank-badge{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700}
+.rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#78350f}
+.rank-2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#374151}
+.rank-3{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+.rank-default{background:var(--bg-input);color:var(--text-secondary)}
+.model-cell{display:flex;align-items:center;gap:10px}
+.model-avatar{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#fff;flex-shrink:0}
+.model-name{font-weight:600;color:var(--text)}
+.model-org{font-size:0.72rem;color:var(--text-muted)}
+.license-badge{font-size:0.65rem;font-weight:600;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.03em}
+.license-os{background:var(--green-light);color:#065f46}
+.license-prop{background:var(--purple-light);color:#5b21b6}
+.elo-cell{font-weight:700;font-variant-numeric:tabular-nums;font-size:0.95rem}
+.ci-cell{color:var(--text-muted);font-size:0.78rem;font-variant-numeric:tabular-nums}
+.winrate-cell{font-variant-numeric:tabular-nums}
+.winrate-bar{height:4px;background:var(--bg-input);border-radius:2px;width:80px;overflow:hidden;margin-top:3px}
+.winrate-bar-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 0.5s ease}
+.votes-cell{font-variant-numeric:tabular-nums;color:var(--text-secondary)}
+
+/* Stat views (all stacked, no tabs) */
+
+/* Stat views */
+.stat-view{display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;animation:fadeIn 0.3s ease}
+.stat-view.show{display:block}
+.stat-view-header{padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.stat-view-header h3{font-size:1rem;font-weight:700}
+.stat-view-header p{font-size:0.75rem;color:var(--text-muted);max-width:500px}
+.stat-canvas-wrap{padding:20px;display:flex;justify-content:center;overflow-x:auto}
+.stat-canvas-wrap canvas{max-width:100%}
+
+/* ===== AUTH MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg-card);border-radius:var(--radius-xl);padding:32px;max-width:400px;width:90%;box-shadow:var(--shadow-xl);animation:scaleIn 0.25s ease;position:relative}
+.modal h3{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.modal .modal-sub{color:var(--text-secondary);font-size:0.85rem;margin-bottom:20px}
+.modal-google{width:100%;padding:12px;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--bg-card);font-size:0.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:var(--transition);font-family:var(--font);color:var(--text)}
+.modal-google:hover{background:var(--bg-hover);border-color:var(--accent)}
+.modal-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--text-muted);font-size:0.75rem}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.modal-input{width:100%;padding:10px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-input);font-size:0.88rem;color:var(--text);font-family:var(--font);margin-bottom:10px;outline:none;transition:var(--transition)}
+.modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.modal-submit{width:100%;padding:11px;border-radius:var(--radius-lg);background:var(--accent);color:#fff;border:none;font-size:0.88rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font);margin-top:4px}
+.modal-submit:hover{background:var(--accent-hover)}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.2rem;color:var(--text-muted);cursor:pointer;transition:var(--transition)}
+.modal-close:hover{color:var(--text)}
+.modal-skip{text-align:center;margin-top:12px}
+.modal-skip a{color:var(--text-muted);font-size:0.82rem;cursor:pointer;text-decoration:none;transition:var(--transition);font-weight:500}
+.modal-skip a:hover{color:var(--accent)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1023px){
+  .sidebar{display:none}
+  .mobile-hamburger{display:flex!important}
+  .sidebar-drawer{display:block!important}
+}
+@media(min-width:1024px){
+  .mobile-hamburger{display:none!important}
+  .sidebar-drawer{display:none!important}
+  .mobile-bottom-nav{display:none!important}
+}
+@media(max-width:768px){
+  .dual-panel{grid-template-columns:1fr}
+  .prompt-grid{grid-template-columns:1fr 1fr}
+  .vote-bar-inner{flex-direction:column}
+  .elo-reveal-inner{flex-direction:column;gap:16px}
+  .lb-table{font-size:0.78rem}
+  .lb-table th,.lb-table td{padding:8px 10px}
+  .stat-tabs{overflow-x:auto;flex-wrap:nowrap}
+  .model-selectors{flex-wrap:wrap}
+  .nav-tab{font-size:0.78rem;padding:5px 10px}
+  .topbar{padding:0 12px}
+  .mobile-bottom-nav{display:flex!important}
+}
+
+/* Mobile hamburger */
+.mobile-hamburger{display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:transparent;cursor:pointer;font-size:1.2rem;color:var(--text-secondary);border-radius:var(--radius)}
+.mobile-hamburger:hover{background:var(--bg-hover)}
+
+/* Sidebar drawer (tablet/mobile) */
+.sidebar-drawer{display:none;position:fixed;inset:0;z-index:500}
+.sidebar-drawer.open{display:block}
+.sidebar-drawer .drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(2px)}
+.sidebar-drawer .drawer-panel{position:absolute;left:0;top:0;bottom:0;width:var(--sidebar-w);background:var(--bg-sidebar);box-shadow:var(--shadow-xl);display:flex;flex-direction:column;animation:slideRight 0.2s ease}
+@keyframes slideRight{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+
+/* Mobile bottom nav */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-card);border-top:1px solid var(--border);z-index:400;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom,6px)}
+.mobile-bottom-nav button{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:4px 12px;font-size:0.65rem;color:var(--text-muted);cursor:pointer;font-family:var(--font)}
+.mobile-bottom-nav button .bn-icon{font-size:1.1rem}
+.mobile-bottom-nav button.active{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR (Desktop) -->
+  <aside class="sidebar" id="sidebarDesktop">
+    <div class="sidebar-logo" onclick="goHome()">
+      <div class="logo-icon">V</div>
+      <span class="logo-text">ViGen Arena</span>
+      <span class="logo-badge">beta</span>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- History search -->
+    <div class="sidebar-search">
+      <input type="text" id="historySearch" placeholder="Tìm kiếm..." oninput="filterHistory(this.value)">
+    </div>
+
+    <!-- Conversation history (date-grouped) -->
+    <div class="sidebar-history" id="historyList"></div>
+
+    <div class="sidebar-footer">
+      <a href="#">Giới thiệu</a> · <a href="#">API</a> · <a href="#">Chính sách</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-hamburger" onclick="toggleDrawer()">☰</button>
+        <!-- Mode selector dropdown (arena.ai style) -->
+        <div class="mode-sel" id="modeSel">
+          <button class="mode-btn" id="modeBtn">
+            <span id="modeBtnIcon">⚔️</span>
+            <span id="modeBtnText">Đấu Trường</span>
+            <span class="caret">▼</span>
+          </button>
+          <div class="mode-dd" id="modeDd">
+            <div class="mode-opt active" data-mode="battle" onclick="selectMode('battle',this)">
+              <div class="mo-icon">⚔️</div>
+              <div>
+                <div class="mo-title">Đấu Trường</div>
+                <div class="mo-desc">So sánh 2 mô hình ẩn danh, đánh giá không thiên vị</div>
+              </div>
+            </div>
+            <div class="mode-opt" data-mode="sbs" onclick="selectMode('sbs',this)">
+              <div class="mo-icon">⚖️</div>
+              <div>
+                <div class="mo-title">Song Song</div>
+                <div class="mo-desc">Chọn 2 mô hình cụ thể để so sánh trực tiếp</div>
+              </div>
+            </div>
+            <div class="mode-opt" data-mode="direct" onclick="selectMode('direct',this)">
+              <div class="mo-icon">💬</div>
+              <div>
+                <div class="mo-title">Trực Tiếp</div>
+                <div class="mo-desc">Chat trực tiếp với 1 mô hình, đánh giá bằng sao</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Model selectors for SBS (Bug #11: searchable dropdowns) -->
+        <div class="model-selectors" id="modelSelectors">
+          <div class="searchable-dd" id="sddModelA"></div>
+          <span class="vs-label">VS</span>
+          <div class="searchable-dd" id="sddModelB"></div>
+        </div>
+        <span class="sdd-error-msg" id="dupModelError">⚠️ Chọn 2 mô hình khác nhau</span>
+        <!-- Model selector for Direct -->
+        <div class="model-selectors" id="directModelSel">
+          <div class="searchable-dd" id="sddModelDirect"></div>
+        </div>
+      </div>
+      <div class="topbar-center">
+        <button class="nav-tab active" data-view="arena" onclick="switchView('arena',this)">⚔️ Đấu Trường</button>
+        <button class="nav-tab" data-view="leaderboard" onclick="switchView('leaderboard',this)">🏆 Bảng Xếp Hạng</button>
+      </div>
+      <div class="topbar-right">
+        <!-- Bug #30: vote counter format -->
+        <div class="vote-counter" id="voteCounterWrap" style="display:none">🗳️ <span class="vc-num" id="totalVotes">0</span> phiếu</div>
+        <button class="tb-btn" id="newBattleBtn" onclick="newBattle()">Cuộc trò chuyện mới</button>
+        <div class="user-avatar" id="userAvatar" onclick="toggleAvatarDropdown()">?
+          <div class="avatar-dropdown" id="avatarDropdown">
+            <div class="ad-stat"><span>Tổng phiếu bình chọn</span><strong id="adTotal">0</strong></div>
+            <div class="ad-stat"><span>⚔️ Đấu Trường</span><strong id="adBattle">0</strong></div>
+            <div class="ad-stat"><span>⚖️ Song Song</span><strong id="adSbs">0</strong></div>
+            <div class="ad-stat"><span>💬 Trực Tiếp</span><strong id="adDirect">0</strong></div>
+            <div class="ad-divider"></div>
+            <div class="ad-stat"><span>Thành viên từ</span><strong id="adSince">—</strong></div>
+            <div class="ad-divider"></div>
+            <div class="ad-logout" onclick="handleLogout()">Đăng Xuất</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARENA VIEW -->
+    <div class="arena-view" id="arenaView">
+      <div class="arena-chat" id="arenaChat">
+        <div class="welcome" id="welcomeScreen">
+          <div class="welcome-icon">⚔️</div>
+          <h2>Đấu Trường GenAI Việt Nam</h2>
+          <p>So sánh và đánh giá các mô hình AI trên tiếng Việt. Nhập prompt hoặc chọn gợi ý bên dưới.</p>
+          <div class="prompt-grid" id="promptGrid"></div>
+        </div>
+      </div>
+
+      <!-- Vote bar -->
+      <div class="vote-bar" id="voteBar">
+        <div class="vote-bar-inner" id="voteBarInner"></div>
+      </div>
+
+      <!-- Elo reveal (Battle only, 1.5s delay) -->
+      <div class="elo-reveal" id="eloReveal">
+        <div class="elo-reveal-inner" id="eloRevealInner"></div>
+        <div class="new-battle-btn"><button onclick="newBattle()">⚔️ Cuộc trò chuyện mới</button></div>
+      </div>
+
+      <!-- Input bar -->
+      <div class="input-bar" id="inputBar">
+        <div class="input-wrap">
+          <input type="text" id="promptInput" placeholder="Nhập prompt tiếng Việt..." onkeydown="if(event.key==='Enter')sendPrompt()">
+          <button class="send-btn" id="sendBtn" onclick="sendPrompt()">➤</button>
+        </div>
+        <div class="turn-indicator" id="turnIndicator"></div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD VIEW -->
+    <div class="leaderboard-view" id="leaderboardView">
+      <div class="lb-container">
+        <div class="lb-header">
+          <div>
+            <h2>🏆 Bảng Xếp Hạng Arena</h2>
+            <div class="lb-updated">Cập nhật: 11/03/2026 · Elo Rating System (K=32) · Bootstrap CI (n=1000)</div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">12 mô hình · 67,134 phiếu</div>
+        </div>
+        <div class="lb-cat-tabs" id="lbCatTabs">
+          <button class="lb-cat-tab active" onclick="filterLeaderboard('all',this)">🏆 Tổng hợp</button>
+          <button class="lb-cat-tab" onclick="filterLeaderboard('knowledge',this)">📚 Kiến thức</button>
+          <button class="lb-cat-tab" onclick="filterLeaderboard('creative',this)">✍️ Sáng tạo</button>
+          <button class="lb-cat-tab" onclick="filterLeaderboard('reasoning',this)">🧠 Suy luận</button>
+          <button class="lb-cat-tab" onclick="filterLeaderboard('coding',this)">💻 Lập trình</button>
+          <button class="lb-cat-tab" onclick="filterLeaderboard('culture',this)">🇻🇳 Văn hóa VN</button>
+          <button class="lb-cat-tab" onclick="filterLeaderboard('professional',this)">💼 Nghề nghiệp</button>
+        </div>
+        <div class="lb-table-wrap">
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th class="rank-cell">#</th>
+                <th onclick="sortLeaderboard('name')">Mô hình <span class="sort-icon">↕</span></th>
+                <th onclick="sortLeaderboard('elo')">Elo <span class="sort-icon">↕</span></th>
+                <th onclick="sortLeaderboard('ci')">±CI <span class="sort-icon">↕</span></th>
+                <th onclick="sortLeaderboard('winRate')">Tỉ lệ thắng <span class="sort-icon">↕</span></th>
+                <th onclick="sortLeaderboard('votes')">Phiếu <span class="sort-icon">↕</span></th>
+                <th onclick="sortLeaderboard('org')">Tổ chức <span class="sort-icon">↕</span></th>
+                <th onclick="sortLeaderboard('license')">Loại <span class="sort-icon">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="lbBody"></tbody>
+          </table>
+        </div>
+
+        <!-- All stat views stacked on one page -->
+        <div class="stat-view show" id="stat-winmatrix" style="margin-top:24px">
+          <div class="stat-view-header">
+            <div>
+              <h3>🔥 Ma Trận Tỉ Lệ Thắng (Không Tính Hòa)</h3>
+              <p>Đã hiệu chỉnh thiên lệch vị trí. Xanh = hàng thắng, trắng = ngang, đỏ = hàng thua.</p>
+            </div>
+          </div>
+          <div class="stat-canvas-wrap"><canvas id="canvasWinrate" width="560" height="560"></canvas></div>
+        </div>
+        <div class="stat-view show" id="stat-battles" style="margin-top:24px">
+          <div class="stat-view-header">
+            <div>
+              <h3>🔢 Số Trận Đấu Theo Cặp Mô Hình</h3>
+              <p>Ma trận đối xứng. Vàng = nhiều trận, tím = ít trận. Cặp &lt;50 trận chưa đáng tin.</p>
+            </div>
+          </div>
+          <div class="stat-canvas-wrap"><canvas id="canvasBattles" width="560" height="560"></canvas></div>
+        </div>
+        <div class="stat-view show" id="stat-avgwin" style="margin-top:24px">
+          <div class="stat-view-header">
+            <div>
+              <h3>📈 Tỉ Lệ Thắng Trung Bình So Với Tất Cả Mô Hình</h3>
+              <p>Lấy mẫu đồng đều, không tính hòa. Kiểm tra chéo phi tham số — sai lệch với Elo cho thấy mất cân bằng.</p>
+            </div>
+          </div>
+          <div class="stat-canvas-wrap"><canvas id="canvasAvgwin" width="700" height="440"></canvas></div>
+        </div>
+        <div class="stat-view show" id="stat-ci" style="margin-top:24px">
+          <div class="stat-view-header">
+            <div>
+              <h3>📉 Khoảng Tin Cậy Điểm Elo</h3>
+              <p>Bootstrap Elo (1.000 hoán vị). Khoảng không giao nhau → khác biệt có ý nghĩa thống kê.</p>
+            </div>
+          </div>
+          <div class="stat-canvas-wrap"><canvas id="canvasCi" width="700" height="440"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR DRAWER (Tablet/Mobile) -->
+<div class="sidebar-drawer" id="sidebarDrawer">
+  <div class="drawer-overlay" onclick="toggleDrawer()"></div>
+  <div class="drawer-panel" id="drawerPanel"></div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-bottom-nav" id="mobileBottomNav">
+  <button class="active" onclick="mobileNav('arena')"><span class="bn-icon">🏠</span>Trang Chủ</button>
+  <button onclick="mobileNav('leaderboard')"><span class="bn-icon">🏆</span>Bảng Xếp Hạng</button>
+  <button onclick="mobileNav('history')"><span class="bn-icon">📜</span>Lịch Sử</button>
+  <button onclick="mobileNav('account')"><span class="bn-icon">👤</span>Tài Khoản</button>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h3>Đăng nhập để tiếp tục</h3>
+    <p class="modal-sub">Bạn đã sử dụng 3 lượt miễn phí. Đăng nhập để tiếp tục đánh giá không giới hạn.</p>
+    <button class="modal-google" onclick="loginGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.5l6.8-6.8C35.9 2.5 30.3 0 24 0 14.6 0 6.7 5.5 2.8 13.4l7.9 6.1C12.7 13.1 17.9 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.5 2.8-2.2 5.2-4.6 6.8l7.1 5.5c4.1-3.8 6.3-9.4 6.3-16.3z"/><path fill="#34A853" d="M10.7 28.6c-1-2.8-1-5.8 0-8.6l-7.9-6.1c-3.7 7.4-3.7 16.1 0 23.5l7.9-6.1v-2.7z"/><path fill="#FBBC05" d="M24 48c6.5 0 11.9-2.1 15.8-5.8l-7.1-5.5c-2.2 1.5-5 2.3-8.7 2.3-6.1 0-11.3-3.6-13.3-8.9l-7.9 6.1C6.7 42.5 14.6 48 24 48z"/></svg>
+      Đăng Nhập Bằng Google
+    </button>
+    <div class="modal-divider">hoặc</div>
+    <input class="modal-input" type="email" placeholder="Email">
+    <input class="modal-input" type="password" placeholder="Mật khẩu">
+    <button class="modal-submit" onclick="loginEmail()">Đăng Ký</button>
+    <div class="modal-skip"><a onclick="dismissModal()">Tiếp Tục Là Khách</a></div>
+  </div>
+</div>
+
+<!-- UNDO TOAST -->
+<div class="undo-toast" id="undoToast">
+  <span id="undoText">Đã xóa cuộc trò chuyện</span>
+  <button onclick="undoDelete()">Hoàn tác</button>
+</div>
+
+<script>
+// ===== MODEL DATA (12 models from G3A Appendix A) =====
+const MODELS=[
+  {id:'claude-opus',name:'Claude Opus 4.6',org:'Anthropic',elo:1504,ci:12,votes:8945,winRate:0.60,license:'prop',color:'#8b5cf6'},
+  {id:'gpt-5',name:'GPT-5',org:'OpenAI',elo:1492,ci:14,votes:7823,winRate:0.57,license:'prop',color:'#10b981'},
+  {id:'gemini-pro',name:'Gemini 3 Pro',org:'Google',elo:1485,ci:11,votes:6412,winRate:0.55,license:'prop',color:'#3b82f6'},
+  {id:'gemini-flash',name:'Gemini 3 Flash',org:'Google',elo:1473,ci:13,votes:5890,winRate:0.53,license:'prop',color:'#06b6d4'},
+  {id:'claude-sonnet',name:'Claude Sonnet 4.6',org:'Anthropic',elo:1468,ci:15,votes:5234,winRate:0.52,license:'prop',color:'#a78bfa'},
+  {id:'grok-4',name:'Grok 4',org:'xAI',elo:1461,ci:18,votes:4100,winRate:0.50,license:'prop',color:'#f97316'},
+  {id:'deepseek',name:'DeepSeek V3.2',org:'DeepSeek',elo:1451,ci:16,votes:4567,winRate:0.49,license:'open',color:'#14b8a6'},
+  {id:'llama-4',name:'Llama 4 Maverick',org:'Meta',elo:1443,ci:17,votes:3980,winRate:0.47,license:'open',color:'#6366f1'},
+  {id:'qwen-35',name:'Qwen 3.5',org:'Alibaba',elo:1438,ci:19,votes:3654,winRate:0.46,license:'open',color:'#ec4899'},
+  {id:'glm-5',name:'GLM-5',org:'Zhipu AI',elo:1430,ci:20,votes:3210,winRate:0.44,license:'open',color:'#ef4444'},
+  {id:'kimi-k25',name:'Kimi K2.5',org:'Moonshot AI',elo:1422,ci:22,votes:2876,winRate:0.42,license:'open',color:'#f59e0b'},
+  {id:'mistral-l2',name:'Mistral Large 2',org:'Mistral AI',elo:1415,ci:21,votes:2543,winRate:0.40,license:'open',color:'#78716c'}
+];
+
+// ===== PROMPT SUGGESTIONS (Vietnamese, 6 categories from G3A) =====
+const PROMPTS=[
+  {cat:'Kiến thức',text:'Giải thích blockchain cho học sinh lớp 10'},
+  {cat:'Sáng tạo',text:'Viết bài thơ lục bát về mùa xuân Hà Nội'},
+  {cat:'Suy luận',text:'Tại sao kinh tế Việt Nam tăng trưởng nhanh hơn dự kiến?'},
+  {cat:'Lập trình',text:'Viết hàm Python sắp xếp tên tiếng Việt theo alphabet'},
+  {cat:'Văn hóa VN',text:'So sánh phở Hà Nội và phở Sài Gòn'},
+  {cat:'Nghề nghiệp',text:'Viết email xin nghỉ phép gửi sếp bằng giọng lịch sự'},
+  {cat:'Kiến thức',text:'Tóm tắt hiệp định Geneva 1954 trong 5 câu'},
+  {cat:'Sáng tạo',text:'Viết truyện ngắn kinh dị lấy bối cảnh Đà Lạt'},
+  {cat:'Suy luận',text:'Phân tích điểm mạnh và yếu của VinFast trên thị trường quốc tế'},
+  {cat:'Lập trình',text:'Tạo REST API đơn giản với FastAPI cho quản lý sinh viên'},
+  {cat:'Văn hóa VN',text:'Giải thích ý nghĩa của Tết Nguyên Đán cho người nước ngoài'},
+  {cat:'Nghề nghiệp',text:'Viết CV cho vị trí Product Manager tại startup fintech'},
+];
+
+// ===== SIMULATED RESPONSES =====
+const RESPONSES={
+  battle:[
+    ['Blockchain là một cơ sở dữ liệu phân tán, hoạt động như một cuốn sổ cái kỹ thuật số được chia sẻ giữa nhiều máy tính. Hãy tưởng tượng bạn có một cuốn sổ ghi chép mà cả lớp đều có bản sao giống hệt nhau — không ai có thể tự ý sửa mà mọi người không biết.\n\nMỗi "khối" (block) chứa thông tin giao dịch và được nối với khối trước đó bằng mã hóa, tạo thành một "chuỗi" (chain). Điều này khiến việc giả mạo dữ liệu gần như không thể.\n\n**Ứng dụng thực tế:** Bitcoin, hợp đồng thông minh, quản lý chuỗi cung ứng.','Blockchain giống như một cuốn nhật ký mà ai cũng đọc được nhưng không ai xóa hay sửa được.\n\nVề cơ bản, đây là công nghệ lưu trữ thông tin theo chuỗi các khối dữ liệu. Mỗi khối được bảo mật bằng mật mã và liên kết với khối trước — tạo thành chuỗi không thể phá vỡ.\n\n**3 đặc điểm nổi bật:**\n1. Phi tập trung: không cần ngân hàng hay bên trung gian\n2. Minh bạch: mọi giao dịch đều công khai\n3. Bất biến: dữ liệu đã ghi không thể thay đổi\n\nVí dụ đời thường: Bitcoin dùng blockchain để chuyển tiền trực tiếp giữa hai người.'],
+    ['Phở Hà Nội mang vẻ đẹp của sự tinh tế, thanh đạm. Nước dùng trong vắt, ngọt từ xương bò ninh lâu, gia vị vừa phải. Bánh phở mỏng, mềm. Ăn kèm chỉ với hành lá, rau mùi, quẩy. Người Hà Nội xem phở như nghệ thuật — ít mà tinh.\n\nPhở Sài Gòn phóng khoáng hơn. Nước ngọt đậm, béo ngậy. Bàn ăn bày đầy rau sống: giá, húng quế, ngò gai, tương đen, tương ớt. Khẩu phần lớn, thêm thịt bò viên, gân, nạm.\n\n**Khác biệt cốt lõi:** Hà Nội tối giản — "ít mà tinh"; Sài Gòn phong phú — "nhiều mà vui".','Phở — linh hồn ẩm thực Việt Nam — có hai trường phái rõ rệt:\n\n**Phở Hà Nội** (phong cách Bắc):\n- Nước dùng thanh, trong, vị tinh tế\n- Gia vị ít, chú trọng xương bò\n- Không rau sống, chỉ hành lá và mùi\n- Quẩy chiên giòn là bạn đồng hành\n\n**Phở Sài Gòn** (phong cách Nam):\n- Nước ngọt đậm đà, có vị hồi\n- "Vườn rau" trên bàn: giá, húng, ngò\n- Tương đen, tương ớt tự do pha\n- Phần lớn, nhiều topping\n\nCả hai đều ngon — chỉ là bạn thích tối giản hay phong phú thôi!'],
+    ['Kinh tế Việt Nam tăng trưởng nhanh nhờ ba yếu tố chính:\n\n**1. Chuyển đổi cơ cấu:** Từ nông nghiệp sang công nghiệp và dịch vụ. FDI từ Samsung, Intel, và các tập đoàn lớn tạo hàng triệu việc làm.\n\n**2. Lợi thế nhân khẩu:** Dân số trẻ, chi phí lao động cạnh tranh, tay nghề ngày càng cao.\n\n**3. Hội nhập quốc tế:** Tham gia CPTPP, EVFTA mở cửa thị trường xuất khẩu. Việt Nam trở thành mắt xích quan trọng trong chuỗi cung ứng toàn cầu.\n\nTuy nhiên, thách thức vẫn còn: bẫy thu nhập trung bình, năng suất lao động, và chuyển đổi số.','Tăng trưởng GDP Việt Nam liên tục đạt 6-8%/năm trong thập kỷ qua. Nguyên nhân:\n\n**Yếu tố vĩ mô:**\n- Ổn định chính trị, chính sách mở cửa nhất quán\n- Quản lý vĩ mô cải thiện: lạm phát thấp, tỷ giá ổn định\n- Đầu tư công vào hạ tầng giao thông\n\n**Yếu tố vi mô:**\n- "China+1 strategy" — doanh nghiệp chuyển sản xuất sang VN\n- Hệ sinh thái startup bùng nổ (VNPay, Tiki, MoMo)\n- Thương mại điện tử tăng 25%/năm\n\n**Rủi ro:** Phụ thuộc FDI, biến đổi khí hậu, và già hóa dân số từ 2035.']
+  ]
+};
+
+// ===== STATE =====
+let currentMode='battle';
+let currentView='arena';
+let guestBattles=parseInt(localStorage.getItem('vigen_guest_battles')||'0');
+let isLoggedIn=false;
+let voteStats={total:0,battle:0,sbs:0,direct:0};
+let turnCount=0;
+let maxTurns={battle:5,sbs:5,direct:999}; // Bug #4/#16: 5-turn limit for Battle/SBS
+let conversationHistory=[];
+let pairA=null,pairB=null;
+let currentResponseIdx=0;
+let currentStarRating=0;
+let guestSessionId=localStorage.getItem('vigen_guest_sessionId')||crypto.randomUUID();
+localStorage.setItem('vigen_guest_sessionId',guestSessionId);
+let deletedItem=null;
+let undoTimeout=null;
+let voteButtonsDisabled=false;
+let viewingPastConversation=false; // Bug #50: track if viewing history
+let votedTurns=new Set(); // Bug #44: prevent re-voting on same turn
+let currentConversationId=null; // Bug #44: conversation ID for vote dedup
+
+// Bug #7: localStorage conversation state with 30-min TTL
+const CONV_STATE_KEY='vigen_conversation_state';
+const CONV_TTL=30*60*1000; // 30 minutes
+function saveConversationState(){
+  const state={mode:currentMode,turnCount,conversationHistory,pairA:pairA?pairA.id:null,pairB:pairB?pairB.id:null,ts:Date.now(),convId:currentConversationId};
+  localStorage.setItem(CONV_STATE_KEY,JSON.stringify(state));
+}
+function loadConversationState(){
+  try{
+    const raw=localStorage.getItem(CONV_STATE_KEY);
+    if(!raw)return null;
+    const state=JSON.parse(raw);
+    if(Date.now()-state.ts>CONV_TTL){localStorage.removeItem(CONV_STATE_KEY);return null;}
+    return state;
+  }catch(e){return null;}
+}
+
+// Bug #41: Offline vote queue
+const VOTE_QUEUE_KEY='votes_queue';
+function queueVote(voteData){
+  try{
+    const q=JSON.parse(localStorage.getItem(VOTE_QUEUE_KEY)||'[]');
+    if(q.length>=1000)q.shift(); // B9: cap queue at 1000
+    q.push({...voteData,ts:Date.now()});
+    localStorage.setItem(VOTE_QUEUE_KEY,JSON.stringify(q));
+  }catch(e){}
+}
+function flushVoteQueue(){
+  try{
+    const q=JSON.parse(localStorage.getItem(VOTE_QUEUE_KEY)||'[]');
+    if(q.length===0)return;
+    // In production, batch POST to API. Prototype just clears.
+    console.log(`[VoteQueue] Flushing ${q.length} votes`,q);
+    localStorage.setItem(VOTE_QUEUE_KEY,'[]');
+  }catch(e){}
+}
+
+// Searchable dropdown state
+let sddInstances={};
+let selectedModels={modelA:'claude-opus',modelB:'gpt-5',modelDirect:'claude-opus'};
+
+// History items with date groups
+let historyItems=[
+  {id:1,text:'So sánh phở Hà Nội và phở Sài Gòn',mode:'battle',badge:'🏆 A',group:'today',ts:Date.now()-3600000},
+  {id:2,text:'Viết bài thơ lục bát về mùa xuân',mode:'battle',badge:'🤝 Hòa',group:'today',ts:Date.now()-7200000},
+  {id:3,text:'Giải thích blockchain cho học sinh',mode:'sbs',badge:'🏆 GPT-5',group:'today',ts:Date.now()-10800000},
+  {id:4,text:'Viết email xin nghỉ phép gửi sếp',mode:'direct',badge:'⭐ 4/5',group:'yesterday',ts:Date.now()-90000000},
+  {id:5,text:'Tại sao kinh tế VN tăng trưởng nhanh?',mode:'battle',badge:'🏆 B',group:'yesterday',ts:Date.now()-100000000},
+  {id:6,text:'Viết hàm Python sắp xếp tên tiếng Việt',mode:'sbs',badge:'👎 Tệ',group:'lastWeek',ts:Date.now()-500000000},
+  {id:7,text:'Tóm tắt hiệp định Geneva 1954',mode:'direct',badge:'⭐ 5/5',group:'lastWeek',ts:Date.now()-600000000},
+  {id:8,text:'Phân tích điểm mạnh VinFast',mode:'battle',badge:'🏆 A',group:'lastMonth',ts:Date.now()-2000000000},
+];
+let nextHistoryId=100;
+
+// ===== ELO ENGINE (K=32, base-10 logistic per G3B) =====
+const ELO_K=32;
+function eloExpected(rA,rB){return 1/(1+Math.pow(10,(rB-rA)/400))}
+function eloUpdate(rA,rB,scoreA){
+  const eA=eloExpected(rA,rB);
+  const eB=eloExpected(rB,rA);
+  const dA=Math.round(ELO_K*(scoreA-eA));
+  const dB=Math.round(ELO_K*((1-scoreA)-eB));
+  return{newA:rA+dA,newB:rB+dB,deltaA:dA,deltaB:dB};
+}
+
+// ===== INIT =====
+function init(){
+  // Clear localStorage on every refresh for testing
+  localStorage.clear();
+  populateModelDropdowns();
+  renderPromptGrid();
+  renderHistory();
+  renderLeaderboard();
+  drawAllStats();
+  updateVoteCounter();
+  // Mode selector dropdown events
+  const modeBtn=document.getElementById('modeBtn');
+  const modeDd=document.getElementById('modeDd');
+  const modeSel=document.getElementById('modeSel');
+  modeBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const isOpen=modeDd.classList.contains('show');
+    modeDd.classList.toggle('show',!isOpen);
+    modeBtn.classList.toggle('open',!isOpen);
+  });
+  document.addEventListener('click',e=>{
+    if(!modeSel.contains(e.target)){modeDd.classList.remove('show');modeBtn.classList.remove('open');}
+  });
+  // Restore last mode from localStorage
+  const savedMode=localStorage.getItem('vigen_selected_mode');
+  if(savedMode){
+    const el=document.querySelector(`.mode-opt[data-mode="${savedMode}"]`);
+    if(el)selectMode(savedMode,el,true);
+  }
+  // Restore SBS model pair for searchable dropdowns
+  try{
+    const pair=JSON.parse(localStorage.getItem('vigen_sbs_model_pair')||'null');
+    if(pair){
+      selectedModels.modelA=pair.modelA_id||'claude-opus';
+      selectedModels.modelB=pair.modelB_id||'gpt-5';
+      const mA=MODELS.find(m=>m.id===selectedModels.modelA);
+      const mB=MODELS.find(m=>m.id===selectedModels.modelB);
+      if(mA&&sddInstances['sddModelA'])sddInstances['sddModelA'].trigger.textContent=mA.name;
+      if(mB&&sddInstances['sddModelB'])sddInstances['sddModelB'].trigger.textContent=mB.name;
+    }
+  }catch(e){}
+  // Bug #7: Restore conversation state if within TTL
+  currentConversationId=crypto.randomUUID();
+  // Bug #41: Flush vote queue on load
+  flushVoteQueue();
+  // Close avatar dropdown on outside click
+  document.addEventListener('click',e=>{
+    const av=document.getElementById('userAvatar');
+    if(!av.contains(e.target)){document.getElementById('avatarDropdown').classList.remove('show');}
+  });
+}
+
+// Bug #11/#18: Searchable dropdown component
+function createSearchableDropdown(containerId,key,defaultModelId){
+  const container=document.getElementById(containerId);
+  if(!container)return;
+  const model=MODELS.find(m=>m.id===defaultModelId)||MODELS[0];
+  selectedModels[key]=model.id;
+  container.innerHTML=`
+    <div class="sdd-trigger" id="${containerId}-trigger">${model.name}</div>
+    <div class="sdd-panel" id="${containerId}-panel">
+      <input class="sdd-search" placeholder="Tìm mô hình..." id="${containerId}-search">
+      <div class="sdd-list" id="${containerId}-list"></div>
+    </div>`;
+  const trigger=container.querySelector('.sdd-trigger');
+  const panel=container.querySelector('.sdd-panel');
+  const searchInput=container.querySelector('.sdd-search');
+  const list=container.querySelector('.sdd-list');
+  function renderList(filter=''){
+    const lc=filter.toLowerCase();
+    list.innerHTML='';
+    MODELS.filter(m=>!lc||m.name.toLowerCase().includes(lc)||m.org.toLowerCase().includes(lc)).forEach(m=>{
+      const item=document.createElement('div');
+      item.className='sdd-item'+(m.id===selectedModels[key]?' active':'');
+      item.innerHTML=`<span>${m.name}</span><span class="sdd-org">${m.org}</span>`;
+      item.onclick=(e)=>{e.stopPropagation();selectedModels[key]=m.id;trigger.textContent=m.name;panel.classList.remove('show');validateModelPair();saveModelPair();};
+      list.appendChild(item);
+    });
+  }
+  renderList();
+  trigger.onclick=(e)=>{e.stopPropagation();closeAllDropdowns();panel.classList.toggle('show');if(panel.classList.contains('show')){searchInput.value='';renderList();setTimeout(()=>searchInput.focus(),50);}};
+  searchInput.onclick=(e)=>e.stopPropagation();
+  searchInput.oninput=()=>renderList(searchInput.value);
+  sddInstances[containerId]={renderList,panel,trigger};
+}
+function closeAllDropdowns(){Object.values(sddInstances).forEach(inst=>inst.panel.classList.remove('show'));}
+document.addEventListener('click',()=>closeAllDropdowns());
+
+function populateModelDropdowns(){
+  createSearchableDropdown('sddModelA','modelA','claude-opus');
+  createSearchableDropdown('sddModelB','modelB','gpt-5');
+  createSearchableDropdown('sddModelDirect','modelDirect','claude-opus');
+}
+
+// Bug #12: Duplicate model validation with error message
+function validateModelPair(){
+  const errEl=document.getElementById('dupModelError');
+  if(selectedModels.modelA===selectedModels.modelB){
+    errEl.classList.add('show');
+    if(sddInstances['sddModelB'])sddInstances['sddModelB'].trigger.classList.add('error');
+    return false;
+  }else{
+    errEl.classList.remove('show');
+    if(sddInstances['sddModelB'])sddInstances['sddModelB'].trigger.classList.remove('error');
+    return true;
+  }
+}
+function saveModelPair(){
+  localStorage.setItem('vigen_sbs_model_pair',JSON.stringify({modelA_id:selectedModels.modelA,modelB_id:selectedModels.modelB}));
+}
+
+function renderPromptGrid(){
+  const grid=document.getElementById('promptGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  // B10: Exactly 3 prompt cards per spec
+  const shuffled=[...PROMPTS].sort(()=>Math.random()-0.5).slice(0,3);
+  shuffled.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='prompt-card';
+    card.textContent=p.text; // Bug #1: no category chips
+    card.onclick=()=>{document.getElementById('promptInput').value=p.text;sendPrompt();};
+    grid.appendChild(card);
+  });
+}
+
+// ===== HISTORY (date-grouped with mode icons + vote badges) =====
+const GROUP_LABELS={today:'Hôm Nay',yesterday:'Hôm Qua',lastWeek:'Tuần Trước',lastMonth:'Tháng Trước',older:'Cũ Hơn'};
+const MODE_ICONS={battle:'⚔️',sbs:'⚖️',direct:'💬'};
+const GROUP_ORDER=['today','yesterday','lastWeek','lastMonth','older'];
+
+// Bug #52: pagination for history
+const HISTORY_PAGE_SIZE=20;
+let historyDisplayCount=HISTORY_PAGE_SIZE;
+
+function renderHistory(filter=''){
+  const cont=document.getElementById('historyList');
+  if(!cont)return;
+  cont.innerHTML='';
+  const lc=filter.toLowerCase();
+  const filtered=filter?historyItems.filter(h=>h.text.toLowerCase().includes(lc)):historyItems;
+  if(filtered.length===0){
+    cont.innerHTML=`<div class="history-empty">${filter?'Không tìm thấy':'Chưa có cuộc trò chuyện nào'}</div>`;
+    return;
+  }
+  const visible=filtered.slice(0,historyDisplayCount);
+  // Group
+  const groups={};
+  visible.forEach(h=>{
+    if(!groups[h.group])groups[h.group]=[];
+    groups[h.group].push(h);
+  });
+  GROUP_ORDER.forEach(g=>{
+    if(!groups[g]||groups[g].length===0)return;
+    const label=document.createElement('div');
+    label.className='history-group-label';
+    label.textContent=GROUP_LABELS[g];
+    cont.appendChild(label);
+    groups[g].forEach(h=>{
+      const item=document.createElement('div');
+      item.className='history-item';
+      item.innerHTML=`
+        <span class="hi-icon">${MODE_ICONS[h.mode]||'💬'}</span>
+        <span class="hi-text">${escHtml(h.text)}</span>
+        <span class="hi-badge">${h.badge||''}</span>
+        <span class="hi-delete" onclick="event.stopPropagation();deleteHistory(${h.id})">Xóa</span>`;
+      item.onclick=()=>loadHistory(h);
+      cont.appendChild(item);
+    });
+  });
+  // "Tải thêm" button if more items
+  if(filtered.length>historyDisplayCount){
+    const more=document.createElement('div');
+    more.style.cssText='text-align:center;padding:10px';
+    more.innerHTML=`<button onclick="historyDisplayCount+=${HISTORY_PAGE_SIZE};renderHistory('${filter.replace(/'/g,"\\'")}')" style="background:var(--accent-light);color:var(--accent);border:none;padding:6px 16px;border-radius:var(--radius);font-size:0.78rem;cursor:pointer;font-family:var(--font);font-weight:600">Tải thêm (${filtered.length-historyDisplayCount} còn lại)</button>`;
+    cont.appendChild(more);
+  }
+}
+
+function filterHistory(query){renderHistory(query);}
+
+function deleteHistory(id){
+  const idx=historyItems.findIndex(h=>h.id===id);
+  if(idx<0)return;
+  deletedItem={item:historyItems[idx],index:idx};
+  historyItems.splice(idx,1);
+  renderHistory(document.getElementById('historySearch')?.value||'');
+  // Show undo toast (5s)
+  const toast=document.getElementById('undoToast');
+  toast.classList.add('show');
+  clearTimeout(undoTimeout);
+  undoTimeout=setTimeout(()=>{toast.classList.remove('show');deletedItem=null;},5000);
+}
+
+function undoDelete(){
+  if(!deletedItem)return;
+  historyItems.splice(deletedItem.index,0,deletedItem.item);
+  deletedItem=null;
+  renderHistory(document.getElementById('historySearch')?.value||'');
+  document.getElementById('undoToast').classList.remove('show');
+}
+
+// Bug #49: Full read-only conversation reconstruction
+// Bug #50: Hide input bar when viewing past conversations
+// Bug #51: Add "Cuộc trò chuyện mới" button
+function loadHistory(h){
+  viewingPastConversation=true;
+  switchView('arena',document.querySelector('.nav-tab[data-view="arena"]'));
+  const chat=document.getElementById('arenaChat');
+  // Reconstruct conversation with mode info, all turns, vote badges, model names
+  let html=`<div style="text-align:center;padding:16px;animation:fadeIn 0.3s">
+    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px">${MODE_ICONS[h.mode]} ${h.mode==='battle'?'Đấu Trường':h.mode==='sbs'?'Song Song':'Trực Tiếp'} · ${h.badge}</div>
+  </div>`;
+  // User prompt
+  html+=`<div class="msg-row user"><div class="msg-bubble"><p>${escHtml(h.text)}</p></div></div>`;
+  // Simulated responses reconstruction
+  if(h.mode==='battle'||h.mode==='sbs'){
+    const [respA,respB]=RESPONSES.battle[h.id%RESPONSES.battle.length];
+    const mA=MODELS[h.id%MODELS.length];
+    const mB=MODELS[(h.id+1)%MODELS.length];
+    const labelA=h.mode==='battle'?'Mô hình A':mA.name;
+    const labelB=h.mode==='battle'?'Mô hình B':mB.name;
+    // Determine vote classes from badge
+    let classA='',classB='';
+    if(h.badge.includes('A')||h.badge.includes(mA.name)){classA='vote-winner';classB='vote-loser';}
+    else if(h.badge.includes('B')||h.badge.includes(mB.name)){classA='vote-loser';classB='vote-winner';}
+    else if(h.badge.includes('Hòa')){classA='vote-tie';classB='vote-tie';}
+    else if(h.badge.includes('Tệ')){classA='vote-bad';classB='vote-bad';}
+    html+=`<div class="dual-panel">
+      <div class="response-card ${classA}">
+        <div class="rc-header"><div class="rc-label"><span class="rc-badge rc-badge-a">A</span> ${labelA}</div>
+        ${h.mode==='battle'?`<span class="rc-model">${mA.name} · ${mA.org}</span>`:''}</div>
+        <div class="rc-body expanded">${formatResponse(respA)}</div>
+      </div>
+      <div class="response-card ${classB}">
+        <div class="rc-header"><div class="rc-label"><span class="rc-badge rc-badge-b">B</span> ${labelB}</div>
+        ${h.mode==='battle'?`<span class="rc-model">${mB.name} · ${mB.org}</span>`:''}</div>
+        <div class="rc-body expanded">${formatResponse(respB)}</div>
+      </div>
+    </div>`;
+    // Show Elo deltas for battle
+    if(h.mode==='battle'){
+      const result=eloUpdate(mA.elo,mB.elo,classA==='vote-winner'?1:classB==='vote-winner'?0:0.5);
+      html+=`<div style="text-align:center;padding:12px;font-size:0.82rem;color:var(--text-muted)">
+        ${mA.name} ${result.deltaA>=0?'+':''}${result.deltaA} · ${mB.name} ${result.deltaB>=0?'+':''}${result.deltaB}</div>`;
+    }
+  }else{
+    // Direct mode reconstruction
+    const model=MODELS[h.id%MODELS.length];
+    const resp=RESPONSES.battle[h.id%RESPONSES.battle.length][0];
+    html+=`<div class="msg-row system"><div class="msg-bubble">
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;font-weight:600">${model.name} · ${model.org}</div>
+      ${formatResponse(resp)}
+    </div></div>`;
+    if(h.badge.includes('⭐')){
+      html+=`<div class="prev-rating"><span class="pr-stars">${h.badge}</span></div>`;
+    }
+  }
+  // Bug #51: New conversation button
+  html+=`<div style="text-align:center;padding:16px">
+    <button onclick="exitHistoryView()" class="vote-btn vote-btn-continue" style="margin:0 auto">➕ Cuộc trò chuyện mới</button>
+  </div>`;
+  chat.innerHTML=html;
+  // Bug #50: Hide input bar
+  document.getElementById('inputBar').style.display='none';
+  document.getElementById('voteBar').classList.remove('show');
+  document.getElementById('eloReveal').classList.remove('show');
+}
+
+function exitHistoryView(){
+  viewingPastConversation=false;
+  document.getElementById('inputBar').style.display='';
+  newBattle();
+}
+
+// ===== VIEW SWITCHING =====
+function switchView(view,el){
+  currentView=view;
+  document.querySelectorAll('.nav-tab').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('arenaView').style.display=view==='arena'?'flex':'none';
+  document.getElementById('leaderboardView').style.display=view==='leaderboard'?'flex':'none';
+  if(view==='leaderboard'){renderLeaderboard();drawAllStats();}
+}
+
+// ===== MODE SELECTION (topbar dropdown) =====
+function selectMode(mode,el,silent){
+  currentMode=mode;
+  localStorage.setItem('vigen_selected_mode',mode);
+  document.querySelectorAll('.mode-opt').forEach(o=>o.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const icons={battle:'⚔️',sbs:'⚖️',direct:'💬'};
+  const labels={battle:'Đấu Trường',sbs:'Song Song',direct:'Trực Tiếp'};
+  document.getElementById('modeBtnIcon').textContent=icons[mode];
+  document.getElementById('modeBtnText').textContent=labels[mode];
+  document.getElementById('modeDd').classList.remove('show');
+  document.getElementById('modeBtn').classList.remove('open');
+  document.getElementById('modelSelectors').classList.toggle('show',mode==='sbs');
+  document.getElementById('directModelSel').classList.toggle('show',mode==='direct');
+  // B14: Navigate back to arena if on leaderboard
+  if(currentView!=='arena')switchView('arena',document.querySelector('.nav-tab[data-view="arena"]'));
+  if(!silent)newBattle();
+}
+
+// ===== PROMPT HANDLING =====
+function sendPrompt(){
+  const input=document.getElementById('promptInput');
+  const text=input.value.trim();
+  if(!text)return;
+  if(text.length<3){showToast('Nhập ít nhất 3 ký tự');return;}
+
+  // Bug #12: Block if SBS has duplicate models
+  if(currentMode==='sbs'&&!validateModelPair()){showToast('Chọn 2 mô hình khác nhau');return;}
+
+  // Turn limit check (Bug #4: 5 turns for battle/sbs)
+  if(turnCount>=maxTurns[currentMode]){
+    showTurnLimitMsg();
+    return;
+  }
+
+  // Guest gate check (4th battle per G3B)
+  if(!isLoggedIn && currentMode!=='direct'){
+    if(turnCount===0)guestBattles++;
+    localStorage.setItem('vigen_guest_battles',guestBattles);
+    if(guestBattles>3){
+      document.getElementById('authModal').classList.add('show');
+      return;
+    }
+  }
+
+  // Reset past conversation view if needed
+  if(viewingPastConversation){exitHistoryView();}
+
+  input.value='';
+  turnCount++;
+  conversationHistory.push({role:'user',content:text});
+
+  // Add to history on first turn
+  if(turnCount===1){
+    const item={
+      id:nextHistoryId++,text:text,mode:currentMode,badge:'Đang diễn ra',group:'today',ts:Date.now()
+    };
+    historyItems.unshift(item);
+    renderHistory(document.getElementById('historySearch')?.value||'');
+  }
+
+  const chat=document.getElementById('arenaChat');
+  const welcome=document.getElementById('welcomeScreen');
+  if(welcome)welcome.style.display='none';
+
+  // User message bubble
+  const userRow=document.createElement('div');
+  userRow.className='msg-row user';
+  userRow.innerHTML=`<div class="msg-bubble"><p>${escHtml(text)}</p></div>`;
+  chat.appendChild(userRow);
+
+  // Hide previous vote/reveal
+  document.getElementById('voteBar').classList.remove('show');
+  document.getElementById('eloReveal').classList.remove('show');
+
+  if(currentMode==='direct'){
+    showDirectResponse(chat,text);
+  }else{
+    showDualResponse(chat,text);
+  }
+  updateTurnIndicator();
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showDualResponse(chat,text){
+  if(currentMode==='sbs'){
+    // SBS: use selected models
+    pairA=MODELS.find(m=>m.id===selectedModels.modelA)||MODELS[0];
+    pairB=MODELS.find(m=>m.id===selectedModels.modelB)||MODELS[1];
+  }else{
+    // Battle: random pair (50/50 position swap per G3B)
+    const shuffled=[...MODELS].sort(()=>Math.random()-0.5);
+    pairA=shuffled[0];pairB=shuffled[1];
+  }
+  currentResponseIdx=(currentResponseIdx+1)%RESPONSES.battle.length;
+  const [respA,respB]=RESPONSES.battle[currentResponseIdx];
+
+  // Bug #5: Skeleton loaders instead of typing dots
+  const typingEl=document.createElement('div');
+  typingEl.className='dual-panel';
+  typingEl.id='typingPanel';
+  const labelA=currentMode==='battle'?'Mô hình A':pairA.name;
+  const labelB=currentMode==='battle'?'Mô hình B':pairB.name;
+  typingEl.innerHTML=`
+    <div class="response-card">
+      <div class="rc-header"><div class="rc-label"><span class="rc-badge rc-badge-a">A</span> ${labelA}</div></div>
+      <div class="skeleton-loader"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></div>
+    </div>
+    <div class="response-card">
+      <div class="rc-header"><div class="rc-label"><span class="rc-badge rc-badge-b">B</span> ${labelB}</div></div>
+      <div class="skeleton-loader"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></div>
+    </div>`;
+  chat.appendChild(typingEl);
+  // Bug #6: Disable vote buttons (vote bar hidden, but ensure buttons disabled)
+  voteButtonsDisabled=true;
+  chat.scrollTop=chat.scrollHeight;
+
+  setTimeout(()=>{
+    typingEl.remove();
+    const panel=document.createElement('div');
+    panel.className='dual-panel';
+    panel.innerHTML=`
+      <div class="response-card" id="cardA">
+        <div class="rc-header">
+          <div class="rc-label"><span class="rc-badge rc-badge-a">A</span> ${labelA}</div>
+          ${currentMode!=='battle'?`<span class="rc-model">${pairA.org}</span>`:''}
+        </div>
+        <div class="rc-body" onclick="this.classList.toggle('expanded')">${formatResponse(respA)}</div>
+        <div style="padding:4px 16px 8px;font-size:0.7rem;color:var(--text-dim)">${(150+Math.floor(Math.random()*200))} tokens</div>
+      </div>
+      <div class="response-card" id="cardB">
+        <div class="rc-header">
+          <div class="rc-label"><span class="rc-badge rc-badge-b">B</span> ${labelB}</div>
+          ${currentMode!=='battle'?`<span class="rc-model">${pairB.org}</span>`:''}
+        </div>
+        <div class="rc-body" onclick="this.classList.toggle('expanded')">${formatResponse(respB)}</div>
+        <div style="padding:4px 16px 8px;font-size:0.7rem;color:var(--text-dim)">${(150+Math.floor(Math.random()*200))} tokens</div>
+      </div>`;
+    chat.appendChild(panel);
+    voteButtonsDisabled=false; // Bug #6: enable after both loaded
+    showVoteButtons();
+    chat.scrollTop=chat.scrollHeight;
+    saveConversationState(); // Bug #7
+  },1200+Math.random()*800);
+}
+
+function showDirectResponse(chat,text){
+  const model=MODELS.find(m=>m.id===selectedModels.modelDirect)||MODELS[0];
+  const respText=RESPONSES.battle[currentResponseIdx%RESPONSES.battle.length][0];
+  currentResponseIdx++;
+
+  // Bug #5: skeleton loader
+  const typingEl=document.createElement('div');
+  typingEl.className='msg-row system';
+  typingEl.innerHTML=`<div class="msg-bubble"><div class="skeleton-loader"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>`;
+  chat.appendChild(typingEl);
+  chat.scrollTop=chat.scrollHeight;
+
+  setTimeout(()=>{
+    typingEl.remove();
+    const row=document.createElement('div');
+    row.className='msg-row system';
+    const ratingId='ir-'+Date.now();
+    // Bug #19: inline rating below the response
+    row.innerHTML=`
+      <div class="msg-bubble" style="padding-bottom:0">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;font-weight:600">${model.name} · ${model.org}</div>
+        ${formatResponse(respText)}
+        <div style="font-size:0.7rem;color:var(--text-dim);padding:4px 0 8px">${(150+Math.floor(Math.random()*200))} tokens</div>
+        <div class="inline-rating" id="${ratingId}" data-turn="${turnCount}">
+          <div class="ir-label">Đánh giá phản hồi này</div>
+          <div class="ir-stars">
+            <span class="star" onclick="inlineRate(this,1)">★</span>
+            <span class="star" onclick="inlineRate(this,2)">★</span>
+            <span class="star" onclick="inlineRate(this,3)">★</span>
+            <span class="star" onclick="inlineRate(this,4)">★</span>
+            <span class="star" onclick="inlineRate(this,5)">★</span>
+          </div>
+          <div class="ir-tags">
+            <span class="quality-tag" onclick="toggleTag(this)">Chính xác</span>
+            <span class="quality-tag" onclick="toggleTag(this)">Tự nhiên</span>
+            <span class="quality-tag" onclick="toggleTag(this)">Phù hợp văn hóa</span>
+            <span class="quality-tag" onclick="toggleTag(this)">Sáng tạo</span>
+            <span class="quality-tag" onclick="toggleTag(this)">Hữu ích</span>
+          </div>
+          <div class="ir-actions">
+            <button class="save-rating-btn" onclick="saveInlineRating('${ratingId}')">Lưu đánh giá</button>
+            <span class="ir-saved">✓ Đã lưu</span>
+          </div>
+        </div>
+      </div>`;
+    chat.appendChild(row);
+    // No vote bar for direct — rating is inline (Bug #19)
+    chat.scrollTop=chat.scrollHeight;
+    saveConversationState(); // Bug #7
+  },1000+Math.random()*600);
+}
+
+// Bug #19/#22/#23: Inline star rating functions
+function inlineRate(starEl,n){
+  const container=starEl.closest('.inline-rating');
+  container.querySelectorAll('.ir-stars .star').forEach((s,i)=>s.classList.toggle('active',i<n));
+  container.dataset.rating=n;
+}
+function saveInlineRating(ratingId){
+  const container=document.getElementById(ratingId);
+  if(!container)return;
+  const rating=parseInt(container.dataset.rating||'0');
+  if(rating===0){showToast('Chọn ít nhất 1 sao');return;}
+  const tags=[...container.querySelectorAll('.quality-tag.selected')].map(t=>t.textContent);
+  voteStats.total++;voteStats.direct++;
+  updateVoteCounter();
+  // Bug #22 + B3: Show saved rating visually + confirmation toast
+  const savedEl=container.querySelector('.ir-saved');
+  savedEl.classList.add('show');
+  container.querySelector('.ir-label').textContent=`⭐ ${rating}/5${tags.length?' · '+tags.join(', '):''}`;
+  showToast('Cảm ơn đánh giá của bạn!');
+  // Bug #41: Queue vote
+  queueVote({type:'direct_rating',rating,tags,turn:container.dataset.turn,model:selectedModels.modelDirect,convId:currentConversationId});
+  // Update history badge
+  if(historyItems.length>0&&historyItems[0].badge==='Đang diễn ra'){
+    historyItems[0].badge=`⭐ ${rating}/5`;
+    renderHistory(document.getElementById('historySearch')?.value||'');
+  }
+  // Bug #23: re-rating is allowed — button stays active, user can change stars and save again
+}
+
+// ===== VOTE BUTTONS (per G3B spec) =====
+function showVoteButtons(){
+  const bar=document.getElementById('voteBar');
+  const inner=document.getElementById('voteBarInner');
+  if(currentMode==='battle'){
+    inner.innerHTML=`
+      <button class="vote-btn vote-btn-a" onclick="castVote('a')">👈 A tốt hơn</button>
+      <button class="vote-btn vote-btn-b" onclick="castVote('b')">B tốt hơn 👉</button>
+      <button class="vote-btn vote-btn-tie" onclick="castVote('tie')">🤝 Hòa</button>
+      <button class="vote-btn vote-btn-bad" onclick="castVote('bad')">👎 Cả hai đều tệ</button>
+      ${turnCount<maxTurns.battle?'<button class="vote-btn vote-btn-continue" onclick="continueConversation()">💬 Tiếp tục hội thoại</button>':''}`;
+  }else{
+    // SBS — dynamic model names on vote buttons
+    const nameA=pairA?pairA.name:'A';
+    const nameB=pairB?pairB.name:'B';
+    inner.innerHTML=`
+      <button class="vote-btn vote-btn-a" onclick="castVote('a')">👈 ${nameA} tốt hơn</button>
+      <button class="vote-btn vote-btn-b" onclick="castVote('b')">${nameB} tốt hơn 👉</button>
+      <button class="vote-btn vote-btn-tie" onclick="castVote('tie')">🤝 Hòa</button>
+      <button class="vote-btn vote-btn-bad" onclick="castVote('bad')">👎 Cả hai đều tệ</button>
+      ${turnCount<maxTurns.sbs?'<button class="vote-btn vote-btn-continue" onclick="continueConversation()">💬 Tiếp tục hội thoại</button>':''}`;
+  }
+  bar.classList.add('show');
+  voteButtonsDisabled=false;
+}
+
+function toggleTag(el){
+  const container=el.closest('.ir-tags')||el.closest('.quality-tags');
+  const selected=container?container.querySelectorAll('.quality-tag.selected'):[];
+  if(!el.classList.contains('selected')&&selected.length>=5)return;
+  el.classList.toggle('selected');
+}
+
+function continueConversation(){
+  document.getElementById('voteBar').classList.remove('show');
+  document.getElementById('promptInput').focus();
+}
+
+// ===== VOTE CASTING =====
+function castVote(choice){
+  if(voteButtonsDisabled)return;
+  // Bug #44 + B4: allow re-vote (overwrite, not block)
+  const voteKey=`${currentConversationId||'c'}-${turnCount}-${currentMode}`;
+  const isRevote=votedTurns.has(voteKey);
+  votedTurns.add(voteKey);
+  if(isRevote){showToast('Bình chọn đã được cập nhật');}
+  voteButtonsDisabled=true;
+  // Disable buttons for 1s (double-click protection per G3B)
+  document.querySelectorAll('.vote-btn').forEach(b=>b.disabled=true);
+  setTimeout(()=>{document.querySelectorAll('.vote-btn').forEach(b=>b.disabled=false);voteButtonsDisabled=false;},1000);
+
+  const modeKey=currentMode==='sbs'?'sbs':'battle';
+  voteStats.total++;voteStats[modeKey]++;
+  updateVoteCounter();
+  document.getElementById('voteBar').classList.remove('show');
+
+  if(!pairA||!pairB)return;
+  let scoreA=0.5;
+  if(choice==='a')scoreA=1;
+  else if(choice==='b')scoreA=0;
+
+  const result=eloUpdate(pairA.elo,pairB.elo,scoreA);
+  pairA.elo=result.newA;
+  pairB.elo=result.newB;
+  pairA.votes++;pairB.votes++;
+
+  // Apply color highlighting to response cards
+  const chat=document.getElementById('arenaChat');
+  const panels=chat.querySelectorAll('.dual-panel');
+  if(panels.length>0){
+    const lastPanel=panels[panels.length-1];
+    const cards=lastPanel.querySelectorAll('.response-card');
+    if(cards.length===2){
+      if(choice==='a'){cards[0].classList.add('vote-winner');cards[1].classList.add('vote-loser');}
+      else if(choice==='b'){cards[0].classList.add('vote-loser');cards[1].classList.add('vote-winner');}
+      else if(choice==='tie'){cards[0].classList.add('vote-tie');cards[1].classList.add('vote-tie');}
+      else if(choice==='bad'){cards[0].classList.add('vote-bad');cards[1].classList.add('vote-bad');}
+    }
+  }
+
+  // Update history badge
+  const badgeMap={a:'🏆 A',b:'🏆 B',tie:'🤝 Hòa',bad:'👎 Tệ'};
+  if(currentMode==='sbs'){
+    if(choice==='a')badgeMap.a=`🏆 ${pairA.name}`;
+    if(choice==='b')badgeMap.b=`🏆 ${pairB.name}`;
+  }
+  if(historyItems.length>0&&historyItems[0].badge==='Đang diễn ra'){
+    historyItems[0].badge=badgeMap[choice]||'';
+    renderHistory(document.getElementById('historySearch')?.value||'');
+  }
+
+  // Bug #41: Queue vote for offline sync
+  queueVote({type:currentMode==='battle'?'battle_vote':'sbs_vote',choice,modelA:pairA.id,modelB:pairB.id,turn:turnCount,convId:currentConversationId});
+  saveConversationState(); // Bug #7
+
+  // Battle mode: show Elo reveal with 1.5s delay per spec
+  if(currentMode==='battle'){
+    setTimeout(()=>{showEloReveal(pairA,pairB,result,choice);},1500);
+    // Toast while waiting
+    showToast('Bình chọn đã được ghi nhận');
+  }else{
+    // SBS mode: confirmation message, no Elo reveal
+    const label=choice==='a'?`🏆 ${pairA.name} thắng!`:choice==='b'?`🏆 ${pairB.name} thắng!`:choice==='tie'?'🤝 Hòa':'👎 Cả hai đều tệ';
+    const bg=(choice==='bad')?'var(--red-light)':'var(--green-light)';
+    const clr=(choice==='bad')?'#991b1b':'#065f46';
+    const msg=document.createElement('div');
+    msg.className='msg-row system';
+    msg.innerHTML=`<div class="msg-bubble" style="background:${bg};text-align:center;font-size:0.85rem;color:${clr}">${label}</div>`;
+    chat.appendChild(msg);
+
+    // SBS: offer continue (multi-turn) + reset options
+    const actionRow=document.createElement('div');
+    actionRow.style.cssText='text-align:center;padding:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap';
+    actionRow.innerHTML=`${turnCount<maxTurns.sbs?'<button class="vote-btn vote-btn-continue" onclick="continueConversation()" style="margin:0">💬 Tiếp tục hội thoại</button>':''}
+      <button class="vote-btn vote-btn-continue" onclick="sbsReset()" style="margin:0">⚖️ So sánh tiếp</button>`;
+    chat.appendChild(actionRow);
+    chat.scrollTop=chat.scrollHeight;
+  }
+}
+
+function showEloReveal(mA,mB,result,choice){
+  const reveal=document.getElementById('eloReveal');
+  const inner=document.getElementById('eloRevealInner');
+  inner.innerHTML=`
+    <div class="elo-model">
+      <div class="elo-model-name">${mA.name}</div>
+      <div class="elo-model-org">${mA.org}</div>
+      <div class="elo-score" style="color:var(--accent)">${mA.elo}</div>
+      <div class="elo-delta ${result.deltaA>=0?'pos':'neg'}">${result.deltaA>=0?'+':''}${result.deltaA}</div>
+      ${choice==='a'?'<div class="elo-crown">👑</div>':''}
+    </div>
+    <div class="elo-vs">VS</div>
+    <div class="elo-model">
+      <div class="elo-model-name">${mB.name}</div>
+      <div class="elo-model-org">${mB.org}</div>
+      <div class="elo-score" style="color:var(--orange)">${mB.elo}</div>
+      <div class="elo-delta ${result.deltaB>=0?'pos':'neg'}">${result.deltaB>=0?'+':''}${result.deltaB}</div>
+      ${choice==='b'?'<div class="elo-crown">👑</div>':''}
+    </div>`;
+  reveal.classList.add('show');
+}
+
+function sbsReset(){
+  // Retains model selections, clears prompt & votes per spec
+  const chat=document.getElementById('arenaChat');
+  chat.innerHTML=`
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">⚖️</div>
+      <h2>So Sánh Song Song</h2>
+      <p>Chọn 2 mô hình cụ thể và so sánh câu trả lời.</p>
+      <div class="prompt-grid" id="promptGrid"></div>
+    </div>`;
+  renderPromptGrid();
+  document.getElementById('voteBar').classList.remove('show');
+  document.getElementById('eloReveal').classList.remove('show');
+  turnCount=0;conversationHistory=[];
+  updateTurnIndicator();
+}
+
+function newBattle(){
+  const icons={battle:'⚔️',sbs:'⚖️',direct:'💬'};
+  const titles={battle:'Đấu Trường AI',sbs:'So Sánh Song Song',direct:'Trò Chuyện Trực Tiếp'};
+  const descs={battle:'So sánh 2 mô hình ẩn danh — đánh giá không thiên vị.',sbs:'Chọn 2 mô hình cụ thể và so sánh câu trả lời.',direct:'Chat với 1 mô hình và đánh giá bằng sao.'};
+  document.getElementById('arenaChat').innerHTML=`
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">${icons[currentMode]}</div>
+      <h2>${titles[currentMode]}</h2>
+      <p>${descs[currentMode]}</p>
+      <div class="prompt-grid" id="promptGrid"></div>
+    </div>`;
+  renderPromptGrid();
+  document.getElementById('voteBar').classList.remove('show');
+  document.getElementById('eloReveal').classList.remove('show');
+  document.getElementById('inputBar').style.display=''; // Bug #50: restore input bar
+  turnCount=0;conversationHistory=[];votedTurns.clear();
+  currentConversationId=crypto.randomUUID();
+  viewingPastConversation=false;
+  localStorage.removeItem(CONV_STATE_KEY); // Bug #7: clear saved state
+  // Bug #25: Direct mode clears model selection (unlike SBS which retains)
+  if(currentMode==='direct'&&sddInstances['sddModelDirect']){
+    selectedModels.modelDirect=MODELS[0].id;
+    sddInstances['sddModelDirect'].trigger.textContent=MODELS[0].name;
+  }
+  updateTurnIndicator();
+}
+
+function goHome(){
+  switchView('arena',document.querySelector('.nav-tab[data-view="arena"]'));
+  newBattle();
+}
+
+function updateTurnIndicator(){
+  const el=document.getElementById('turnIndicator');
+  if(!el)return;
+  if(turnCount>0){
+    const max=maxTurns[currentMode];
+    // Bug #24/#4: "Lượt X/5" for Battle/SBS, "Lượt X/∞" for Direct
+    if(max<100){
+      el.textContent=`Lượt ${turnCount}/${max}`;
+    }else{
+      el.textContent=`Lượt ${turnCount}/∞`;
+    }
+  }else{
+    el.textContent='';
+  }
+}
+
+function showTurnLimitMsg(){
+  const chat=document.getElementById('arenaChat');
+  const msg=document.createElement('div');
+  msg.className='turn-limit-msg';
+  msg.textContent='Bạn đã đạt giới hạn tối đa. Bắt đầu cuộc trò chuyện mới để tiếp tục.';
+  chat.appendChild(msg);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function updateVoteCounter(){
+  // Bug #30/#54: "🗳️ N phiếu" format with locale number formatting
+  document.getElementById('totalVotes').textContent=voteStats.total.toLocaleString();
+  document.getElementById('voteCounterWrap').style.display=isLoggedIn&&voteStats.total>0?'flex':'none';
+  document.getElementById('adTotal').textContent=voteStats.total.toLocaleString();
+  document.getElementById('adBattle').textContent=voteStats.battle.toLocaleString();
+  document.getElementById('adSbs').textContent=voteStats.sbs.toLocaleString();
+  document.getElementById('adDirect').textContent=voteStats.direct.toLocaleString();
+}
+
+function showToast(text){
+  // Reuse undo toast briefly
+  const toast=document.getElementById('undoToast');
+  document.getElementById('undoText').textContent=text;
+  toast.querySelector('button').style.display='none';
+  toast.classList.add('show');
+  setTimeout(()=>{toast.classList.remove('show');toast.querySelector('button').style.display='';},2000);
+}
+
+// ===== AUTH =====
+function toggleAvatarDropdown(){
+  if(!isLoggedIn){document.getElementById('authModal').classList.add('show');return;}
+  document.getElementById('avatarDropdown').classList.toggle('show');
+}
+function loginGoogle(){
+  isLoggedIn=true;
+  document.getElementById('userAvatar').childNodes[0].textContent='F';
+  document.getElementById('adSince').textContent='12/03/2026';
+  document.getElementById('voteCounterWrap').style.display=isLoggedIn&&voteStats.total>0?'flex':'none';
+  closeModal();
+}
+function loginEmail(){
+  isLoggedIn=true;
+  document.getElementById('userAvatar').childNodes[0].textContent='F';
+  document.getElementById('adSince').textContent='12/03/2026';
+  closeModal();
+}
+function handleLogout(){
+  isLoggedIn=false;
+  document.getElementById('userAvatar').childNodes[0].textContent='?';
+  document.getElementById('avatarDropdown').classList.remove('show');
+  document.getElementById('voteCounterWrap').style.display='none';
+}
+function closeModal(){document.getElementById('authModal').classList.remove('show');}
+function dismissModal(){
+  // "Tiếp Tục Là Khách" — dismiss but can't start 4th battle
+  closeModal();
+}
+
+// ===== MOBILE =====
+function toggleDrawer(){
+  const drawer=document.getElementById('sidebarDrawer');
+  const panel=document.getElementById('drawerPanel');
+  if(drawer.classList.contains('open')){
+    drawer.classList.remove('open');
+  }else{
+    // Clone sidebar content into drawer
+    panel.innerHTML=document.getElementById('sidebarDesktop').innerHTML;
+    drawer.classList.add('open');
+  }
+}
+function mobileNav(target){
+  document.querySelectorAll('.mobile-bottom-nav button').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if(target==='arena')switchView('arena',document.querySelector('.nav-tab[data-view="arena"]'));
+  else if(target==='leaderboard')switchView('leaderboard',document.querySelector('.nav-tab[data-view="leaderboard"]'));
+  else if(target==='history')toggleDrawer();
+  else if(target==='account')toggleAvatarDropdown();
+}
+
+// ===== LEADERBOARD =====
+// Bug #26: Sortable columns
+let lbSortKey='elo';
+let lbSortDir='desc';
+try{const s=JSON.parse(localStorage.getItem('vigen_lb_sort'));if(s){lbSortKey=s.key;lbSortDir=s.dir;}}catch(e){}
+
+function renderLeaderboard(){
+  const body=document.getElementById('lbBody');
+  if(!body)return;
+  // Sort by current key
+  const sortFn={
+    elo:(a,b)=>b.elo-a.elo,
+    name:(a,b)=>a.name.localeCompare(b.name),
+    ci:(a,b)=>a.ci-b.ci,
+    winRate:(a,b)=>b.winRate-a.winRate,
+    votes:(a,b)=>b.votes-a.votes,
+    org:(a,b)=>a.org.localeCompare(b.org),
+    license:(a,b)=>a.license.localeCompare(b.license)
+  };
+  // Apply category Elo offsets for filtered view
+  let models=MODELS.map(m=>{
+    const offset=(lbCategory!=='all'&&CATEGORY_ELO_OFFSETS[lbCategory])?CATEGORY_ELO_OFFSETS[lbCategory][m.id]||0:0;
+    return {...m,elo:m.elo+offset,winRate:Math.min(0.95,Math.max(0.15,m.winRate+(offset/500)))};
+  });
+  models.sort(sortFn[lbSortKey]||sortFn.elo);
+  if(lbSortDir==='asc')models.reverse();
+  body.innerHTML='';
+  models.forEach((m,i)=>{
+    const rank=i+1;
+    const rankClass=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-default';
+    const wr=Math.round(m.winRate*100);
+    // Bug #54: number formatting with toLocaleString
+    body.innerHTML+=`
+      <tr>
+        <td class="rank-cell"><span class="rank-badge ${rankClass}">${rank}</span></td>
+        <td><div class="model-cell">
+          <div class="model-avatar" style="background:${m.color}">${m.name.charAt(0)}</div>
+          <div><div class="model-name">${m.name}</div><div class="model-org">${m.org}</div></div>
+        </div></td>
+        <td class="elo-cell">${m.elo.toLocaleString()}</td>
+        <td class="ci-cell">±${m.ci}</td>
+        <td class="winrate-cell">${wr}%<div class="winrate-bar"><div class="winrate-bar-fill" style="width:${wr}%"></div></div></td>
+        <td class="votes-cell">${m.votes.toLocaleString()}</td>
+        <td style="font-size:0.82rem;color:var(--text-secondary)">${m.org}</td>
+        <td><span class="license-badge ${m.license==='open'?'license-os':'license-prop'}">${m.license==='open'?'Open':'Prop'}</span></td>
+      </tr>`;
+  });
+  // Update sort indicators
+  document.querySelectorAll('.lb-table th').forEach(th=>{
+    const icon=th.querySelector('.sort-icon');
+    if(icon)icon.textContent='↕';
+  });
+}
+
+// Category filter for leaderboard (P1-2 preview — simulated per-category Elo)
+let lbCategory='all';
+const CATEGORY_ELO_OFFSETS={
+  knowledge:{},
+  creative:{'claude-opus':30,'gemini-pro':-20,'grok-4':25,'deepseek':-15,'qwen-35':20},
+  reasoning:{'gpt-5':25,'claude-opus':15,'gemini-flash':-10,'llama-4':20,'glm-5':-25},
+  coding:{'gpt-5':30,'claude-sonnet':20,'deepseek':35,'llama-4':15,'mistral-l2':25,'kimi-k25':-20},
+  culture:{'gemini-pro':-40,'gpt-5':-30,'qwen-35':40,'glm-5':35,'kimi-k25':30,'deepseek':20},
+  professional:{'claude-opus':20,'gpt-5':15,'gemini-flash':10,'grok-4':-20,'mistral-l2':-15}
+};
+function filterLeaderboard(cat,el){
+  lbCategory=cat;
+  document.querySelectorAll('.lb-cat-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderLeaderboard();
+}
+
+// Bug #26 + B6: Click-to-sort handler with localStorage persistence
+function sortLeaderboard(key){
+  if(lbSortKey===key){lbSortDir=lbSortDir==='desc'?'asc':'desc';}
+  else{lbSortKey=key;lbSortDir='desc';}
+  localStorage.setItem('vigen_lb_sort',JSON.stringify({key:lbSortKey,dir:lbSortDir}));
+  renderLeaderboard();
+}
+
+// ===== STAT VIEWS (all shown on one page, no tabs) =====
+
+// Generate synthetic pairwise data
+function generatePairwiseData(){
+  const n=MODELS.length;
+  const wins=Array.from({length:n},()=>Array(n).fill(0));
+  const counts=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      const totalBattles=Math.floor(50+Math.random()*200);
+      const eloDiff=MODELS[i].elo-MODELS[j].elo;
+      const expectedWinRate=1/(1+Math.pow(10,-eloDiff/400));
+      const actualWins=Math.round(totalBattles*expectedWinRate*(0.85+Math.random()*0.3));
+      wins[i][j]=Math.min(actualWins,totalBattles);
+      wins[j][i]=totalBattles-wins[i][j];
+      counts[i][j]=totalBattles;
+      counts[j][i]=totalBattles;
+    }
+  }
+  return{wins,counts};
+}
+
+const pairwise=generatePairwiseData();
+
+function drawAllStats(){
+  drawWinrateHeatmap();
+  drawBattleCountHeatmap();
+  drawAvgWinRateChart();
+  drawCIChart();
+}
+
+function drawWinrateHeatmap(){
+  const canvas=document.getElementById('canvasWinrate');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const n=MODELS.length;
+  const margin=100,cellSize=38;
+  canvas.width=margin+n*cellSize+20;
+  canvas.height=margin+n*cellSize+20;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sorted=[...MODELS].sort((a,b)=>b.elo-a.elo);
+  const idxMap=sorted.map(m=>MODELS.indexOf(m));
+  for(let i=0;i<n;i++){
+    for(let j=0;j<n;j++){
+      const x=margin+j*cellSize,y=margin+i*cellSize;
+      const si=idxMap[i],sj=idxMap[j];
+      if(i===j){ctx.fillStyle='#1a1d23';}
+      else{
+        const total=pairwise.counts[si][sj];
+        const wr=total>0?pairwise.wins[si][sj]/total:0.5;
+        ctx.fillStyle=winrateColor(wr);
+      }
+      ctx.fillRect(x,y,cellSize-1,cellSize-1);
+      if(i!==j){
+        const total=pairwise.counts[si][sj];
+        const wr=total>0?pairwise.wins[si][sj]/total:0.5;
+        ctx.fillStyle=wr>0.65||wr<0.35?'#fff':'#333';
+        ctx.font='bold 9px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText((wr*100).toFixed(0)+'%',x+cellSize/2-0.5,y+cellSize/2);
+      }
+    }
+  }
+  ctx.fillStyle='#5a6070';ctx.font='600 9px Inter';ctx.textAlign='right';ctx.textBaseline='middle';
+  sorted.forEach((m,i)=>{ctx.fillText(m.name.length>14?m.name.slice(0,14)+'…':m.name,margin-6,margin+i*cellSize+cellSize/2);});
+  ctx.textAlign='center';
+  sorted.forEach((m,j)=>{ctx.save();ctx.translate(margin+j*cellSize+cellSize/2,margin-6);ctx.rotate(-Math.PI/3);ctx.textAlign='right';ctx.fillText(m.name.length>14?m.name.slice(0,14)+'…':m.name,0,0);ctx.restore();});
+}
+
+function winrateColor(wr){
+  if(wr>=0.5){const t=(wr-0.5)*2;return`rgb(${Math.round(255-t*196)},${Math.round(255-t*130)},255)`;}
+  else{const t=(0.5-wr)*2;return`rgb(255,${Math.round(255-t*150)},${Math.round(255-t*187)})`;}
+}
+
+function drawBattleCountHeatmap(){
+  const canvas=document.getElementById('canvasBattles');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const n=MODELS.length;
+  const margin=100,cellSize=38;
+  canvas.width=margin+n*cellSize+20;canvas.height=margin+n*cellSize+20;
+  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sorted=[...MODELS].sort((a,b)=>b.elo-a.elo);
+  const idxMap=sorted.map(m=>MODELS.indexOf(m));
+  let maxCount=0;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(i!==j)maxCount=Math.max(maxCount,pairwise.counts[i][j]);
+  for(let i=0;i<n;i++){
+    for(let j=0;j<n;j++){
+      const x=margin+j*cellSize,y=margin+i*cellSize;
+      const si=idxMap[i],sj=idxMap[j];
+      if(i===j){ctx.fillStyle='#1a1d23';}
+      else{const t=pairwise.counts[si][sj]/maxCount;ctx.fillStyle=battleCountColor(t);}
+      ctx.fillRect(x,y,cellSize-1,cellSize-1);
+      if(i!==j){
+        const count=pairwise.counts[si][sj];
+        ctx.fillStyle=count/maxCount>0.6?'#fff':'#333';
+        ctx.font='bold 9px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(count,x+cellSize/2-0.5,y+cellSize/2);
+      }
+    }
+  }
+  ctx.fillStyle='#5a6070';ctx.font='600 9px Inter';ctx.textAlign='right';ctx.textBaseline='middle';
+  sorted.forEach((m,i)=>{ctx.fillText(m.name.length>14?m.name.slice(0,14)+'…':m.name,margin-6,margin+i*cellSize+cellSize/2);});
+  ctx.textAlign='center';
+  sorted.forEach((m,j)=>{ctx.save();ctx.translate(margin+j*cellSize+cellSize/2,margin-6);ctx.rotate(-Math.PI/3);ctx.textAlign='right';ctx.fillText(m.name.length>14?m.name.slice(0,14)+'…':m.name,0,0);ctx.restore();});
+}
+
+function battleCountColor(t){return`rgb(${Math.round(88+t*167)},${Math.round(48+t*185)},${Math.round(140-t*100)})`;}
+
+function drawAvgWinRateChart(){
+  const canvas=document.getElementById('canvasAvgwin');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=700;canvas.height=440;
+  ctx.clearRect(0,0,700,440);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,700,440);
+  const sorted=[...MODELS].sort((a,b)=>b.winRate-a.winRate);
+  const n=sorted.length;
+  const margin={left:140,right:60,top:20,bottom:20};
+  const chartW=700-margin.left-margin.right;
+  const chartH=440-margin.top-margin.bottom;
+  const barH=chartH/n-4;
+  sorted.forEach((m,i)=>{
+    const y=margin.top+i*(barH+4);
+    const w=chartW*m.winRate;
+    const grad=ctx.createLinearGradient(margin.left,0,margin.left+w,0);
+    grad.addColorStop(0,'#3b82f6');grad.addColorStop(1,'#60a5fa');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(margin.left,y,w,barH,[0,4,4,0]);ctx.fill();
+    ctx.fillStyle='#5a6070';ctx.font='600 10px Inter';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(m.name,margin.left-8,y+barH/2);
+    ctx.fillStyle='#1a1d23';ctx.font='bold 10px Inter';ctx.textAlign='left';
+    ctx.fillText((m.winRate*100).toFixed(0)+'%',margin.left+w+6,y+barH/2);
+  });
+}
+
+function drawCIChart(){
+  const canvas=document.getElementById('canvasCi');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=700;canvas.height=440;
+  ctx.clearRect(0,0,700,440);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,700,440);
+  const sorted=[...MODELS].sort((a,b)=>b.elo-a.elo);
+  const n=sorted.length;
+  const margin={left:140,right:40,top:20,bottom:30};
+  const chartW=700-margin.left-margin.right;
+  const chartH=440-margin.top-margin.bottom;
+  const rowH=chartH/n;
+  const minElo=Math.min(...sorted.map(m=>m.elo-m.ci))-10;
+  const maxElo=Math.max(...sorted.map(m=>m.elo+m.ci))+10;
+  const eloRange=maxElo-minElo;
+  const step=20;
+  ctx.strokeStyle='#eceef2';ctx.lineWidth=0.5;ctx.font='500 9px Inter';ctx.fillStyle='#b0b5c0';ctx.textAlign='center';
+  for(let e=Math.ceil(minElo/step)*step;e<=maxElo;e+=step){
+    const x=margin.left+(e-minElo)/eloRange*chartW;
+    ctx.beginPath();ctx.moveTo(x,margin.top);ctx.lineTo(x,margin.top+chartH);ctx.stroke();
+    ctx.fillText(e,x,margin.top+chartH+16);
+  }
+  sorted.forEach((m,i)=>{
+    const y=margin.top+i*rowH+rowH/2;
+    const xCenter=margin.left+(m.elo-minElo)/eloRange*chartW;
+    const xLow=margin.left+(m.elo-m.ci-minElo)/eloRange*chartW;
+    const xHigh=margin.left+(m.elo+m.ci-minElo)/eloRange*chartW;
+    ctx.strokeStyle='#94a3b8';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(xLow,y);ctx.lineTo(xHigh,y);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xLow,y-5);ctx.lineTo(xLow,y+5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xHigh,y-5);ctx.lineTo(xHigh,y+5);ctx.stroke();
+    ctx.fillStyle=m.color;ctx.beginPath();ctx.arc(xCenter,y,5,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#5a6070';ctx.font='600 10px Inter';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(m.name,margin.left-8,y);
+    ctx.fillStyle='#1a1d23';ctx.font='bold 9px Inter';ctx.textAlign='left';
+    ctx.fillText(m.elo,xHigh+6,y);
+  });
+}
+
+// ===== UTILITIES =====
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function formatResponse(text){
+  return text.split('\n').map(line=>{
+    line=line.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    if(line.match(/^\d+\./))return`<p style="margin-left:12px">${line}</p>`;
+    return line?`<p>${line}</p>`:'';
+  }).join('');
+}
+
+// ===== LAUNCH =====
+init();
+</script>
+</body>
+</html>
