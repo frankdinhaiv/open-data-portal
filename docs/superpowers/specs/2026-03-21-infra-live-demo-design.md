@@ -150,10 +150,10 @@ Most audience members will scan a QR code and vote without creating an account. 
 Config flag `EVENT_MODE=true` that switches:
 - Elo recalc: daily cron → micro-batch every 2-5 seconds
 - WebSocket endpoint: enabled
-- Rate limiting: **disabled for IP-based limits** (venue WiFi shares a single external IP across all 500 attendees — IP-based limiting would 429 everyone). Switch to session-based limiting with high ceiling (100 votes/session/hour).
+- Rate limiting: session-based limits relaxed (200 votes/session/hour vs production 100)
 - Guest gate: unchanged at 3 free battles (same as normal operation)
 
-After event: flip to `EVENT_MODE=false` → daily cron, IP-based rate limiting restored.
+After event: flip to `EVENT_MODE=false` → daily cron, WebSocket disabled, standard session-based rate limits restored.
 
 ### Graceful Degradation
 
@@ -270,13 +270,14 @@ Sentry is the existing monitoring tool. Configure for demo day:
 - `GET /api/arena/next-battle` — battle initiation (triggers 2 LLM calls)
 - `ws://api/leaderboard/live` — WebSocket connections
 
-**Fix:** Under `EVENT_MODE=true`:
-- **Disable IP-based rate limiting entirely** on all endpoints
-- **Switch to session-based limiting:** Rate limit by `guest_sessionId` or `user_id` (from JWT), not by IP
-- **Session limits:** 100 votes/session/hour, 10 signups/session/hour, 60 battle initiations/session/hour
-- **WebSocket:** No rate limit on connection (one per client is natural)
+**Fix:** Remove IP-based rate limiting entirely — both for the event and production. Users behind shared networks (university WiFi, corporate NAT, mobile carriers, co-working spaces) will always share IPs. IP-based limiting is the wrong abstraction for this product.
 
-**After event:** `EVENT_MODE=false` restores IP-based rate limiting for production.
+**Use session-based rate limiting everywhere:**
+- Rate limit by `guest_sessionId` or `user_id` (from JWT), never by IP
+- **Session limits (production):** 100 votes/session/hour, 10 signups/session/hour, 60 battle initiations/session/hour
+- **Session limits (EVENT_MODE):** Relaxed — 200 votes/session/hour, same signup/battle limits
+- **WebSocket:** No rate limit on connection (one per client is natural)
+- **Anti-abuse:** For bot detection, use behavioral signals (vote timing patterns, user-agent fingerprint) instead of IP blocking
 
 ### Demo Risk Register
 
@@ -286,7 +287,7 @@ Sentry is the existing monitoring tool. Configure for demo day:
 | 2 | Portable routers saturate under load | **Medium** | Critical | Network | 3-5 routers for redundancy. Pre-load React app as PWA (only API calls need network after first load). Fallback: presenter continues demo from own device if audience connectivity collapses. |
 | 3 | QR code → page load too slow on congested network | **Medium** | High | Network/UX | Cloudflare CDN caches all static assets. Landing page must load < 2 seconds on 3G. Minimize initial JS bundle. |
 | 4 | LLM API rate limits hit during burst | **High** | Critical | LLM | Response caching in Redis, per-provider request queuing with retry, fallback model rotation, pre-event quota verification. |
-| 5 | IP-based rate limiting blocks all attendees | **High** | Critical | Rate Limit | EVENT_MODE disables IP-based limits; switches to session-based limiting. |
+| 5 | Rate limiting blocks legitimate users | **Medium** | Critical | Rate Limit | Session-based limiting everywhere (never IP-based). Relaxed limits during EVENT_MODE. |
 | 6 | Presenter's screen freezes mid-demo | **Low** | Critical | Demo flow | Presenter on wired ethernet or dedicated hotspot (NOT audience WiFi). Backup laptop pre-loaded. Rehearse full flow twice before event. |
 | 7 | Pre-computed responses not seeded / LLM responses too slow | **Medium** | Critical | Data/LLM | Response cache warms from suggested prompts. Set 30s timeout per LLM call with retry. |
 | 8 | API keys for 12 models not ready or expired | **Medium** | Critical | Data | Burst test all 12 keys 48 hours before event. Sonny manages keys centrally — verify with him. |
