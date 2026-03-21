@@ -129,7 +129,7 @@ Key product decisions from the PRD:
 
 ## UI/UX
 
-- Figma: https://www.figma.com/design/s58LWGpASUoNlHMT51CghO/ViGen-Product-Release-R1
+- Figma: https://www.figma.com/design/s58LWGpASUoNlHMT51CghO/ViGen-Product-Release-R1?node-id=13920-133313
 - Lo-fi mockup: https://chatgpt.com/canvas/shared/69a7c08b9b2c8191b286720e4bc39c18
 
 ---
