@@ -1,12 +1,24 @@
-import { useStore } from '../../hooks/useStore'
+import { ChatInput } from './ChatInput'
+import { PromptCard } from './PromptCard'
 
-const PROMPTS = [
-  { cat: 'Kiến thức', text: 'Giải thích blockchain cho học sinh lớp 10' },
-  { cat: 'Sáng tạo', text: 'Viết bài thơ lục bát về mùa xuân Hà Nội' },
-  { cat: 'Suy luận', text: 'Tại sao kinh tế Việt Nam tăng trưởng nhanh hơn dự kiến?' },
-  { cat: 'Lập trình', text: 'Viết hàm Python sắp xếp tên tiếng Việt theo alphabet' },
-  { cat: 'Văn hóa VN', text: 'So sánh phở Hà Nội và phở Sài Gòn' },
-  { cat: 'Nghề nghiệp', text: 'Viết email xin nghỉ phép gửi sếp bằng giọng lịch sự' },
+/*
+ * WelcomeScreen — matches Figma node 2:10708 (Frame 1686560715, 1111×564)
+ *
+ * Structure:
+ *   Welcome area (flex-col items-center justify-center)
+ *   ├── Heading group (y:113, centered)
+ *   │   ├── "Bạn muốn hỏi gì hôm nay?" — Space Grotesk 48px, gold gradient
+ *   │   └── Subtitle — 20px Regular, opacity 75%, gap: 4px from heading
+ *   ├── Chatbox area (y:207, 1111×152, py-24)
+ *   │   └── ChatInput (600×104, centered)
+ *   └── Prompt cards (y:359, 1111×92, px-64)
+ *       └── 3 cards (flex-1, gap-16)
+ */
+
+const PROMPT_SUGGESTIONS = [
+  'Viết một đoạn thơ ngắn (4 câu) theo phong cách lục bát, chủ đề: tình yêu quê hương.',
+  'Giải thích vì sao cầu vồng thường xuất hiện sau cơn mưa bằng 2–3 câu, dùng ngôn ngữ rõ ràng, dễ hiểu.',
+  'Tóm tắt tác phẩm Truyện Kiều của Nguyễn Du và phân loại thể loại văn học của tác phẩm này.',
 ]
 
 interface Props {
@@ -14,31 +26,46 @@ interface Props {
 }
 
 export function WelcomeScreen({ onSubmitPrompt }: Props) {
-  const mode = useStore((s) => s.mode)
-
-  const icon = mode === 'battle' ? '⚔️' : mode === 'sbs' ? '⚖️' : '💬'
-  const title = mode === 'battle' ? 'Đấu Trường GenAI Việt Nam' : mode === 'sbs' ? 'So Sánh Song Song' : 'Trò Chuyện Trực Tiếp'
-  const desc = mode === 'battle'
-    ? 'So sánh và đánh giá các mô hình AI trên tiếng Việt. Nhập prompt hoặc chọn gợi ý bên dưới.'
-    : mode === 'sbs'
-      ? 'Chọn 2 mô hình cụ thể và so sánh câu trả lời.'
-      : 'Chat với 1 mô hình và đánh giá bằng sao.'
-
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 animate-fade-in">
-      <div className="text-5xl mb-4 drop-shadow-lg">{icon}</div>
-      <h2 className="text-2xl font-bold tracking-tight mb-1.5">{title}</h2>
-      <p className="text-[var(--text-secondary)] text-sm max-w-md text-center mb-7">{desc}</p>
-      <div className="grid grid-cols-3 max-md:grid-cols-2 gap-2.5 max-w-2xl w-full">
-        {PROMPTS.map((p) => (
-          <div
-            key={p.text}
-            onClick={() => onSubmitPrompt(p.text)}
-            className="px-4 py-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl cursor-pointer text-xs text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--text)] hover:bg-[var(--accent-light)] hover:-translate-y-0.5 hover:shadow-sm transition-all text-left leading-relaxed"
-          >
-            <div className="text-[0.65rem] uppercase tracking-wider text-[var(--text-muted)] mb-1 font-semibold">{p.cat}</div>
-            {p.text}
-          </div>
+    <div className="flex-1 flex flex-col items-center animate-fade-in relative" style={{ paddingTop: '113px' }}>
+      {/* Heading group — Figma: centered, gap-4px between heading and subtitle */}
+      <div className="flex flex-col items-center w-full" style={{ gap: '4px' }}>
+        <h1 className="display-lg text-gold-gradient text-center relative z-10">
+          Bạn muốn hỏi gì hôm nay?
+        </h1>
+        <p
+          className="text-center w-full relative z-10"
+          style={{
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            fontSize: '20px',
+            lineHeight: '30px',
+            fontWeight: 400,
+            color: '#FFFFFF',
+            opacity: 0.75,
+          }}
+        >
+          Đo độ hiệu qủa của các mô hình khác nhau. Mô hình nào sẽ làm bạn hài lòng nhất?
+        </p>
+      </div>
+
+      {/* Chatbox area — Figma: py-24, 600px centered */}
+      <div className="flex flex-col items-center w-full relative z-10" style={{ padding: '24px 0' }}>
+        <div style={{ width: '600px' }}>
+          <ChatInput onSubmit={onSubmitPrompt} />
+        </div>
+      </div>
+
+      {/* Prompt suggestion cards — Figma: px-64, h-92, 3 cards flex-1, gap-16 */}
+      <div
+        className="flex items-start justify-center w-full relative z-10"
+        style={{ padding: '0 64px', height: '92px', gap: '16px' }}
+      >
+        {PROMPT_SUGGESTIONS.map((text) => (
+          <PromptCard
+            key={text}
+            text={text}
+            onClick={() => onSubmitPrompt(text)}
+          />
         ))}
       </div>
     </div>

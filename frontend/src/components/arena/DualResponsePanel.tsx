@@ -1,4 +1,6 @@
-import type { Model } from '../../types'
+import type { Model, VoteChoice } from '../../types'
+import { ResponsePanel } from './ResponsePanel'
+import type { PanelVisualState } from './ResponsePanel'
 
 interface Props {
   responseA: string
@@ -6,65 +8,112 @@ interface Props {
   modelA: Model
   modelB: Model
   isBattle: boolean
-  voteResult?: 'a' | 'b' | 'tie' | 'bad' | null
+  /** The final vote result (after voting) */
+  voteResult?: VoteChoice | null
+  /** The currently hovered/selecting vote choice (before voting) */
+  selectingChoice?: VoteChoice | null
 }
 
-function formatResponse(text: string) {
-  return text.split('\n').map((line, i) => {
-    const formatted = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    if (line.match(/^\d+\./)) return <p key={i} className="ml-3" dangerouslySetInnerHTML={{ __html: formatted }} />
-    if (line.startsWith('```')) return <pre key={i} className="bg-[var(--bg-input)] rounded-lg p-3 text-xs overflow-x-auto my-2">{line.replace(/```\w*/, '')}</pre>
-    return line ? <p key={i} className="mb-2 last:mb-0" dangerouslySetInnerHTML={{ __html: formatted }} /> : null
-  })
+/**
+ * Derive the visual state for panel A and B based on selecting or voted choice.
+ *
+ * Selecting states (hover, before vote is submitted):
+ * - 'a' selecting: A=winner, B=default
+ * - 'b' selecting: A=default, B=winner
+ * - 'tie' selecting: A=tie-good, B=tie-good
+ * - 'bad' selecting: A=tie-bad, B=tie-bad
+ *
+ * Voted states (after vote is submitted, vote bar disappears):
+ * - 'a' voted: A=winner, B=default (no dimming per Figma)
+ * - 'b' voted: A=default, B=winner
+ * - 'tie' voted: A=tie-good, B=tie-good
+ * - 'bad' voted: A=tie-bad, B=tie-bad
+ */
+function deriveVisualStates(
+  selectingChoice: VoteChoice | null | undefined,
+  voteResult: VoteChoice | null | undefined,
+): { stateA: PanelVisualState; stateB: PanelVisualState; revealModels: boolean } {
+  // Voted takes priority
+  const choice = voteResult || selectingChoice
+
+  if (!choice) {
+    return { stateA: 'default', stateB: 'default', revealModels: false }
+  }
+
+  const isVoted = !!voteResult
+  const revealModels = isVoted
+
+  switch (choice) {
+    case 'a':
+      return {
+        stateA: 'winner',
+        stateB: 'default',
+        revealModels,
+      }
+    case 'b':
+      return {
+        stateA: 'default',
+        stateB: 'winner',
+        revealModels,
+      }
+    case 'tie':
+      return {
+        stateA: 'tie-good',
+        stateB: 'tie-good',
+        revealModels,
+      }
+    case 'bad':
+      return {
+        stateA: 'tie-bad',
+        stateB: 'tie-bad',
+        revealModels,
+      }
+    default:
+      return { stateA: 'default', stateB: 'default', revealModels: false }
+  }
 }
 
-function cardClass(side: 'a' | 'b', voteResult?: string | null) {
-  if (!voteResult) return 'border-[var(--border)]'
-  if (voteResult === 'tie') return 'border-[var(--green)] bg-gradient-to-b from-green-50 to-white'
-  if (voteResult === 'bad') return 'border-[var(--red)] bg-gradient-to-b from-red-50 to-white opacity-70'
-  if (voteResult === side) return 'border-[var(--green)] bg-gradient-to-b from-green-50 to-white shadow-[0_0_0_2px_rgba(16,185,129,0.15)]'
-  return 'border-[var(--red)] bg-gradient-to-b from-red-50 to-white opacity-75'
-}
+export function DualResponsePanel({
+  responseA,
+  responseB,
+  modelA,
+  modelB,
+  isBattle,
+  voteResult,
+  selectingChoice,
+}: Props) {
+  const { stateA, stateB, revealModels } = deriveVisualStates(selectingChoice, voteResult)
 
-function headerBadge(side: 'a' | 'b', voteResult?: string | null) {
-  if (!voteResult) return null
-  if (voteResult === 'tie') return <span className="text-[0.7rem] font-bold text-emerald-800 bg-[var(--green-light)] px-2 py-0.5 rounded-full">🤝 Hòa</span>
-  if (voteResult === 'bad') return <span className="text-[0.7rem] font-bold text-red-800 bg-[var(--red-light)] px-2 py-0.5 rounded-full">👎 Tệ</span>
-  if (voteResult === side) return <span className="text-[0.7rem] font-bold text-emerald-800 bg-[var(--green-light)] px-2 py-0.5 rounded-full">🏆 Thắng</span>
-  return <span className="text-[0.7rem] font-bold text-red-800 bg-[var(--red-light)] px-2 py-0.5 rounded-full">Thua</span>
-}
-
-export function DualResponsePanel({ responseA, responseB, modelA, modelB, isBattle, voteResult }: Props) {
   return (
-    <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4 animate-slide-up">
+    <div className="flex gap-2.5 animate-slide-up relative">
       {/* Response A */}
-      <div className={`bg-[var(--bg-card)] border rounded-2xl overflow-hidden transition-all hover:shadow-md ${cardClass('a', voteResult)}`}>
-        <div className="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
-          <div className="text-xs font-bold text-[var(--text-secondary)] flex items-center gap-1.5">
-            <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[0.72rem] font-bold text-white bg-[var(--accent)]">A</span>
-            {isBattle ? 'Mô hình A' : modelA.name}
-          </div>
-          {!isBattle && <span className="text-[0.72rem] text-[var(--text-dim)]">{modelA.org}</span>}
-          {headerBadge('a', voteResult)}
-        </div>
-        <div className="px-4 py-4 text-sm leading-relaxed max-h-96 overflow-y-auto">
-          {formatResponse(responseA)}
-        </div>
+      <div
+        className="flex-1 transition-opacity duration-300"
+        style={{ opacity: 1 }}
+      >
+        <ResponsePanel
+          content={responseA}
+          model={modelA}
+          isBattle={isBattle}
+          label="Model A"
+          visualState={stateA}
+          revealModel={revealModels}
+        />
       </div>
 
       {/* Response B */}
-      <div className={`bg-[var(--bg-card)] border rounded-2xl overflow-hidden transition-all hover:shadow-md ${cardClass('b', voteResult)}`}>
-        <div className="px-4 py-3 border-b border-[var(--border-light)] flex items-center justify-between">
-          <div className="text-xs font-bold text-[var(--text-secondary)] flex items-center gap-1.5">
-            <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[0.72rem] font-bold text-white bg-[var(--orange)]">B</span>
-            {isBattle ? 'Mô hình B' : modelB.name}
-          </div>
-          {!isBattle && <span className="text-[0.72rem] text-[var(--text-dim)]">{modelB.org}</span>}
-          {headerBadge('b', voteResult)}
-        </div>
-        <div className="px-4 py-4 text-sm leading-relaxed max-h-96 overflow-y-auto">
-          {formatResponse(responseB)}
-        </div>
+      <div
+        className="flex-1 transition-opacity duration-300"
+        style={{ opacity: 1 }}
+      >
+        <ResponsePanel
+          content={responseB}
+          model={modelB}
+          isBattle={isBattle}
+          label="Model B"
+          visualState={stateB}
+          revealModel={revealModels}
+        />
       </div>
     </div>
   )

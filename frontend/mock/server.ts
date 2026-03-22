@@ -234,11 +234,14 @@ app.get('/api/arena/response', async (req, res) => {
     : `[Phản hồi mẫu từ ${model.name} cho câu hỏi số ${promptId}]`;
 
   res.json({
-    id: Math.floor(Math.random() * 10000),
-    prompt_id: promptId,
-    model_id: modelId,
-    content,
-    turn_number: 1,
+    response: {
+      id: Math.floor(Math.random() * 10000),
+      prompt_id: promptId,
+      model_id: modelId,
+      content,
+      turn_number: 1,
+    },
+    model,
   });
 });
 
@@ -247,18 +250,20 @@ app.get('/api/arena/response', async (req, res) => {
 app.post('/api/arena/vote', async (req, res) => {
   if (checkSimulateError(req, res)) return;
 
-  const { model_a_id, model_b_id, winner, mode } = req.body as {
+  const { model_a_id, model_b_id, choice, mode } = req.body as {
     model_a_id: string;
     model_b_id: string;
-    winner: 'a' | 'b' | 'tie';
+    choice: string;
     mode?: string;
   };
 
-  if (!model_a_id || !model_b_id || !winner) {
-    res.status(400).json({ error: 'model_a_id, model_b_id, and winner are required' });
+  if (!model_a_id || !model_b_id || !choice) {
+    res.status(400).json({ error: 'model_a_id, model_b_id, and choice are required' });
     return;
   }
 
+  // Map FE choice values to Elo winner
+  const winner = choice === 'a' ? 'a' : choice === 'b' ? 'b' : 'tie' as 'a' | 'b' | 'tie';
   const ratingA = eloState[model_a_id] ?? 1300;
   const ratingB = eloState[model_b_id] ?? 1300;
   const { newA, newB, deltaA, deltaB } = computeElo(ratingA, ratingB, winner);
@@ -315,12 +320,26 @@ app.get('/api/leaderboard/stats/:type', async (req, res) => {
   if (checkSimulateError(req, res)) return;
   const { type } = req.params;
 
+  // Map model IDs to short display names for matrix labels
+  const idToName: Record<string, string> = {};
+  for (const m of modelsFixture) {
+    idToName[m.id] = m.name;
+  }
+
   if (type === 'win-fraction') {
-    res.json(leaderboardFixture.win_fraction_matrix);
+    const wf = leaderboardFixture.win_fraction_matrix;
+    res.json({ models: wf.models.map((id: string) => idToName[id] || id), matrix: wf.data });
   } else if (type === 'battle-count') {
-    res.json(leaderboardFixture.battle_count_matrix);
+    const bc = leaderboardFixture.battle_count_matrix;
+    res.json({ models: bc.models.map((id: string) => idToName[id] || id), matrix: bc.data });
   } else if (type === 'avg-win-rate') {
-    res.json(leaderboardFixture.avg_win_rate);
+    // Transform to match FE expected shape: { model, avg_win_rate, color }
+    const transformed = leaderboardFixture.avg_win_rate.map((item: { model_id: string; name: string; color: string; win_rate: number }) => ({
+      model: item.name,
+      avg_win_rate: item.win_rate,
+      color: item.color,
+    }));
+    res.json(transformed);
   } else {
     res.status(404).json({ error: `Unknown stat type: ${type}. Valid: win-fraction, battle-count, avg-win-rate` });
   }

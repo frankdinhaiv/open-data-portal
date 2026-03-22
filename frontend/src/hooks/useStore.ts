@@ -46,6 +46,8 @@ interface AppState {
   sessionId: string
   showAuthModal: boolean
   setShowAuthModal: (v: boolean) => void
+  showCTAModal: boolean
+  setShowCTAModal: (v: boolean) => void
   loginUser: (userId: number, email: string, displayName: string | null, token: string) => void
   logoutUser: () => void
   incrementGuestBattles: () => void
@@ -65,13 +67,17 @@ interface AppState {
   setSelectedModelA: (id: string) => void
   setSelectedModelB: (id: string) => void
   setSelectedModelDirect: (id: string) => void
+
+  // Sidebar
+  sidebarCollapsed: boolean
+  setSidebarCollapsed: (v: boolean) => void
 }
 
 export const useStore = create<AppState>((set) => ({
   view: 'arena',
   setView: (v) => set({ view: v }),
 
-  mode: 'battle',
+  mode: 'sbs',
   setMode: (m) => set({ mode: m }),
   messages: [],
   addMessage: (msg) => set((s) => ({ messages: [...s.messages, msg] })),
@@ -100,6 +106,8 @@ export const useStore = create<AppState>((set) => ({
   sessionId: getSessionId(),
   showAuthModal: false,
   setShowAuthModal: (v) => set({ showAuthModal: v }),
+  showCTAModal: false,
+  setShowCTAModal: (v) => set({ showCTAModal: v }),
   loginUser: (userId, email, displayName, token) => {
     localStorage.setItem('arena_token', token)
     localStorage.setItem('arena_user_id', String(userId))
@@ -129,4 +137,7 @@ export const useStore = create<AppState>((set) => ({
   setSelectedModelA: (id) => set({ selectedModelA: id }),
   setSelectedModelB: (id) => set({ selectedModelB: id }),
   setSelectedModelDirect: (id) => set({ selectedModelDirect: id }),
+
+  sidebarCollapsed: false,
+  setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
 }))

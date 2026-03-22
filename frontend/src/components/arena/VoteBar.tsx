@@ -1,106 +1,145 @@
-import { useState } from 'react'
 import { useStore } from '../../hooks/useStore'
 import type { VoteChoice } from '../../types'
+
+import arrowLeft from '../../assets/icons/arrow-left.svg'
+import arrowRightVote from '../../assets/icons/arrow-right-vote.svg'
+import handshake from '../../assets/icons/handshake.svg'
+import thumbsDown from '../../assets/icons/thumbs-down.svg'
 
 interface Props {
   onVote: (choice: VoteChoice) => void
   onContinue: () => void
   onDirectRate: (stars: number, tags: string[]) => void
+  /** Currently hovered/selecting vote choice (for visual highlighting) */
+  selectingChoice?: VoteChoice | null
+  /** Called when the user hovers/unhovers a vote button */
+  onSelectingChange?: (choice: VoteChoice | null) => void
+  /** Model names for SBS mode labels (Figma: "GPT-4.1 tốt hơn" / "DeepSeek V3 tốt hơn") */
+  modelAName?: string
+  modelBName?: string
 }
 
-const QUALITY_TAGS = ['Chính xác', 'Tự nhiên', 'Phù hợp văn hóa', 'Sáng tạo', 'Hữu ích']
-
-export function VoteBar({ onVote, onContinue, onDirectRate }: Props) {
+export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName, modelBName }: Props) {
   const mode = useStore((s) => s.mode)
-  const [stars, setStars] = useState(0)
-  const [tags, setTags] = useState<string[]>([])
 
-  function toggleTag(tag: string) {
-    setTags((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag])
-  }
-
+  // Direct mode: rating is now inline inside ResponsePanel — VoteBar does not render
   if (mode === 'direct') {
-    return (
-      <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--bg-card)] animate-slide-up shrink-0">
-        <div className="flex flex-col items-center gap-2 max-md:gap-3">
-          <div className="text-sm font-semibold text-[var(--text-secondary)]">Đánh giá phản hồi</div>
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <span
-                key={n}
-                onClick={() => setStars(n)}
-                className={`text-2xl cursor-pointer transition-all ${n <= stars ? 'text-[var(--gold)]' : 'text-[var(--border)]'}`}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-1.5 justify-center">
-            {QUALITY_TAGS.map((tag) => (
-              <span
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={`px-3 py-1 rounded-full text-xs font-medium border cursor-pointer transition-all
-                  ${tags.includes(tag)
-                    ? 'bg-[var(--accent-light)] text-[var(--accent)] border-[var(--border-accent)]'
-                    : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--accent-light)] hover:text-[var(--accent)]'
-                  }`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-2 mt-1">
-            <button
-              onClick={() => { onDirectRate(stars, tags); setStars(0); setTags([]) }}
-              className="h-10 px-5 rounded-xl text-sm font-semibold bg-[var(--accent-light)] text-[var(--accent)] border border-blue-200 hover:bg-[var(--accent)] hover:text-white transition-all"
-            >
-              ✓ Gửi đánh giá
-            </button>
-            <button
-              onClick={onContinue}
-              className="h-10 px-5 rounded-xl text-sm font-medium text-[var(--text-muted)] border border-[var(--border-light)] hover:bg-[var(--bg-hover)] transition-all"
-            >
-              💬 Tiếp tục
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+    return null
   }
+
+  // Battle/SBS vote buttons
+  const isBattle = mode === 'battle'
+  const leftLabel = isBattle ? 'Bên trái tốt hơn' : (modelAName ? `${modelAName} tốt hơn` : 'Mô hình A tốt hơn')
+  const rightLabel = isBattle ? 'Bên phải tốt hơn' : (modelBName ? `${modelBName} tốt hơn` : 'Mô hình B tốt hơn')
+
+  // Determine the highlight color for the selecting state
+  function getButtonStyle(choice: VoteChoice) {
+    const isSelecting = selectingChoice === choice
+    if (!isSelecting) {
+      return {
+        border: '1px solid #FFFFFF',
+        color: '#FFFFFF',
+      }
+    }
+    // 'bad' uses error color, all others use success color
+    if (choice === 'bad') {
+      return {
+        border: '1px solid #FDA29B',
+        color: '#FDA29B',
+      }
+    }
+    return {
+      border: '1px solid #75E0A7',
+      color: '#75E0A7',
+    }
+  }
+
+  // Figma: 4 buttons in a row, no wrapping glass container
+  // Each button: border-white, rounded-8, px-10 py-6, gap-4, shadow-xs
+  const btnClass = "flex items-center gap-1 bg-transparent cursor-pointer hover:bg-white/10 transition-all"
 
   return (
-    <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--bg-card)] animate-slide-up shrink-0">
-      <div className="flex items-center justify-center gap-2.5 flex-wrap max-md:flex-col">
+    <div className="py-4 animate-slide-up shrink-0">
+      <div className="flex items-center justify-center gap-2">
         <button
           onClick={() => onVote('a')}
-          className="h-10 px-5 rounded-xl text-sm font-semibold bg-[var(--accent-light)] text-[var(--accent)] border border-blue-200 hover:bg-[var(--accent)] hover:text-white hover:shadow-md transition-all"
+          onMouseEnter={() => onSelectingChange?.('a')}
+          onMouseLeave={() => onSelectingChange?.(null)}
+          className={btnClass}
+          style={{
+            ...getButtonStyle('a'),
+            padding: '6px 10px',
+            borderRadius: '8px',
+            gap: '4px',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            lineHeight: '20px',
+            boxShadow: '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
+          }}
         >
-          👈 A tốt hơn
-        </button>
-        <button
-          onClick={() => onVote('b')}
-          className="h-10 px-5 rounded-xl text-sm font-semibold bg-[var(--orange-light)] text-[var(--orange)] border border-orange-200 hover:bg-[var(--orange)] hover:text-white hover:shadow-md transition-all"
-        >
-          B tốt hơn 👉
+          <img src={arrowLeft} alt="" style={{ width: '20px', height: '20px' }} />
+          <span>{leftLabel}</span>
         </button>
         <button
           onClick={() => onVote('tie')}
-          className="h-10 px-5 rounded-xl text-sm font-semibold bg-[var(--bg-input)] text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--green)] hover:text-white hover:border-[var(--green)] transition-all"
+          onMouseEnter={() => onSelectingChange?.('tie')}
+          onMouseLeave={() => onSelectingChange?.(null)}
+          className={btnClass}
+          style={{
+            ...getButtonStyle('tie'),
+            padding: '6px 10px',
+            borderRadius: '8px',
+            gap: '4px',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            lineHeight: '20px',
+            boxShadow: '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
+          }}
         >
-          🤝 Cả hai tốt
+          <img src={handshake} alt="" style={{ width: '20px', height: '20px' }} />
+          <span>Hoà</span>
         </button>
         <button
           onClick={() => onVote('bad')}
-          className="h-10 px-5 rounded-xl text-sm font-semibold bg-[var(--bg-input)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--red)] hover:text-white hover:border-[var(--red)] transition-all"
+          onMouseEnter={() => onSelectingChange?.('bad')}
+          onMouseLeave={() => onSelectingChange?.(null)}
+          className={btnClass}
+          style={{
+            ...getButtonStyle('bad'),
+            padding: '6px 10px',
+            borderRadius: '8px',
+            gap: '4px',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            lineHeight: '20px',
+            boxShadow: '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
+          }}
         >
-          👎 Cả hai tệ
+          <img src={thumbsDown} alt="" style={{ width: '20px', height: '20px' }} />
+          <span>Cả hai đều tệ</span>
         </button>
         <button
-          onClick={onContinue}
-          className="h-10 px-5 rounded-xl text-sm font-medium text-[var(--text-muted)] border border-[var(--border-light)] hover:bg-[var(--bg-hover)] transition-all"
+          onClick={() => onVote('b')}
+          onMouseEnter={() => onSelectingChange?.('b')}
+          onMouseLeave={() => onSelectingChange?.(null)}
+          className={btnClass}
+          style={{
+            ...getButtonStyle('b'),
+            padding: '6px 10px',
+            borderRadius: '8px',
+            gap: '4px',
+            fontSize: '14px',
+            fontWeight: 600,
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            lineHeight: '20px',
+            boxShadow: '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
+          }}
         >
-          💬 Tiếp tục hội thoại
+          <span>{rightLabel}</span>
+          <img src={arrowRightVote} alt="" style={{ width: '20px', height: '20px' }} />
         </button>
       </div>
     </div>

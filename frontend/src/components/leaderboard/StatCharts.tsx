@@ -1,255 +1,570 @@
 import { useEffect, useRef, useState } from 'react'
 import { fetchStats } from '../../api/client'
 
-type StatType = 'win-fraction' | 'battle-count' | 'avg-win-rate' | 'confidence-intervals'
+/*
+ * StatCharts — three visualization sections matching Figma 2:10985, 2:11498, 2:11512
+ *
+ * 1. Win Rate Matrix (heatmap) — green/red/neutral cells
+ * 2. Battle Count Matrix (heatmap) — gold/blue gradient
+ * 3. Average Win Rate (horizontal bars with gradient)
+ */
 
-const TABS: { id: StatType; icon: string; label: string }[] = [
-  { id: 'win-fraction', icon: '📊', label: 'Win Fraction Matrix' },
-  { id: 'battle-count', icon: '🔢', label: 'Battle Count Matrix' },
-  { id: 'avg-win-rate', icon: '📈', label: 'Average Win Rate' },
-  { id: 'confidence-intervals', icon: '📉', label: 'Confidence Intervals' },
-]
-
-const DESCRIPTIONS: Record<StatType, { title: string; desc: string }> = {
-  'win-fraction': {
-    title: 'Fraction of Model A Wins (Non-tied Battles)',
-    desc: 'Position-bias corrected. Blue = row wins, white = even, red = row loses.',
-  },
-  'battle-count': {
-    title: 'Battle Count per Model Pair (No Ties)',
-    desc: 'Symmetric matrix. Yellow = high count, purple = low. Pairs <50 battles are unreliable.',
-  },
-  'avg-win-rate': {
-    title: 'Average Win Rate Against All Other Models',
-    desc: 'Uniform sampling, ties excluded. Non-parametric sanity check.',
-  },
-  'confidence-intervals': {
-    title: 'Confidence Intervals on Elo Score',
-    desc: 'Bootstrap Elo (1,000 permutations). Non-overlapping CIs = statistically significant difference.',
-  },
-}
+// ─── Color helpers ───
 
 function winrateColor(wr: number): string {
-  if (wr >= 0.5) {
-    const t = (wr - 0.5) * 2
-    return `rgb(${Math.round(255 - t * 196)},${Math.round(255 - t * 130)},255)`
+  // >50% → green (#00FF88 glow), <50% → red (#FF3366 glow), 50% → neutral gray
+  if (wr > 0.52) {
+    const t = Math.min((wr - 0.5) * 4, 1)
+    const r = Math.round(20 + (1 - t) * 50)
+    const g = Math.round(60 + t * 140)
+    const b = Math.round(80 + (1 - t) * 40)
+    return `rgba(${r}, ${g}, ${b}, 0.85)`
   }
-  const t = (0.5 - wr) * 2
-  return `rgb(255,${Math.round(255 - t * 150)},${Math.round(255 - t * 187)})`
+  if (wr < 0.48) {
+    const t = Math.min((0.5 - wr) * 4, 1)
+    const r = Math.round(80 + t * 100)
+    const g = Math.round(50 + (1 - t) * 30)
+    const b = Math.round(60 + (1 - t) * 40)
+    return `rgba(${r}, ${g}, ${b}, 0.85)`
+  }
+  return 'rgba(74, 80, 96, 0.85)'
+}
+
+function winrateTextColor(wr: number): string {
+  if (wr > 0.52) return '#DDFFF0'
+  if (wr < 0.48) return '#FFD0D0'
+  return 'rgba(200,232,255,0.8)'
 }
 
 function battleCountColor(t: number): string {
-  return `rgb(${Math.round(88 + t * 167)},${Math.round(48 + t * 185)},${Math.round(140 - t * 100)})`
+  // low → blue (#1A6FCC), high → gold (#F5C800)
+  const r = Math.round(26 + t * 219)
+  const g = Math.round(111 + t * 89)
+  const b = Math.round(204 - t * 204)
+  return `rgba(${r}, ${g}, ${b}, 0.75)`
 }
 
-export function StatCharts() {
-  const [activeStat, setActiveStat] = useState<StatType>('win-fraction')
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+// ─── Section header component ───
 
-  useEffect(() => {
-    fetchStats(activeStat).then((data) => {
-      const canvas = canvasRef.current
-      if (!canvas) return
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-
-      if (activeStat === 'win-fraction') drawHeatmap(ctx, canvas, data, 'winrate')
-      else if (activeStat === 'battle-count') drawHeatmap(ctx, canvas, data, 'count')
-      else if (activeStat === 'avg-win-rate') drawAvgWinRate(ctx, canvas, data)
-      else if (activeStat === 'confidence-intervals') drawCI(ctx, canvas, data)
-    })
-  }, [activeStat])
-
+function SectionHeader({
+  title,
+  subtitle,
+  legends,
+}: {
+  title: string
+  subtitle: string
+  legends?: { color: string; glow: string; label: string }[]
+}) {
   return (
-    <div>
-      <div className="flex gap-1.5 mt-5 mb-4 flex-wrap">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveStat(tab.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-medium border transition-all
-              ${activeStat === tab.id
-                ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)]'
-              }`}
-          >
-            {tab.icon} {tab.label}
-          </button>
-        ))}
+    <div
+      className="flex flex-col items-center"
+      style={{ paddingTop: '48px', gap: '32px', width: '100%' }}
+    >
+      <div className="flex items-start justify-center" style={{ width: '900px' }}>
+        <h2
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: '36px',
+            lineHeight: '44px',
+            fontWeight: 400,
+            letterSpacing: '-0.72px',
+            color: '#FFFFFF',
+            whiteSpace: 'nowrap',
+            margin: 0,
+          }}
+        >
+          {title}
+        </h2>
       </div>
-
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl overflow-hidden animate-fade-in">
-        <div className="px-5 py-4 border-b border-[var(--border-light)] flex items-center justify-between">
-          <div>
-            <h3 className="text-base font-bold">{DESCRIPTIONS[activeStat].title}</h3>
-            <p className="text-xs text-[var(--text-muted)] max-w-lg">{DESCRIPTIONS[activeStat].desc}</p>
+      <div
+        className="flex flex-col items-center"
+        style={{ width: '900px', gap: '10px' }}
+      >
+        <p
+          style={{
+            fontFamily: "'Be Vietnam Pro', sans-serif",
+            fontSize: '20px',
+            lineHeight: '30px',
+            fontWeight: 400,
+            color: '#FFFFFF',
+            opacity: 0.75,
+            textAlign: 'center',
+            width: '100%',
+            margin: 0,
+          }}
+        >
+          {subtitle}
+        </p>
+        {legends && (
+          <div
+            className="flex flex-wrap items-start justify-center"
+            style={{ width: '100%', gap: '0 24px', minHeight: '15px' }}
+          >
+            {legends.map((leg) => (
+              <div
+                key={leg.label}
+                className="flex items-center"
+                style={{ gap: '8px', alignSelf: 'stretch' }}
+              >
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '2px',
+                    background: leg.color,
+                    boxShadow: `0px 0px 8px 0px ${leg.glow}`,
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "'Be Vietnam Pro', sans-serif",
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    letterSpacing: '1px',
+                    color: 'rgba(200,232,255,0.6)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {leg.label}
+                </span>
+              </div>
+            ))}
           </div>
-        </div>
-        <div className="p-5 flex justify-center overflow-x-auto">
-          <canvas ref={canvasRef} />
-        </div>
+        )}
       </div>
     </div>
   )
 }
 
-function drawHeatmap(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, data: { models: string[]; matrix: number[][] }, type: 'winrate' | 'count') {
+// ─── Main component ───
+
+export function StatCharts() {
+  return (
+    <div className="flex flex-col items-center" style={{ gap: '0px', width: '100%' }}>
+      <WinRateMatrix />
+      <BattleCountMatrix />
+      <AvgWinRate />
+    </div>
+  )
+}
+
+// ─── Win Rate Matrix ───
+
+function WinRateMatrix() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    fetchStats('win-fraction')
+      .then((data) => {
+        if (!data?.models?.length) { setError(true); return }
+        drawWinRateHeatmap(canvasRef.current, data)
+      })
+      .catch(() => setError(true))
+  }, [])
+
+  return (
+    <div>
+      <SectionHeader
+        title="Ma trận tỉ lệ thắng"
+        subtitle="Đã hiệu chỉnh thiên lệch vị trí  ·  Hàng = model chơi  ·  Cột = đối thủ"
+        legends={[
+          { color: '#00FF88', glow: '#00FF88', label: 'Thắng (>50%)' },
+          { color: '#FF3366', glow: '#FF3366', label: 'Thua (<50%)' },
+          { color: '#4A5060', glow: 'rgba(100,120,160,0.4)', label: 'Hoà (50%)' },
+        ]}
+      />
+      <div className="flex justify-center" style={{ padding: '32px 0', overflow: 'auto' }}>
+        {error ? (
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>Chưa có dữ liệu</p>
+        ) : (
+          <canvas ref={canvasRef} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function drawWinRateHeatmap(
+  canvas: HTMLCanvasElement | null,
+  data: { models: string[]; matrix: number[][] }
+) {
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
   const n = data.models.length
-  const margin = 100, cellSize = 38
-  canvas.width = margin + n * cellSize + 20
-  canvas.height = margin + n * cellSize + 20
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  const cellSize = 72
+  const gap = 4
+  const labelMargin = 140
+  const dpr = window.devicePixelRatio || 1
 
-  let maxCount = 0
-  if (type === 'count') {
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (i !== j) maxCount = Math.max(maxCount, data.matrix[i][j])
-  }
+  const gridW = n * cellSize + (n - 1) * gap
+  const totalW = labelMargin + gridW + 20
+  const totalH = labelMargin + gridW + 20
 
+  canvas.width = totalW * dpr
+  canvas.height = totalH * dpr
+  canvas.style.width = `${totalW}px`
+  canvas.style.height = `${totalH}px`
+  ctx.scale(dpr, dpr)
+  ctx.clearRect(0, 0, totalW, totalH)
+
+  // Draw cells
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
-      const x = margin + j * cellSize, y = margin + i * cellSize
+      const x = labelMargin + j * (cellSize + gap)
+      const y = labelMargin + i * (cellSize + gap)
+
       if (i === j) {
-        ctx.fillStyle = '#1a1d23'
-        ctx.fillRect(x, y, cellSize - 1, cellSize - 1)
+        // Diagonal — darker
+        ctx.fillStyle = 'rgba(21, 37, 80, 0.9)'
+        roundRect(ctx, x, y, cellSize, cellSize, 8)
+        ctx.fill()
       } else {
         const val = data.matrix[i][j]
-        if (type === 'winrate') {
-          ctx.fillStyle = winrateColor(val)
-          ctx.fillRect(x, y, cellSize - 1, cellSize - 1)
-          ctx.fillStyle = val > 0.65 || val < 0.35 ? '#fff' : '#333'
-          ctx.font = 'bold 9px Inter'
-          ctx.textAlign = 'center'
-          ctx.textBaseline = 'middle'
-          ctx.fillText(Math.round(val * 100) + '%', x + cellSize / 2, y + cellSize / 2)
-        } else {
-          const t = maxCount > 0 ? val / maxCount : 0
-          ctx.fillStyle = battleCountColor(t)
-          ctx.fillRect(x, y, cellSize - 1, cellSize - 1)
-          ctx.fillStyle = t > 0.6 ? '#fff' : '#333'
-          ctx.font = 'bold 9px Inter'
-          ctx.textAlign = 'center'
-          ctx.textBaseline = 'middle'
-          ctx.fillText(String(val), x + cellSize / 2, y + cellSize / 2)
-        }
+        ctx.fillStyle = winrateColor(val)
+        roundRect(ctx, x, y, cellSize, cellSize, 8)
+        ctx.fill()
+
+        // Text
+        ctx.fillStyle = winrateTextColor(val)
+        ctx.font = "bold 12px 'Be Vietnam Pro', sans-serif"
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(Math.round(val * 100) + '%', x + cellSize / 2, y + cellSize / 2)
       }
     }
   }
 
-  // Labels
-  ctx.fillStyle = '#5a6070'
-  ctx.font = '600 9px Inter'
+  // Row labels (left)
+  ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
+  ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
   data.models.forEach((name, i) => {
-    const label = name.length > 14 ? name.slice(0, 14) + '…' : name
-    ctx.fillText(label, margin - 6, margin + i * cellSize + cellSize / 2)
+    const y = labelMargin + i * (cellSize + gap) + cellSize / 2
+    const label = name.length > 16 ? name.slice(0, 16) + '…' : name
+    ctx.fillText(label, labelMargin - 12, y)
   })
-  ctx.textAlign = 'center'
+
+  // Column labels (top, rotated)
   data.models.forEach((name, j) => {
     ctx.save()
-    ctx.translate(margin + j * cellSize + cellSize / 2, margin - 6)
-    ctx.rotate(-Math.PI / 3)
+    const x = labelMargin + j * (cellSize + gap) + cellSize / 2
+    ctx.translate(x, labelMargin - 12)
+    ctx.rotate(-Math.PI / 4)
+    ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
+    ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
     ctx.textAlign = 'right'
-    ctx.fillText(name.length > 14 ? name.slice(0, 14) + '…' : name, 0, 0)
+    ctx.textBaseline = 'middle'
+    ctx.fillText(name.length > 16 ? name.slice(0, 16) + '…' : name, 0, 0)
     ctx.restore()
   })
 }
 
-function drawAvgWinRate(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, data: { model: string; avg_win_rate: number }[]) {
-  canvas.width = 700
-  canvas.height = 440
-  ctx.clearRect(0, 0, 700, 440)
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, 700, 440)
+// ─── Battle Count Matrix ───
 
-  const sorted = [...data].sort((a, b) => b.avg_win_rate - a.avg_win_rate)
-  const n = sorted.length
-  const ml = 140, mr = 60, mt = 20, mb = 20
-  const chartW = 700 - ml - mr, barH = (440 - mt - mb) / n - 4
+function BattleCountMatrix() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [error, setError] = useState(false)
 
-  sorted.forEach((m, i) => {
-    const y = mt + i * (barH + 4)
-    const w = chartW * m.avg_win_rate
-    const grad = ctx.createLinearGradient(ml, 0, ml + w, 0)
-    grad.addColorStop(0, '#3b82f6')
-    grad.addColorStop(1, '#60a5fa')
-    ctx.fillStyle = grad
-    ctx.beginPath()
-    ctx.roundRect(ml, y, w, barH, [0, 4, 4, 0])
-    ctx.fill()
+  useEffect(() => {
+    fetchStats('battle-count')
+      .then((data) => {
+        if (!data?.models?.length) { setError(true); return }
+        drawBattleCountHeatmap(canvasRef.current, data)
+      })
+      .catch(() => setError(true))
+  }, [])
 
-    ctx.fillStyle = '#5a6070'
-    ctx.font = '600 10px Inter'
+  return (
+    <div>
+      <SectionHeader
+        title="Số trận đấu theo cặp mô hình"
+        subtitle="Ma trận đối xứng"
+        legends={[
+          { color: '#F5C800', glow: '#F5C800', label: 'Nhiều trận (>200)' },
+          { color: '#1A6FCC', glow: '#1A6FCC', label: 'Ít trận (<80)' },
+        ]}
+      />
+      <div className="flex justify-center" style={{ padding: '32px 0', overflow: 'auto' }}>
+        {error ? (
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>Chưa có dữ liệu</p>
+        ) : (
+          <canvas ref={canvasRef} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function drawBattleCountHeatmap(
+  canvas: HTMLCanvasElement | null,
+  data: { models: string[]; matrix: number[][] }
+) {
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const n = data.models.length
+  const cellSize = 72
+  const gap = 4
+  const labelMargin = 140
+  const dpr = window.devicePixelRatio || 1
+
+  const gridW = n * cellSize + (n - 1) * gap
+  const totalW = labelMargin + gridW + 20
+  const totalH = labelMargin + gridW + 20
+
+  canvas.width = totalW * dpr
+  canvas.height = totalH * dpr
+  canvas.style.width = `${totalW}px`
+  canvas.style.height = `${totalH}px`
+  ctx.scale(dpr, dpr)
+  ctx.clearRect(0, 0, totalW, totalH)
+
+  // Find max count
+  let maxCount = 0
+  for (let i = 0; i < n; i++)
+    for (let j = 0; j < n; j++)
+      if (i !== j) maxCount = Math.max(maxCount, data.matrix[i][j])
+
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const x = labelMargin + j * (cellSize + gap)
+      const y = labelMargin + i * (cellSize + gap)
+
+      if (i === j) {
+        ctx.fillStyle = 'rgba(21, 37, 80, 0.9)'
+        roundRect(ctx, x, y, cellSize, cellSize, 8)
+        ctx.fill()
+      } else {
+        const val = data.matrix[i][j]
+        const t = maxCount > 0 ? val / maxCount : 0
+        ctx.fillStyle = battleCountColor(t)
+        roundRect(ctx, x, y, cellSize, cellSize, 8)
+        ctx.fill()
+
+        ctx.fillStyle = t > 0.5 ? '#FFFFFF' : 'rgba(255,255,255,0.9)'
+        ctx.font = "bold 12px 'Be Vietnam Pro', sans-serif"
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(String(val), x + cellSize / 2, y + cellSize / 2)
+      }
+    }
+  }
+
+  // Row labels
+  ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
+  ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
+  ctx.textAlign = 'right'
+  ctx.textBaseline = 'middle'
+  data.models.forEach((name, i) => {
+    const y = labelMargin + i * (cellSize + gap) + cellSize / 2
+    ctx.fillText(name.length > 16 ? name.slice(0, 16) + '…' : name, labelMargin - 12, y)
+  })
+
+  // Column labels
+  data.models.forEach((name, j) => {
+    ctx.save()
+    const x = labelMargin + j * (cellSize + gap) + cellSize / 2
+    ctx.translate(x, labelMargin - 12)
+    ctx.rotate(-Math.PI / 4)
+    ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
+    ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
     ctx.textAlign = 'right'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(m.model, ml - 8, y + barH / 2)
-
-    ctx.fillStyle = '#1a1d23'
-    ctx.font = 'bold 10px Inter'
-    ctx.textAlign = 'left'
-    ctx.fillText(Math.round(m.avg_win_rate * 100) + '%', ml + w + 6, y + barH / 2)
+    ctx.fillText(name.length > 16 ? name.slice(0, 16) + '…' : name, 0, 0)
+    ctx.restore()
   })
 }
 
-function drawCI(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, data: { model: string; color: string; elo: number; ci_lower: number; ci_upper: number }[]) {
-  canvas.width = 700
-  canvas.height = 440
-  ctx.clearRect(0, 0, 700, 440)
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, 700, 440)
+// ─── Average Win Rate ───
 
-  const sorted = [...data].sort((a, b) => b.elo - a.elo)
-  const n = sorted.length
-  const ml = 140, mr = 40, mt = 20, mb = 30
-  const chartW = 700 - ml - mr, chartH = 440 - mt - mb
-  const rowH = chartH / n
+function AvgWinRate() {
+  const [data, setData] = useState<{ model: string; avg_win_rate: number; color?: string }[]>([])
+  const [error, setError] = useState(false)
 
-  const minElo = Math.min(...sorted.map((m) => m.ci_lower)) - 10
-  const maxElo = Math.max(...sorted.map((m) => m.ci_upper)) + 10
-  const range = maxElo - minElo
+  useEffect(() => {
+    fetchStats('avg-win-rate')
+      .then((d) => {
+        if (!d?.length) { setError(true); return }
+        setData([...d].sort((a: { avg_win_rate: number }, b: { avg_win_rate: number }) => b.avg_win_rate - a.avg_win_rate))
+      })
+      .catch(() => setError(true))
+  }, [])
 
-  // Grid
-  const step = 20
-  ctx.strokeStyle = '#eceef2'
-  ctx.lineWidth = 0.5
-  ctx.font = '500 9px Inter'
-  ctx.fillStyle = '#b0b5c0'
-  ctx.textAlign = 'center'
-  for (let e = Math.ceil(minElo / step) * step; e <= maxElo; e += step) {
-    const x = ml + ((e - minElo) / range) * chartW
-    ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, mt + chartH); ctx.stroke()
-    ctx.fillText(String(e), x, mt + chartH + 16)
+  const maxRate = data.length > 0 ? Math.max(...data.map((d) => d.avg_win_rate)) : 1
+
+  return (
+    <div>
+      <SectionHeader
+        title="Tỉ lệ thắng trung bình"
+        subtitle="Lấy mẫu đồng đều, không tính hòa."
+      />
+      <div style={{ padding: '32px 0', width: '900px', margin: '0 auto' }}>
+        {error ? (
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', textAlign: 'center' }}>
+            Chưa có dữ liệu
+          </p>
+        ) : (
+          <div className="flex flex-col" style={{ gap: '8px', borderRadius: '12px' }}>
+            {data.map((item, idx) => {
+              const pct = Math.round(item.avg_win_rate * 100)
+              // Bar width proportional to max rate, container is 900px - rank area
+              const barWidthPct = (item.avg_win_rate / maxRate) * 100
+
+              return (
+                <div
+                  key={item.model}
+                  className="flex items-center"
+                  style={{
+                    height: '48px',
+                    padding: '8px',
+                    borderRadius: '24px',
+                    background: `linear-gradient(to right, rgba(21,94,239,0) 20%, #155EEF 100%)`,
+                    width: `${barWidthPct}%`,
+                    minWidth: '300px',
+                  }}
+                >
+                  <div className="flex items-center gap-[8px] flex-1 min-w-0">
+                    {/* Rank badge */}
+                    <div
+                      className="flex flex-col items-center justify-center shrink-0"
+                      style={{ width: '32px', height: '32px' }}
+                    >
+                      {idx < 3 ? (
+                        <RankBadge rank={idx + 1} />
+                      ) : (
+                        <span
+                          style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontSize: '14px',
+                            fontWeight: 700,
+                            color: '#FFFFFF',
+                            textAlign: 'center',
+                            width: '100%',
+                            lineHeight: '0.95',
+                          }}
+                        >
+                          {idx + 1}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Model name */}
+                    <span
+                      className="flex-1 min-w-0 truncate"
+                      style={{
+                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                        fontSize: '12px',
+                        lineHeight: '18px',
+                        fontWeight: 400,
+                        color: '#FFFFFF',
+                      }}
+                    >
+                      {item.model}
+                    </span>
+
+                    {/* Percentage */}
+                    <span
+                      className="flex-1 min-w-0"
+                      style={{
+                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                        fontSize: '12px',
+                        lineHeight: '18px',
+                        fontWeight: 400,
+                        color: '#FFFFFF',
+                        textAlign: 'right',
+                      }}
+                    >
+                      {pct}%
+                    </span>
+                  </div>
+
+                  {/* Model logo placeholder (circle) */}
+                  <div
+                    className="shrink-0 flex items-center justify-center"
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '16px',
+                      background: '#FFFFFF',
+                      padding: '4px',
+                      marginLeft: '4px',
+                    }}
+                  >
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '12px',
+                        background: item.color || '#155EEF',
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        color: '#FFFFFF',
+                      }}
+                    >
+                      {item.model[0]}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Rank badge (glassmorphism style for top 3) ───
+
+function RankBadge({ rank }: { rank: number }) {
+  const medals: Record<number, { bg: string; emoji: string }> = {
+    1: { bg: 'linear-gradient(135deg, #FFD700, #FFA500)', emoji: '🥇' },
+    2: { bg: 'linear-gradient(135deg, #C0C0C0, #A0A0A0)', emoji: '🥈' },
+    3: { bg: 'linear-gradient(135deg, #CD7F32, #A0522D)', emoji: '🥉' },
   }
+  const medal = medals[rank]
+  if (!medal) return null
 
-  sorted.forEach((m, i) => {
-    const y = mt + i * rowH + rowH / 2
-    const xCenter = ml + ((m.elo - minElo) / range) * chartW
-    const xLow = ml + ((m.ci_lower - minElo) / range) * chartW
-    const xHigh = ml + ((m.ci_upper - minElo) / range) * chartW
+  return (
+    <div
+      className="flex items-center justify-center"
+      style={{
+        width: '32px',
+        height: '32px',
+        fontSize: '18px',
+        lineHeight: 1,
+      }}
+    >
+      {medal.emoji}
+    </div>
+  )
+}
 
-    ctx.strokeStyle = '#94a3b8'
-    ctx.lineWidth = 1.5
-    ctx.beginPath(); ctx.moveTo(xLow, y); ctx.lineTo(xHigh, y); ctx.stroke()
-    ctx.beginPath(); ctx.moveTo(xLow, y - 5); ctx.lineTo(xLow, y + 5); ctx.stroke()
-    ctx.beginPath(); ctx.moveTo(xHigh, y - 5); ctx.lineTo(xHigh, y + 5); ctx.stroke()
+// ─── Canvas utility ───
 
-    ctx.fillStyle = m.color
-    ctx.beginPath(); ctx.arc(xCenter, y, 5, 0, Math.PI * 2); ctx.fill()
-    ctx.strokeStyle = '#fff'
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-
-    ctx.fillStyle = '#5a6070'
-    ctx.font = '600 10px Inter'
-    ctx.textAlign = 'right'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(m.model, ml - 8, y)
-
-    ctx.fillStyle = '#1a1d23'
-    ctx.font = 'bold 9px Inter'
-    ctx.textAlign = 'left'
-    ctx.fillText(String(Math.round(m.elo)), xHigh + 6, y)
-  })
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r)
+  ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
 }

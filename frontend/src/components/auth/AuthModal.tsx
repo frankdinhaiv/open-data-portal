@@ -49,11 +49,10 @@ export function AuthModal() {
       }
       loginUser(data.user_id, data.email, data.display_name, data.token)
 
-      // Link guest votes to the new account
       try {
         await linkSession(data.token)
       } catch {
-        // Non-critical — don't block login
+        // Non-critical
       }
 
       reset()
@@ -74,29 +73,37 @@ export function AuthModal() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in" onClick={handleClose}>
-      <div className="bg-[var(--bg-card)] rounded-2xl p-8 max-w-sm w-[90%] shadow-2xl animate-scale-in relative" onClick={(e) => e.stopPropagation()}>
-        <button onClick={handleClose} className="absolute top-4 right-4 text-xl text-[var(--text-muted)] hover:text-[var(--text)] transition-all bg-transparent border-none cursor-pointer">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in" onClick={handleClose}>
+      <div
+        className="rounded-2xl p-8 max-w-sm w-[90%] shadow-2xl animate-scale-in relative"
+        style={{
+          background: 'rgba(0, 34, 102, 0.95)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          backdropFilter: 'blur(20px)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={handleClose} className="absolute top-4 right-4 text-xl text-white/50 hover:text-white transition-all bg-transparent border-none cursor-pointer">
           &times;
         </button>
 
-        <h3 className="text-xl font-bold mb-4">
+        <h3 className="text-xl font-bold mb-4 text-white">
           {tab === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}
         </h3>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-5 bg-[var(--bg-input)] rounded-lg p-0.5">
+        <div className="flex gap-1 mb-5 bg-white/5 rounded-lg p-0.5">
           <button
             onClick={() => switchTab('login')}
             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all border-none cursor-pointer
-              ${tab === 'login' ? 'bg-[var(--bg-card)] text-[var(--text)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}
+              ${tab === 'login' ? 'bg-white/15 text-white shadow-sm' : 'bg-transparent text-white/50'}`}
           >
             Đăng nhập
           </button>
           <button
             onClick={() => switchTab('register')}
             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all border-none cursor-pointer
-              ${tab === 'register' ? 'bg-[var(--bg-card)] text-[var(--text)] shadow-sm' : 'bg-transparent text-[var(--text-muted)]'}`}
+              ${tab === 'register' ? 'bg-white/15 text-white shadow-sm' : 'bg-transparent text-white/50'}`}
           >
             Đăng ký
           </button>
@@ -107,8 +114,9 @@ export function AuthModal() {
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Tên hiển thị (tùy chọn)"
-            className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm mb-2.5 outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-light)] transition-all"
+            placeholder="Tên hiển thị (tuỳ chọn)"
+            className="w-full px-3.5 py-2.5 rounded-lg text-sm mb-2.5 outline-none text-white placeholder:text-white/40 transition-all"
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
           />
         )}
 
@@ -117,7 +125,8 @@ export function AuthModal() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm mb-2.5 outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-light)] transition-all"
+          className="w-full px-3.5 py-2.5 rounded-lg text-sm mb-2.5 outline-none text-white placeholder:text-white/40 transition-all"
+          style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
         />
         <input
           type="password"
@@ -125,21 +134,22 @@ export function AuthModal() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Mật khẩu"
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm mb-2.5 outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-light)] transition-all"
+          className="w-full px-3.5 py-2.5 rounded-lg text-sm mb-2.5 outline-none text-white placeholder:text-white/40 transition-all"
+          style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
         />
 
-        {error && <p className="text-xs text-[var(--red)] mb-2">{error}</p>}
+        {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
 
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-2.5 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold mt-1 hover:bg-[var(--accent-hover)] transition-all cursor-pointer border-none disabled:opacity-50"
+          className="w-full py-2.5 rounded-xl bg-white text-[#002266] text-sm font-semibold mt-1 hover:bg-gray-100 transition-all cursor-pointer border-none disabled:opacity-50"
         >
           {loading ? 'Đang xử lý...' : tab === 'login' ? 'Đăng nhập' : 'Đăng ký'}
         </button>
 
         <div className="text-center mt-3">
-          <span onClick={handleClose} className="text-xs text-[var(--text-muted)] cursor-pointer hover:text-[var(--accent)] transition-all">
+          <span onClick={handleClose} className="text-xs text-white/40 cursor-pointer hover:text-white/70 transition-all">
             Bỏ qua
           </span>
         </div>

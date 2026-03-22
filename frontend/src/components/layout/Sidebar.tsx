@@ -1,140 +1,252 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useStore } from '../../hooks/useStore'
 import { fetchHistory } from '../../api/client'
-import type { ViewType, HistoryEntry } from '../../types'
+import type { HistoryEntry } from '../../types'
+
+const SAMPLE_HISTORY: HistoryEntry[] = [
+  { id: 1, prompt_text: 'So sánh phở Hà Nội và phở Sài Gòn', mode: 'battle', created_at: '2026-03-21T10:00:00' },
+  { id: 2, prompt_text: 'Khoảng cách từ Nhà hát lớn tới Hồ Gươm', mode: 'sbs', created_at: '2026-03-21T09:00:00' },
+  { id: 3, prompt_text: 'Nếu có thể du lịch đến một nơi nào đó, bạn sẽ chọn đâu: Đà Lạt hay Nha Trang?', mode: 'direct', created_at: '2026-03-20T15:00:00' },
+  { id: 4, prompt_text: 'Bạn nghĩ gì về việc thưởng thức cà phê ở phố cổ Hà Nội?', mode: 'battle', created_at: '2026-03-20T12:00:00' },
+  { id: 5, prompt_text: 'Món ăn nào bạn muốn thử nhất trong ẩm thực Việt Nam?', mode: 'sbs', created_at: '2026-03-19T18:00:00' },
+]
+
+import sidebarToggle from '../../assets/icons/sidebar-toggle.svg'
+import newChat from '../../assets/icons/new-chat.svg'
+import barChart from '../../assets/icons/bar-chart.svg'
+import searchIcon from '../../assets/icons/search.svg'
+import battleIcon from '../../assets/icons/battle.svg'
+import scalesIcon from '../../assets/icons/scales.svg'
+import messageCircle from '../../assets/icons/message-circle.svg'
+
+/*
+ * Sidebar — matches Figma node 2:10666 (280×620)
+ *
+ * Structure:
+ *   Frame (280×620, px-8, flex-col gap-32)
+ *   ├── Search (px-4 py-8) — 40×40 glass button, icon 20×20
+ *   ├── Navigation (gap-4)
+ *   │   └── Nav item (264×40, px-12 py-8, rounded-6, icon 24×24, gap-12, 16px SemiBold #F2F4F7)
+ *   └── History (px-16, gap-16)
+ *       ├── Label "Lịch sử" (16px Medium #FFF)
+ *       └── Items (gap-16, each: gap-8, icon 20×20 opacity-50, text 14px Regular opacity-75)
+ */
 
 export function Sidebar() {
-  const { view, setView, clearMessages, resetTurn, totalVotes, userId, isLoggedIn } = useStore()
+  const { clearMessages, resetTurn, totalVotes, userId, isLoggedIn, setView, sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed } = useStore()
   const [history, setHistory] = useState<HistoryEntry[]>([])
 
   const loadHistory = useCallback(() => {
     if (!isLoggedIn || !userId) {
-      setHistory([])
+      setHistory(SAMPLE_HISTORY)
       return
     }
-    fetchHistory(userId).then(setHistory).catch(() => {})
+    fetchHistory(userId).then((data) => setHistory(data.length > 0 ? data : SAMPLE_HISTORY)).catch(() => setHistory(SAMPLE_HISTORY))
   }, [userId, isLoggedIn])
 
-  // Load on mount and whenever totalVotes or login state changes
   useEffect(() => {
     loadHistory()
   }, [loadHistory, totalVotes])
 
-  const navItems: { view: ViewType; icon: string; label: string }[] = [
-    { view: 'arena', icon: '⚔️', label: 'Đấu Trường' },
-    { view: 'leaderboard', icon: '🏆', label: 'Bảng Xếp Hạng' },
-  ]
-
-  function handleNav(v: ViewType) {
-    setView(v)
-    if (v === 'arena') {
-      clearMessages()
-      resetTurn()
-    }
-  }
-
-  function choiceLabel(entry: HistoryEntry): string {
-    if (entry.choice === 'a') return `${entry.model_a_name} thắng`
-    if (entry.choice === 'b') return `${entry.model_b_name} thắng`
-    if (entry.choice === 'tie') return 'Hòa'
-    if (entry.choice === 'bad') return 'Cả hai chưa tốt'
-    return `${entry.choice} sao`
+  function handleNewChat() {
+    clearMessages()
+    resetTurn()
+    setView('arena')
   }
 
   function modeIcon(mode: string): string {
-    if (mode === 'battle') return '⚔️'
-    if (mode === 'sbs') return '⚖️'
-    return '💬'
+    if (mode === 'battle') return battleIcon
+    if (mode === 'sbs') return scalesIcon
+    return messageCircle
   }
 
-  function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr + 'Z').getTime()
-    const mins = Math.floor(diff / 60000)
-    if (mins < 1) return 'vừa xong'
-    if (mins < 60) return `${mins} phút trước`
-    const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours} giờ trước`
-    return `${Math.floor(hours / 24)} ngày trước`
+  // Glass button style shared between collapsed and expanded
+  const glassButtonStyle: React.CSSProperties = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'rgba(255,255,255,0.1)',
+    padding: '10px',
+    boxShadow: '0px 1px 2px rgba(16,24,40,0.05)',
+  }
+
+  if (collapsed) {
+    return (
+      <aside
+        className="fixed left-0 top-[90px] z-40 flex flex-col"
+        style={{ width: '56px', padding: '0 8px', gap: '32px', height: '620px' }}
+      >
+        {/* Toggle button — same position as expanded */}
+        <div style={{ padding: '8px 4px 0' }}>
+          <button
+            onClick={() => setCollapsed(false)}
+            className="flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all"
+            style={glassButtonStyle}
+          >
+            <img src={sidebarToggle} alt="Expand" style={{ width: '20px', height: '20px' }} />
+          </button>
+        </div>
+
+        {/* Icon-only nav buttons — Figma: 48×128, 3 buttons 40×40, gap-4 */}
+        <nav className="flex flex-col" style={{ padding: '0 4px', gap: '4px' }}>
+          <button
+            onClick={handleNewChat}
+            className="flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all bg-transparent border-none"
+            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px' }}
+            title="Cuộc trò chuyện mới"
+          >
+            <img src={newChat} alt="Cuộc trò chuyện mới" style={{ width: '24px', height: '24px' }} />
+          </button>
+          <button
+            onClick={() => setView('leaderboard')}
+            className="flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all bg-transparent border-none"
+            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px' }}
+            title="Bảng xếp hạng"
+          >
+            <img src={barChart} alt="Bảng xếp hạng" style={{ width: '24px', height: '24px' }} />
+          </button>
+          <button
+            className="flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all bg-transparent border-none"
+            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px' }}
+            title="Tìm kiếm"
+          >
+            <img src={searchIcon} alt="Tìm kiếm" style={{ width: '24px', height: '24px' }} />
+          </button>
+        </nav>
+
+        {/* Gradient divider — Figma: Rectangle 4667, 1×620px */}
+        <div
+          className="absolute right-0 top-0 w-px pointer-events-none"
+          style={{
+            height: '620px',
+            background: 'linear-gradient(180deg, rgba(0, 34, 102, 0) 0%, #5281DD 50%, rgba(0, 34, 102, 0) 100%)',
+          }}
+        />
+      </aside>
+    )
   }
 
   return (
-    <aside className="w-60 border-r border-[var(--border)] flex flex-col shrink-0 bg-[var(--bg-sidebar)] max-md:hidden">
-      <div
-        className="flex items-center gap-2.5 px-5 py-4 cursor-pointer hover:bg-[var(--bg-hover)] transition-all"
-        onClick={() => handleNav('arena')}
-      >
-        <div className="w-8 h-8 rounded-[10px] bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-extrabold text-sm shadow-md">
-          V
-        </div>
-        <span className="text-lg font-bold tracking-tight">ViGen Arena</span>
-        <span className="text-[0.6rem] text-[var(--accent)] font-semibold bg-[var(--accent-light)] px-1.5 rounded-full">
-          beta
-        </span>
+    <aside
+      className="w-[280px] fixed left-0 top-[90px] z-40 flex flex-col"
+      style={{ padding: '0 8px', gap: '32px', height: '620px' }}
+    >
+      {/* Search section — Figma: px-4 py-8, contains 40×40 glass button */}
+      <div style={{ padding: '8px 4px 0' }}>
+        <button
+          onClick={() => setCollapsed(true)}
+          className="flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.1)',
+            padding: '10px',
+            boxShadow: '0px 1px 2px rgba(16,24,40,0.05)',
+          }}
+        >
+          <img src={sidebarToggle} alt="Collapse" style={{ width: '20px', height: '20px' }} />
+        </button>
       </div>
 
-      <nav className="px-3 py-2 flex flex-col gap-0.5">
-        {navItems.map((item) => (
-          <div
-            key={item.view}
-            onClick={() => handleNav(item.view)}
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer text-sm transition-all
-              ${view === item.view
-                ? 'text-[var(--accent)] font-semibold bg-[var(--accent-light)]'
-                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]'
-              }`}
+      {/* Navigation — Figma: gap-4, each item 264×40 */}
+      <nav className="flex flex-col cursor-pointer" style={{ gap: '4px' }}>
+        {[
+          { icon: newChat, label: 'Cuộc trò chuyện mới', onClick: handleNewChat },
+          { icon: barChart, label: 'Bảng xếp hạng', onClick: () => setView('leaderboard') },
+          { icon: searchIcon, label: 'Tìm kiếm cuộc trò chuyện', onClick: undefined },
+        ].map((item) => (
+          <button
+            key={item.label}
+            onClick={item.onClick}
+            className="flex items-start w-full border-none bg-transparent cursor-pointer"
+            style={{ height: '40px' }}
           >
-            <span className="text-base w-5 text-center">{item.icon}</span>
-            {item.label}
-          </div>
+            <div
+              className="flex flex-1 items-center self-stretch overflow-hidden hover:bg-white/10 transition-all"
+              style={{ padding: '8px 12px', borderRadius: '6px', gap: '12px' }}
+            >
+              <div className="shrink-0 overflow-hidden" style={{ width: '24px', height: '24px' }}>
+                <img src={item.icon} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
+              </div>
+              <span
+                className="shrink-0 whitespace-nowrap"
+                style={{
+                  fontFamily: "'Be Vietnam Pro', sans-serif",
+                  fontSize: '16px',
+                  lineHeight: '24px',
+                  fontWeight: 600,
+                  color: '#F2F4F7',
+                  textAlign: 'left',
+                }}
+              >
+                {item.label}
+              </span>
+            </div>
+          </button>
         ))}
       </nav>
 
-      <div className="h-px bg-[var(--border-light)] mx-4 my-2" />
+      {/* History section — Figma: px-16, gap-16 */}
+      <div className="flex flex-col" style={{ padding: '0 16px', gap: '16px' }}>
+        {/* Label */}
+        <div className="flex items-center shrink-0">
+          <span
+            className="shrink-0 whitespace-nowrap"
+            style={{
+              fontFamily: "'Be Vietnam Pro', sans-serif",
+              fontSize: '16px',
+              lineHeight: '24px',
+              fontWeight: 500,
+              color: '#FFFFFF',
+            }}
+          >
+            Lịch sử
+          </span>
+        </div>
 
-      <div className="text-[0.68rem] text-[var(--text-muted)] px-5 pt-3 pb-1 uppercase tracking-wider font-semibold flex items-center justify-between">
-        <span>Lịch sử</span>
-        {history.length > 0 && (
-          <span className="text-[var(--accent)] font-bold">{history.length}</span>
-        )}
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-2 pb-2">
-        {history.length === 0 ? (
-          <p className="px-3 py-3 text-[0.72rem] text-[var(--text-muted)]">
-            Chưa có lượt đánh giá nào
-          </p>
-        ) : (
-          <div className="flex flex-col gap-0.5">
-            {history.map((entry) => (
-              <div
-                key={entry.id}
-                className="px-3 py-2 rounded-lg hover:bg-[var(--bg-hover)] transition-all cursor-default"
-              >
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="text-[0.65rem]">{modeIcon(entry.mode)}</span>
-                  <span className="text-[0.68rem] font-medium text-[var(--text)] truncate flex-1">
-                    {entry.prompt_text.length > 28
-                      ? entry.prompt_text.slice(0, 28) + '…'
-                      : entry.prompt_text}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 pl-4">
-                  <span className="text-[0.65rem] text-[var(--text-muted)]">
-                    {choiceLabel(entry)}
-                  </span>
-                  <span className="text-[0.6rem] text-[var(--text-muted)] ml-auto">
-                    {timeAgo(entry.created_at)}
-                  </span>
-                </div>
+        {/* History items — Figma: gap-16, each item gap-8 */}
+        <div className="flex flex-col overflow-y-auto" style={{ gap: '16px' }}>
+          {history.map((entry) => (
+            <div
+              key={entry.id}
+              className="flex items-center shrink-0 w-full"
+              style={{ gap: '8px' }}
+            >
+              <div className="shrink-0 overflow-hidden" style={{ width: '20px', height: '20px', opacity: 0.5 }}>
+                <img src={modeIcon(entry.mode)} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
               </div>
-            ))}
-          </div>
-        )}
+              <p
+                className="flex-1 overflow-hidden"
+                style={{
+                  fontFamily: "'Be Vietnam Pro', sans-serif",
+                  fontSize: '14px',
+                  lineHeight: '20px',
+                  fontWeight: 400,
+                  color: 'rgba(255, 255, 255, 0.75)',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  margin: 0,
+                  minWidth: 0,
+                }}
+              >
+                {entry.prompt_text}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-auto px-4 py-3 border-t border-[var(--border-light)] text-[0.68rem] text-[var(--text-muted)] flex gap-2">
-        <span>Giới thiệu</span> · <span>API</span> · <span>Chính sách</span>
-      </div>
+      {/* Right edge gradient divider — Figma: Rectangle 4667, 1×620px */}
+      <div
+        className="absolute right-0 top-0 w-px pointer-events-none"
+        style={{
+          height: '620px',
+          background: 'linear-gradient(180deg, rgba(0, 34, 102, 0) 0%, #5281DD 50%, rgba(0, 34, 102, 0) 100%)',
+        }}
+      />
     </aside>
   )
 }

@@ -1,16 +1,19 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { useStore } from '../hooks/useStore'
+import { ModeSelector } from '../components/layout/ModeSelector'
 import { WelcomeScreen } from '../components/arena/WelcomeScreen'
 import { ChatInput } from '../components/arena/ChatInput'
+import { UserMessage } from '../components/arena/UserMessage'
 import { DualResponsePanel } from '../components/arena/DualResponsePanel'
+import { ResponsePanel } from '../components/arena/ResponsePanel'
 import { VoteBar } from '../components/arena/VoteBar'
-import { EloReveal } from '../components/arena/EloReveal'
+import { ErrorResponsePanel } from '../components/arena/ErrorResponsePanel'
 import * as api from '../api/client'
 import type { VoteChoice, PairData, Model } from '../types'
 
 interface DisplayMessage {
   id: number
-  role: 'user' | 'dual' | 'direct' | 'system'
+  role: 'user' | 'dual' | 'direct' | 'system' | 'error'
   content?: string
   responseA?: string
   responseB?: string
@@ -25,87 +28,72 @@ export function ArenaPage() {
     mode, messages, turnCount, incrementTurn,
     currentPair, setCurrentPair,
     showVoteBar, setShowVoteBar,
-    showEloReveal, setShowEloReveal,
-    setEloRevealData, incrementVotes,
+    incrementVotes,
     isLoggedIn, guestBattles, incrementGuestBattles, sessionId,
-    setShowAuthModal,
     isLoading, setIsLoading,
     selectedModelA, selectedModelB, selectedModelDirect,
+    models,
+    setShowCTAModal,
   } = useStore()
 
   const chatRef = useRef<HTMLDivElement>(null)
   const [displayMessages, setDisplayMessages] = useState<DisplayMessage[]>([])
   const msgIdRef = useRef(0)
+  /** Track which vote button is being hovered (selecting state) */
+  const [selectingChoice, setSelectingChoice] = useState<VoteChoice | null>(null)
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight
-  }, [displayMessages, showVoteBar, showEloReveal])
+  }, [displayMessages, showVoteBar])
 
-  // Reset on clear
   useEffect(() => {
     if (messages.length === 0) {
       setDisplayMessages([])
       setShowVoteBar(false)
-      setShowEloReveal(false)
-      setEloRevealData(null)
+      setSelectingChoice(null)
     }
-  }, [messages, setShowVoteBar, setShowEloReveal, setEloRevealData])
+  }, [messages, setShowVoteBar])
 
   const handleSubmitPrompt = useCallback(async (text: string) => {
-    // Guest gate
     if (!isLoggedIn) {
-      incrementGuestBattles()
       if (guestBattles >= 3) {
-        setShowAuthModal(true)
+        setShowCTAModal(true)
         return
       }
+      incrementGuestBattles()
     }
 
     incrementTurn()
     setShowVoteBar(false)
-    setShowEloReveal(false)
+    setSelectingChoice(null)
 
-    // Add user message
     const userId = ++msgIdRef.current
     setDisplayMessages((prev) => [...prev, { id: userId, role: 'user', content: text }])
     setIsLoading(true)
 
     try {
       if (mode === 'direct') {
-        // Direct mode: single model response
+        const modelId = selectedModelDirect || models[0]?.id || 'openai/gpt-5.4'
         const promptsData = await api.fetchPrompts()
         const matchedPrompt = promptsData.find((p: { text: string }) => p.text === text)
-        const modelId = selectedModelDirect || 'claude-opus'
+        // Use matched prompt ID or fallback to first prompt (for custom text)
+        const promptId = matchedPrompt?.id || promptsData[0]?.id || 1
 
-        if (matchedPrompt) {
-          const data = await api.fetchResponse(modelId, matchedPrompt.id)
-          if (data.response) {
-            const msgId = ++msgIdRef.current
-            setDisplayMessages((prev) => [...prev, {
-              id: msgId, role: 'direct',
-              content: data.response.content,
-              modelA: data.model,
-            }])
-            setShowVoteBar(true)
-          }
-        } else {
-          // No matched prompt, show placeholder
+        const data = await api.fetchResponse(modelId, promptId)
+        if (data.response) {
           const msgId = ++msgIdRef.current
           setDisplayMessages((prev) => [...prev, {
             id: msgId, role: 'direct',
-            content: 'Đây là phản hồi mẫu cho prompt tùy chỉnh. Trong phiên bản chính thức, mô hình sẽ tạo phản hồi thời gian thực.',
-            modelA: { id: modelId, name: modelId, org: '', license: 'prop', color: '#3b82f6' },
+            content: data.response.content,
+            modelA: data.model,
           }])
           setShowVoteBar(true)
         }
       } else {
-        // Match user input to a prompt in the database
         const promptsData = await api.fetchPrompts()
         const matchedPrompt = promptsData.find((p: { id: number; text: string }) => p.text === text)
         const promptId = matchedPrompt?.id
 
-        // Battle mode: random pair. SBS mode: use selected models.
         const pairData = mode === 'sbs'
           ? await api.fetchPair(promptId, selectedModelA, selectedModelB)
           : await api.fetchPair(promptId)
@@ -117,7 +105,6 @@ export function ArenaPage() {
         setCurrentPair(pairData)
         const pair: PairData = pairData
 
-        // Simulate typing delay
         await new Promise((r) => setTimeout(r, 800 + Math.random() * 600))
 
         const msgId = ++msgIdRef.current
@@ -132,25 +119,28 @@ export function ArenaPage() {
         }])
         setShowVoteBar(true)
       }
-    } catch (err) {
-      setDisplayMessages((prev) => [...prev, { id: ++msgIdRef.current, role: 'system', content: 'Có lỗi xảy ra. Vui lòng thử lại.' }])
+    } catch {
+      // Determine the model that errored for display in ErrorResponsePanel
+      const modelId = mode === 'direct' ? (selectedModelDirect || 'unknown') : (selectedModelA || 'unknown')
+      const foundModel = models.find((m) => m.id === modelId)
+      const errorModel: Model = foundModel || { id: modelId, name: modelId, org: '', license: 'prop', color: '#3b82f6' }
+      setDisplayMessages((prev) => [...prev, { id: ++msgIdRef.current, role: 'error', modelA: errorModel }])
     } finally {
       setIsLoading(false)
     }
-  }, [mode, isLoggedIn, guestBattles, incrementGuestBattles, incrementTurn, setShowVoteBar, setShowEloReveal, setCurrentPair, setIsLoading, setShowAuthModal, selectedModelA, selectedModelB, selectedModelDirect])
+  }, [mode, isLoggedIn, guestBattles, incrementGuestBattles, incrementTurn, setShowVoteBar, setCurrentPair, setIsLoading, setShowCTAModal, selectedModelA, selectedModelB, selectedModelDirect, models])
 
   async function handleVote(choice: VoteChoice) {
     if (!currentPair) return
 
     setShowVoteBar(false)
+    setSelectingChoice(null)
     incrementVotes()
 
-    // Update the last dual message with vote result
     setDisplayMessages((prev) => prev.map((msg, i) =>
       i === prev.length - 1 && msg.role === 'dual' ? { ...msg, voteResult: choice } : msg
     ))
 
-    // Submit vote to backend
     const result = await api.submitVote({
       mode,
       prompt_text: currentPair.prompt.text,
@@ -163,18 +153,8 @@ export function ArenaPage() {
       turn_number: turnCount,
     }, sessionId)
 
-    // Show Elo reveal in battle mode
-    if (mode === 'battle' && result.elo_reveal) {
-      setEloRevealData({ ...result.elo_reveal, choice })
-      setShowEloReveal(true)
-    } else {
-      // SBS mode - show confirmation
-      const label = choice === 'a' ? `🏆 ${currentPair.model_a.name} thắng!`
-        : choice === 'b' ? `🏆 ${currentPair.model_b.name} thắng!`
-        : choice === 'tie' ? '🤝 Hòa — cả hai đều tốt'
-        : '👎 Cả hai đều chưa tốt'
-      setDisplayMessages((prev) => [...prev, { id: ++msgIdRef.current, role: 'system', content: label }])
-    }
+    // Vote result is shown via DualResponsePanel visual states (winner/loser/tie)
+    // No system message needed
   }
 
   function handleDirectRate(stars: number, tags: string[]) {
@@ -192,31 +172,35 @@ export function ArenaPage() {
 
     setDisplayMessages((prev) => [...prev, {
       id: ++msgIdRef.current, role: 'system',
-      content: '✓ Đánh giá đã được ghi nhận. Cảm ơn bạn!',
+      content: 'Đánh giá đã được ghi nhận. Cảm ơn bạn!',
     }])
   }
 
   function handleContinue() {
     setShowVoteBar(false)
+    setSelectingChoice(null)
   }
 
   const hasMessages = displayMessages.length > 0
 
+  // Find the last dual message index to apply selecting state only to it
+  const lastDualIdx = displayMessages.reduce((acc, msg, i) => msg.role === 'dual' ? i : acc, -1)
+
   return (
-    <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-      <div className="flex-1 overflow-y-auto min-h-0 px-6 py-5 flex flex-col gap-4" ref={chatRef}>
+    <div className="flex flex-col" style={{ minHeight: 'calc(100vh - 90px)' }}>
+      {/* Mode selector bar */}
+      <ModeSelector />
+
+      {/* Chat area -- fills remaining viewport height */}
+      <div className="flex-1 px-6 py-3 flex flex-col gap-4" ref={chatRef}>
         {!hasMessages && <WelcomeScreen onSubmitPrompt={handleSubmitPrompt} />}
-        {displayMessages.map((msg) => {
+        {displayMessages.map((msg, idx) => {
           if (msg.role === 'user') {
-            return (
-              <div key={msg.id} className="flex justify-end animate-slide-up">
-                <div className="bg-[var(--accent)] text-white rounded-2xl rounded-br-sm px-4 py-3 text-sm max-w-xl shadow-sm">
-                  <p>{msg.content}</p>
-                </div>
-              </div>
-            )
+            return <UserMessage key={msg.id} content={msg.content || ''} />
           }
           if (msg.role === 'dual' && msg.modelA && msg.modelB) {
+            // Only apply selecting state to the latest dual message
+            const isLatest = idx === lastDualIdx
             return (
               <DualResponsePanel
                 key={msg.id}
@@ -226,37 +210,42 @@ export function ArenaPage() {
                 modelB={msg.modelB}
                 isBattle={mode === 'battle'}
                 voteResult={msg.voteResult}
+                selectingChoice={isLatest && showVoteBar ? selectingChoice : null}
               />
             )
           }
-          if (msg.role === 'direct') {
+          if (msg.role === 'direct' && msg.modelA) {
+            // In direct mode the rating UI lives inside the ResponsePanel (Figma: inline footer)
+            // The latest unrated direct message gets the interactive onDirectRate callback;
+            // earlier messages show the footer in a read-only/dimmed state (no callback)
+            const isLatestDirect = displayMessages.slice(idx + 1).every((m) => m.role !== 'direct')
             return (
-              <div key={msg.id} className="animate-slide-up">
-                <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl px-4 py-3 text-sm max-w-3xl shadow-sm">
-                  {msg.modelA && (
-                    <div className="text-[0.72rem] text-[var(--text-muted)] mb-2 font-semibold">
-                      {msg.modelA.name} · {msg.modelA.org}
-                    </div>
-                  )}
-                  <div className="leading-relaxed" dangerouslySetInnerHTML={{
-                    __html: (msg.content || '').split('\n').map((line) => {
-                      const formatted = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                      return line ? `<p class="mb-2">${formatted}</p>` : ''
-                    }).join('')
-                  }} />
-                </div>
+              <div key={msg.id} className="animate-slide-up max-w-3xl">
+                <ResponsePanel
+                  content={msg.content || ''}
+                  model={msg.modelA}
+                  isBattle={false}
+                  onDirectRate={isLatestDirect ? handleDirectRate : undefined}
+                />
               </div>
             )
           }
+          if (msg.role === 'error' && msg.modelA) {
+            return (
+              <ErrorResponsePanel
+                key={msg.id}
+                model={msg.modelA}
+                onRetry={() => {
+                  // Remove the error message and let user re-submit
+                  setDisplayMessages((prev) => prev.filter((m) => m.id !== msg.id))
+                }}
+              />
+            )
+          }
           if (msg.role === 'system') {
-            const isSuccess = msg.content?.includes('✓') || msg.content?.includes('🏆') || msg.content?.includes('🤝')
-            const isError = msg.content?.includes('👎') || msg.content?.includes('lỗi')
             return (
               <div key={msg.id} className="animate-slide-up">
-                <div className={`rounded-2xl px-4 py-3 text-sm text-center border shadow-sm
-                  ${isSuccess ? 'bg-[var(--green-light)] border-[var(--green)] text-emerald-800'
-                    : isError ? 'bg-[var(--red-light)] border-[var(--red)] text-red-800'
-                    : 'bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-secondary)]'}`}>
+                <div className="rounded-lg px-4 py-3 text-sm text-center glass">
                   {msg.content}
                 </div>
               </div>
@@ -273,12 +262,25 @@ export function ArenaPage() {
         )}
       </div>
 
-      {showVoteBar && (
-        <VoteBar onVote={handleVote} onContinue={handleContinue} onDirectRate={handleDirectRate} />
+      {/* Vote bar — only for battle/sbs modes; direct mode uses inline rating in ResponsePanel */}
+      {showVoteBar && mode !== 'direct' && (
+        <VoteBar
+          onVote={handleVote}
+          onContinue={handleContinue}
+          onDirectRate={handleDirectRate}
+          selectingChoice={selectingChoice}
+          onSelectingChange={setSelectingChoice}
+          modelAName={currentPair?.model_a?.name}
+          modelBName={currentPair?.model_b?.name}
+        />
       )}
-      {showEloReveal && <EloReveal />}
 
-      <ChatInput onSubmit={handleSubmitPrompt} />
+      {/* Chat input (post-submit) */}
+      {hasMessages && (
+        <div className="shrink-0 px-6 py-4">
+          <ChatInput onSubmit={handleSubmitPrompt} placeholder="Tiếp tục hỏi..." />
+        </div>
+      )}
     </div>
   )
 }

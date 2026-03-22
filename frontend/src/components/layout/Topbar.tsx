@@ -1,165 +1,169 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore } from '../../hooks/useStore'
-import type { ArenaMode } from '../../types'
 
-const MODES: { id: ArenaMode; icon: string; title: string; desc: string }[] = [
-  { id: 'battle', icon: '⚔️', title: 'Battle — Đấu mù', desc: 'So sánh 2 mô hình ẩn danh, đánh giá không thiên vị' },
-  { id: 'sbs', icon: '⚖️', title: 'Side-by-Side — Song song', desc: 'Chọn 2 mô hình cụ thể để so sánh trực tiếp' },
-  { id: 'direct', icon: '💬', title: 'Direct Chat — Trò chuyện', desc: 'Chat trực tiếp với 1 mô hình, đánh giá bằng sao' },
-]
+import vigenLogo from '../../assets/logos/vigen-logo.svg'
+import vigenTagline from '../../assets/logos/vigen-tagline.svg'
+
+const NAV_ITEMS = [
+  { id: 'leaderboard', label: 'Bảng xếp hạng' },
+  { id: 'benchmarks', label: 'Benchmarks' },
+  { id: 'arena', label: 'Arena' },
+  { id: 'community', label: 'Cộng đồng' },
+] as const
 
 export function Topbar() {
-  const {
-    mode, setMode, totalVotes, clearMessages, resetTurn,
-    models, selectedModelA, selectedModelB, selectedModelDirect,
-    setSelectedModelA, setSelectedModelB, setSelectedModelDirect,
-    isLoggedIn, userEmail, displayName, logoutUser, setShowAuthModal,
-  } = useStore()
-
-  const [ddOpen, setDdOpen] = useState(false)
-  const [avatarOpen, setAvatarOpen] = useState(false)
-  const ddRef = useRef<HTMLDivElement>(null)
-  const avatarRef = useRef<HTMLDivElement>(null)
+  const { view, setView, setShowAuthModal } = useStore()
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ddRef.current && !ddRef.current.contains(e.target as Node)) setDdOpen(false)
-      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) setAvatarOpen(false)
+    function onScroll() {
+      setScrolled(window.scrollY > 10)
     }
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const currentMode = MODES.find((m) => m.id === mode)!
-
-  function selectMode(m: ArenaMode) {
-    setMode(m)
-    setDdOpen(false)
-    clearMessages()
-    resetTurn()
-  }
-
-  function handleNewBattle() {
-    clearMessages()
-    resetTurn()
-  }
-
-  const avatarInitial = displayName?.[0]?.toUpperCase() || userEmail?.[0]?.toUpperCase() || '?'
-
   return (
-    <div className="flex items-center justify-between px-5 border-b border-[var(--border)] bg-[var(--bg-card)] shrink-0 h-[52px]">
-      <div className="flex items-center gap-3.5">
-        {/* Mode selector */}
-        <div className="relative" ref={ddRef}>
-          <button
-            onClick={() => setDdOpen(!ddOpen)}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-sm font-semibold rounded-xl hover:bg-[var(--bg-hover)] transition-all border border-transparent hover:border-[var(--border)]"
-          >
-            <span>{currentMode.icon}</span>
-            <span>{currentMode.id === 'battle' ? 'Battle' : currentMode.id === 'sbs' ? 'Side-by-Side' : 'Direct Chat'}</span>
-            <span className={`text-[0.55rem] text-[var(--text-muted)] transition-transform ${ddOpen ? 'rotate-180' : ''}`}>▼</span>
-          </button>
-
-          {ddOpen && (
-            <div className="absolute top-[calc(100%+6px)] left-0 min-w-80 bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-1.5 z-50 shadow-xl animate-fade-in">
-              {MODES.map((m) => (
-                <div
-                  key={m.id}
-                  onClick={() => selectMode(m.id)}
-                  className={`flex items-start gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all border
-                    ${mode === m.id ? 'bg-[var(--accent-light)] border-[var(--border-accent)]' : 'border-transparent hover:bg-[var(--bg-hover)]'}`}
-                >
-                  <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center text-lg shrink-0
-                    ${mode === m.id ? 'bg-[var(--accent-light)] text-[var(--accent)]' : 'bg-[var(--bg-input)]'}`}>
-                    {m.icon}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">{m.title}</div>
-                    <div className="text-xs text-[var(--text-muted)]">{m.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Model selectors for SBS */}
-        {mode === 'sbs' && (
-          <div className="flex items-center gap-2">
-            <select
-              value={selectedModelA}
-              onChange={(e) => setSelectedModelA(e.target.value)}
-              className="bg-[var(--bg-input)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-xs hover:border-[var(--accent)] outline-none"
-            >
-              {models.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
-            <span className="text-[0.72rem] text-[var(--text-muted)] font-bold uppercase">VS</span>
-            <select
-              value={selectedModelB}
-              onChange={(e) => setSelectedModelB(e.target.value)}
-              className="bg-[var(--bg-input)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-xs hover:border-[var(--accent)] outline-none"
-            >
-              {models.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-            </select>
-          </div>
-        )}
-
-        {/* Model selector for Direct */}
-        {mode === 'direct' && (
-          <select
-            value={selectedModelDirect}
-            onChange={(e) => setSelectedModelDirect(e.target.value)}
-            className="bg-[var(--bg-input)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-xs hover:border-[var(--accent)] outline-none"
-          >
-            {models.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-          </select>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[var(--green)] bg-[var(--green-bg)]">
-          <span>🗳️</span>
-          <span>{totalVotes}</span> phiếu
-        </div>
-        <button
-          onClick={handleNewBattle}
-          className="h-[34px] px-3.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:border-[var(--accent)] transition-all"
+    <header
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        height: '90px',
+        background: scrolled ? 'rgba(0, 34, 102, 0.95)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+      }}
+    >
+      {/* Content container — 1200px centered, vertically centered */}
+      <div
+        className="relative mx-auto h-full flex items-center justify-between"
+        style={{ maxWidth: '1200px', padding: '0 24px' }}
+      >
+        {/* Left: ViGen Logo (70px tall = logo + tagline as one unit) */}
+        <div
+          className="relative shrink-0 cursor-pointer overflow-hidden"
+          style={{ width: '141px', height: '70px' }}
+          onClick={() => setView('arena')}
         >
-          ⚔️ Trận mới
-        </button>
+          {/* Logo SVG — top 75% of the container */}
+          <img
+            src={vigenLogo}
+            alt="ViGen"
+            className="absolute top-0 left-0"
+            style={{ width: '100%', height: '75%', objectFit: 'contain', objectPosition: 'left' }}
+          />
+          {/* Tagline SVG — bottom portion */}
+          <img
+            src={vigenTagline}
+            alt=""
+            aria-hidden="true"
+            className="absolute bottom-[1px] left-[0.4%]"
+            style={{ width: '86%', height: '19%', objectFit: 'contain', objectPosition: 'left', opacity: 0.75 }}
+          />
+        </div>
 
-        {!isLoggedIn ? (
+        {/* Center: Nav bar — absolutely centered */}
+        <nav
+          className="absolute flex items-center justify-center"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            gap: '24px',
+          }}
+        >
+          {NAV_ITEMS.map((item) => {
+            const isActive = (item.id === 'arena' && view === 'arena') ||
+                            (item.id === 'leaderboard' && view === 'leaderboard')
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  if (item.id === 'arena') setView('arena')
+                  if (item.id === 'leaderboard') setView('leaderboard')
+                }}
+                className="relative bg-transparent border-none cursor-pointer transition-all flex items-center"
+                style={{
+                  fontFamily: "'Be Vietnam Pro', sans-serif",
+                  fontSize: '16px',
+                  lineHeight: '24px',
+                  fontWeight: 400,
+                  color: '#FFFFFF',
+                  padding: '10px 2px',
+                  gap: '4px',
+                  isolation: 'isolate',
+                }}
+              >
+                <span style={{ position: 'relative', zIndex: 1 }}>{item.label}</span>
+                {isActive && (
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute',
+                      height: '10px',
+                      left: '0.5px',
+                      right: '-0.5px',
+                      top: '12px',
+                      background: 'linear-gradient(270deg, #3F86F9 0%, #3FD0F9 25%, #BAFAFF 50%, #3FD0F9 74.52%, #3F86F9 100%)',
+                      filter: 'blur(4px)',
+                      transform: 'matrix(1, 0, 0, -1, 0, 0)',
+                      zIndex: 0,
+                      pointerEvents: 'none',
+                    }}
+                  />
+                )}
+              </button>
+            )
+          })}
+        </nav>
+
+        {/* Right: Auth buttons — Figma: 265×40 container, gap 16px, justify-end */}
+        <div className="flex items-center justify-end shrink-0" style={{ width: '265px', height: '40px', gap: '16px' }}>
           <button
             onClick={() => setShowAuthModal(true)}
-            className="h-[34px] px-3.5 rounded-lg text-xs font-semibold border border-[var(--accent)] text-[var(--accent)] bg-transparent hover:bg-[var(--accent)] hover:text-white transition-all"
+            className="cursor-pointer hover:bg-white/10 transition-all"
+            style={{
+              boxSizing: 'border-box',
+              height: '40px',
+              fontFamily: "'Be Vietnam Pro', sans-serif",
+              fontSize: '16px',
+              lineHeight: '24px',
+              fontWeight: 600,
+              color: '#FFFFFF',
+              background: 'transparent',
+              border: '1px solid #FFFFFF',
+              borderRadius: '55px',
+              padding: '8px 24px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              whiteSpace: 'nowrap',
+            }}
           >
             Đăng nhập
           </button>
-        ) : (
-          <div className="relative" ref={avatarRef}>
-            <div
-              onClick={() => setAvatarOpen(!avatarOpen)}
-              className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--purple)] flex items-center justify-center text-white font-semibold text-xs cursor-pointer border-2 border-transparent hover:border-[var(--accent)] hover:shadow-md transition-all"
-            >
-              {avatarInitial}
-            </div>
-            {avatarOpen && (
-              <div className="absolute top-[calc(100%+6px)] right-0 min-w-52 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-2 z-50 shadow-xl animate-fade-in">
-                <div className="px-3 py-2 border-b border-[var(--border-light)] mb-1">
-                  <div className="text-sm font-semibold">{displayName || 'User'}</div>
-                  <div className="text-xs text-[var(--text-muted)]">{userEmail}</div>
-                </div>
-                <div
-                  onClick={() => { logoutUser(); setAvatarOpen(false) }}
-                  className="px-3 py-2 text-sm text-[var(--red)] rounded-lg cursor-pointer hover:bg-[var(--bg-hover)] transition-all"
-                >
-                  Đăng xuất
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="cursor-pointer hover:opacity-90 transition-all"
+            style={{
+              height: '40px',
+              fontFamily: "'Be Vietnam Pro', sans-serif",
+              fontSize: '16px',
+              lineHeight: '24px',
+              fontWeight: 600,
+              color: '#000000',
+              background: '#FFFFFF',
+              border: 'none',
+              borderRadius: '55px',
+              padding: '8px 24px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Đăng ký
+          </button>
+        </div>
       </div>
-    </div>
+    </header>
   )
 }
