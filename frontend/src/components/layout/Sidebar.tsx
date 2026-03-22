@@ -33,7 +33,7 @@ import messageCircle from '../../assets/icons/message-circle.svg'
  */
 
 export function Sidebar() {
-  const { clearMessages, resetTurn, totalVotes, userId, isLoggedIn, setView, sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed } = useStore()
+  const { view, clearMessages, resetTurn, totalVotes, userId, isLoggedIn, setView, sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed } = useStore()
   const [history, setHistory] = useState<HistoryEntry[]>([])
 
   const loadHistory = useCallback(() => {
@@ -93,7 +93,7 @@ export function Sidebar() {
           <button
             onClick={handleNewChat}
             className="flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all bg-transparent border-none"
-            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px' }}
+            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px', background: view === 'arena' ? 'rgba(255,255,255,0.1)' : 'transparent' }}
             title="Cuộc trò chuyện mới"
           >
             <img src={newChat} alt="Cuộc trò chuyện mới" style={{ width: '24px', height: '24px' }} />
@@ -101,7 +101,7 @@ export function Sidebar() {
           <button
             onClick={() => setView('leaderboard')}
             className="flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all bg-transparent border-none"
-            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px' }}
+            style={{ width: '40px', height: '40px', borderRadius: '6px', padding: '8px', background: view === 'leaderboard' ? 'rgba(255,255,255,0.1)' : 'transparent' }}
             title="Bảng xếp hạng"
           >
             <img src={barChart} alt="Bảng xếp hạng" style={{ width: '24px', height: '24px' }} />
@@ -154,39 +154,47 @@ export function Sidebar() {
       {/* Navigation — Figma: gap-4, each item 264×40 */}
       <nav className="flex flex-col cursor-pointer" style={{ gap: '4px' }}>
         {[
-          { icon: newChat, label: 'Cuộc trò chuyện mới', onClick: handleNewChat },
-          { icon: barChart, label: 'Bảng xếp hạng', onClick: () => setView('leaderboard') },
-          { icon: searchIcon, label: 'Tìm kiếm cuộc trò chuyện', onClick: undefined },
-        ].map((item) => (
-          <button
-            key={item.label}
-            onClick={item.onClick}
-            className="flex items-start w-full border-none bg-transparent cursor-pointer"
-            style={{ height: '40px' }}
-          >
-            <div
-              className="flex flex-1 items-center self-stretch overflow-hidden hover:bg-white/10 transition-all"
-              style={{ padding: '8px 12px', borderRadius: '6px', gap: '12px' }}
+          { icon: newChat, label: 'Cuộc trò chuyện mới', onClick: handleNewChat, activeView: 'arena' as const },
+          { icon: barChart, label: 'Bảng xếp hạng', onClick: () => setView('leaderboard'), activeView: 'leaderboard' as const },
+          { icon: searchIcon, label: 'Tìm kiếm cuộc trò chuyện', onClick: undefined, activeView: null },
+        ].map((item) => {
+          const isActive = item.activeView !== null && view === item.activeView
+          return (
+            <button
+              key={item.label}
+              onClick={item.onClick}
+              className="flex items-start w-full border-none bg-transparent cursor-pointer"
+              style={{ height: '40px' }}
             >
-              <div className="shrink-0 overflow-hidden" style={{ width: '24px', height: '24px' }}>
-                <img src={item.icon} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
-              </div>
-              <span
-                className="shrink-0 whitespace-nowrap"
+              <div
+                className="flex flex-1 items-center self-stretch overflow-hidden hover:bg-white/10 transition-all"
                 style={{
-                  fontFamily: "'Be Vietnam Pro', sans-serif",
-                  fontSize: '16px',
-                  lineHeight: '24px',
-                  fontWeight: 600,
-                  color: '#F2F4F7',
-                  textAlign: 'left',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  gap: '12px',
+                  background: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
                 }}
               >
-                {item.label}
-              </span>
-            </div>
-          </button>
-        ))}
+                <div className="shrink-0 overflow-hidden" style={{ width: '24px', height: '24px' }}>
+                  <img src={item.icon} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
+                </div>
+                <span
+                  className="shrink-0 whitespace-nowrap"
+                  style={{
+                    fontFamily: "'Be Vietnam Pro', sans-serif",
+                    fontSize: '16px',
+                    lineHeight: '24px',
+                    fontWeight: 600,
+                    color: '#F2F4F7',
+                    textAlign: 'left',
+                  }}
+                >
+                  {item.label}
+                </span>
+              </div>
+            </button>
+          )
+        })}
       </nav>
 
       {/* History section — Figma: px-16, gap-16 */}

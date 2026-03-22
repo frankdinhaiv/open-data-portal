@@ -42,11 +42,11 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, votedChoic
     const isActive = isSelecting || isVoted
 
     if (!isActive) {
-      // After voting, non-voted buttons are dimmed
+      // Non-chosen buttons stay white — no dimming. The chosen one's color already differentiates.
       return {
-        border: '1px solid rgba(255,255,255,0.4)',
-        color: 'rgba(255,255,255,0.4)',
-        opacity: hasVoted ? 0.5 : 1,
+        border: '1px solid #FFFFFF',
+        color: '#FFFFFF',
+        opacity: 1,
       }
     }
     // 'bad' uses error color, all others use success color

@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import type { Model } from '../../types'
 
 import refreshIcon from '../../assets/icons/refresh.svg'
 import copyIcon from '../../assets/icons/copy.svg'
 import expandIcon from '../../assets/icons/expand.svg'
 import starFilledIcon from '../../assets/icons/star-filled.svg'
-import starEmptyIcon from '../../assets/icons/star-empty.svg'
 
 import openaiAvatar from '../../assets/models/openai.png'
 import googleAvatar from '../../assets/models/google.png'
@@ -55,6 +55,41 @@ interface Props {
   onDirectRate?: (stars: number, tags: string[]) => void
   /** Called when user clicks re-generate */
   onRegenerate?: () => void
+  /** If true, animate content character-by-character (streaming simulation) */
+  streaming?: boolean
+}
+
+/**
+ * Hook that progressively reveals `fullText` to simulate LLM streaming.
+ * Reveals ~15–30 chars per tick every `speed` ms.
+ * Returns `{ displayed, isStreaming }`.
+ */
+function useStreamingText(fullText: string, speed: number = 30, enabled: boolean = false) {
+  const [displayed, setDisplayed] = useState(enabled ? '' : fullText)
+  const [isStreaming, setIsStreaming] = useState(enabled && fullText.length > 0)
+
+  useEffect(() => {
+    if (!enabled || !fullText) {
+      setDisplayed(fullText)
+      setIsStreaming(false)
+      return
+    }
+    setDisplayed('')
+    setIsStreaming(true)
+    let i = 0
+    const interval = setInterval(() => {
+      const chunkSize = 15 + Math.floor(Math.random() * 15)
+      i = Math.min(i + chunkSize, fullText.length)
+      setDisplayed(fullText.slice(0, i))
+      if (i >= fullText.length) {
+        setIsStreaming(false)
+        clearInterval(interval)
+      }
+    }, speed)
+    return () => clearInterval(interval)
+  }, [fullText, speed, enabled])
+
+  return { displayed, isStreaming }
 }
 
 function getAvatar(modelId: string): string | undefined {
@@ -126,10 +161,13 @@ function StatusIcon({ state }: { state: PanelVisualState }) {
   return null
 }
 
-export function ResponsePanel({ content, model, isBattle, label, visualState = 'default', revealModel, onDirectRate, onRegenerate }: Props) {
+export function ResponsePanel({ content, model, isBattle, label, visualState = 'default', revealModel, onDirectRate, onRegenerate, streaming = false }: Props) {
   const avatar = getAvatar(model.id)
   const showRealName = revealModel || !isBattle
   const displayName = showRealName ? model.name : (label || 'Model')
+
+  // Streaming simulation
+  const { displayed: streamedContent, isStreaming } = useStreamingText(content, 30, streaming)
 
   // Inline rating state (direct mode only)
   const [stars, setStars] = useState(0)
@@ -158,6 +196,9 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
   // Do NOT change this to !isBattle — SBS panels have isBattle=false but no stars.
   const showRatingFooter = !!onDirectRate
   const displayStars = hoverStar || stars
+
+  // While streaming, hide action buttons
+  const showActions = !isStreaming
 
   return (
     <div
@@ -197,8 +238,8 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
             </div>
           )}
 
-          {/* Action buttons only shown in default/loser state */}
-          {(visualState === 'default' || visualState === 'loser') && (
+          {/* Action buttons: shown in default/loser state, hidden while streaming */}
+          {(visualState === 'default' || visualState === 'loser') && showActions && (
             <>
               <button
                 onClick={onRegenerate}
@@ -235,16 +276,31 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
 
       {/* Body */}
       <div className="px-4 py-4 text-base leading-6 text-white max-h-96 overflow-y-auto">
-        {formatResponse(content)}
+        {formatResponse(streamedContent)}
+        {/* Blinking cursor while streaming */}
+        {isStreaming && (
+          <span
+            className="inline-block w-[2px] h-[1em] ml-[1px] align-middle"
+            style={{
+              background: 'rgba(255,255,255,0.8)',
+              animation: 'blink 0.8s step-end infinite',
+            }}
+          />
+        )}
       </div>
 
       {/* Rating footer — direct mode only (Figma: Frame 1686560582 / 2:11962) */}
       {showRatingFooter && (
         <div
-          className="flex flex-col items-start p-4 shrink-0 w-full"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.1)', gap: stars > 0 ? '16px' : '0' }}
+          className="flex flex-col items-start p-4 shrink-0 w-full relative"
+          style={{
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            gap: stars > 0 ? '16px' : '0',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 100%), linear-gradient(90deg, rgb(0,34,102) 0%, rgb(0,34,102) 100%)',
+            zIndex: 1,
+          }}
         >
-          {/* Stars row */}
+          {/* Stars row — label left, 5 stars right, gap-[8px] between stars per Figma 2:11963 */}
           <div className="flex items-center justify-between w-full">
             <span
               className="text-sm font-medium text-white whitespace-nowrap"
@@ -252,7 +308,8 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
             >
               Đánh giá phản hồi này
             </span>
-            <div className="flex items-center gap-2">
+            {/* Five filled stars; unselected at opacity-10, selected at full opacity — Figma 2:11965 */}
+            <div className="flex items-center" style={{ gap: '8px' }}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <div
                   key={n}
@@ -262,8 +319,9 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
                   className="cursor-pointer transition-all select-none relative shrink-0"
                   style={{ width: '32px', height: '32px', opacity: n <= displayStars ? 1 : 0.1 }}
                 >
+                  {/* Single filled star SVG at all times — Figma uses opacity for selected/unselected state */}
                   <img
-                    src={n <= displayStars ? starFilledIcon : starEmptyIcon}
+                    src={starFilledIcon}
                     alt=""
                     className="absolute block"
                     style={{ inset: '6.79% 6.56% 9.99% 6.56%', width: 'auto', height: 'auto', maxWidth: 'none' }}
@@ -273,9 +331,9 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
             </div>
           </div>
 
-          {/* Quality tags — visible once a star is selected */}
+          {/* Quality tags — visible once a star is selected, Figma 2:12182 */}
           {stars > 0 && (
-            <div className="flex flex-wrap gap-[10px] items-start">
+            <div className="flex flex-wrap items-start" style={{ gap: '10px' }}>
               {QUALITY_TAGS.map((tag) => (
                 <span
                   key={tag}
@@ -306,7 +364,7 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
             </div>
           )}
 
-          {/* Submit button — visible once a star is selected */}
+          {/* Submit button — Figma 2:12187: bg #155EEF, px-[10px] py-[6px], rounded-[8px] */}
           {stars > 0 && onDirectRate && (
             <button
               onClick={() => { onDirectRate(stars, tags); setStars(0); setTags([]) }}
@@ -325,19 +383,20 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
         </div>
       )}
 
-      {/* Fullscreen side panel — slides in from the right */}
-      {fullscreen && (
+      {/* Fullscreen side panel — rendered via portal at document.body to escape overflow:hidden */}
+      {fullscreen && createPortal(
         <>
           {/* Dark overlay — click to close */}
           <div
-            className="fixed inset-0 z-40 animate-fade-in"
-            style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+            className="fixed inset-0 animate-fade-in"
+            style={{ zIndex: 999, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
             onClick={() => setFullscreen(false)}
           />
           {/* Side panel */}
           <div
-            className="fixed top-0 right-0 bottom-0 z-50 flex flex-col animate-slide-in-right"
+            className="fixed top-0 right-0 bottom-0 flex flex-col animate-slide-in-right"
             style={{
+              zIndex: 1000,
               width: '50vw',
               minWidth: '400px',
               maxWidth: '720px',
@@ -387,7 +446,8 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
               {formatResponse(content)}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   )

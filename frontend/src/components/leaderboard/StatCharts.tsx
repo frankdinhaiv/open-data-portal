@@ -225,9 +225,9 @@ function drawWinRateHeatmap(
   if (!ctx) return
 
   const n = data.models.length
-  const cellSize = 72
-  const gap = 4
-  const labelMargin = 140
+  const cellSize = 56
+  const gap = 3
+  const labelMargin = 160
   const dpr = window.devicePixelRatio || 1
 
   const gridW = n * cellSize + (n - 1) * gap
@@ -260,7 +260,7 @@ function drawWinRateHeatmap(
 
         // Text
         ctx.fillStyle = winrateTextColor(val)
-        ctx.font = "bold 12px 'Be Vietnam Pro', sans-serif"
+        ctx.font = "bold 11px 'Be Vietnam Pro', sans-serif"
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(Math.round(val * 100) + '%', x + cellSize / 2, y + cellSize / 2)
@@ -270,7 +270,7 @@ function drawWinRateHeatmap(
 
   // Row labels (left)
   ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
-  ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
+  ctx.font = "500 11px 'Be Vietnam Pro', sans-serif"
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
   data.models.forEach((name, i) => {
@@ -286,7 +286,7 @@ function drawWinRateHeatmap(
     ctx.translate(x, labelMargin - 12)
     ctx.rotate(-Math.PI / 4)
     ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
-    ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
+    ctx.font = "500 11px 'Be Vietnam Pro', sans-serif"
     ctx.textAlign = 'right'
     ctx.textBaseline = 'middle'
     ctx.fillText(name.length > 16 ? name.slice(0, 16) + '…' : name, 0, 0)
@@ -339,9 +339,9 @@ function drawBattleCountHeatmap(
   if (!ctx) return
 
   const n = data.models.length
-  const cellSize = 72
-  const gap = 4
-  const labelMargin = 140
+  const cellSize = 56
+  const gap = 3
+  const labelMargin = 160
   const dpr = window.devicePixelRatio || 1
 
   const gridW = n * cellSize + (n - 1) * gap
@@ -378,7 +378,7 @@ function drawBattleCountHeatmap(
         ctx.fill()
 
         ctx.fillStyle = t > 0.5 ? '#FFFFFF' : 'rgba(255,255,255,0.9)'
-        ctx.font = "bold 12px 'Be Vietnam Pro', sans-serif"
+        ctx.font = "bold 11px 'Be Vietnam Pro', sans-serif"
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(val), x + cellSize / 2, y + cellSize / 2)
@@ -388,7 +388,7 @@ function drawBattleCountHeatmap(
 
   // Row labels
   ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
-  ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
+  ctx.font = "500 11px 'Be Vietnam Pro', sans-serif"
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
   data.models.forEach((name, i) => {
@@ -403,7 +403,7 @@ function drawBattleCountHeatmap(
     ctx.translate(x, labelMargin - 12)
     ctx.rotate(-Math.PI / 4)
     ctx.fillStyle = 'rgba(200, 232, 255, 0.8)'
-    ctx.font = "500 12px 'Be Vietnam Pro', sans-serif"
+    ctx.font = "500 11px 'Be Vietnam Pro', sans-serif"
     ctx.textAlign = 'right'
     ctx.fillText(name.length > 16 ? name.slice(0, 16) + '…' : name, 0, 0)
     ctx.restore()

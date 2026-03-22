@@ -12,6 +12,10 @@ interface Props {
   voteResult?: VoteChoice | null
   /** The currently hovered/selecting vote choice (before voting) */
   selectingChoice?: VoteChoice | null
+  /** If true, animate content character-by-character (streaming simulation) */
+  streaming?: boolean
+  /** Called when user clicks re-generate on either panel */
+  onRegenerate?: () => void
 }
 
 /**
@@ -81,6 +85,8 @@ export function DualResponsePanel({
   isBattle,
   voteResult,
   selectingChoice,
+  streaming,
+  onRegenerate,
 }: Props) {
   const { stateA, stateB, revealModels } = deriveVisualStates(selectingChoice, voteResult)
 
@@ -98,6 +104,8 @@ export function DualResponsePanel({
           label="Model A"
           visualState={stateA}
           revealModel={revealModels}
+          streaming={streaming}
+          onRegenerate={onRegenerate}
         />
       </div>
 
@@ -113,6 +121,8 @@ export function DualResponsePanel({
           label="Model B"
           visualState={stateB}
           revealModel={revealModels}
+          streaming={streaming}
+          onRegenerate={onRegenerate}
         />
       </div>
     </div>

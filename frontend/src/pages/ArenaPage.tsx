@@ -21,6 +21,8 @@ interface DisplayMessage {
   modelB?: Model
   pairData?: PairData
   voteResult?: VoteChoice | null
+  /** Whether to play streaming animation on first render */
+  streaming?: boolean
 }
 
 export function ArenaPage() {
@@ -42,15 +44,15 @@ export function ArenaPage() {
   /** Track which vote button is being hovered (selecting state) */
   const [selectingChoice, setSelectingChoice] = useState<VoteChoice | null>(null)
 
-  // Auto-scroll: after responses load or vote bar appears, scroll the bottom into view
+  // Auto-scroll: only when message count changes or loading state changes (not during streaming ticks)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const msgCount = displayMessages.length
   useEffect(() => {
-    // Small delay to let DOM render before scrolling
     const timer = setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    }, 100)
+    }, 150)
     return () => clearTimeout(timer)
-  }, [displayMessages, showVoteBar, isLoading])
+  }, [msgCount, showVoteBar, isLoading])
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -92,6 +94,7 @@ export function ArenaPage() {
             id: msgId, role: 'direct',
             content: data.response.content,
             modelA: data.model,
+            streaming: true,
           }])
           setShowVoteBar(true)
         }
@@ -122,6 +125,7 @@ export function ArenaPage() {
           modelB: pair.model_b,
           pairData: pair,
           voteResult: null,
+          streaming: true,
         }])
         setShowVoteBar(true)
       }
@@ -181,6 +185,16 @@ export function ArenaPage() {
     }])
   }
 
+  function handleRegenerate(msgId: number) {
+    // Remove the response message that triggered regenerate
+    setDisplayMessages((prev) => prev.filter((m) => m.id !== msgId))
+    // Find the last user message before this response and re-submit it
+    const lastUserMsg = displayMessages.slice().reverse().find((m) => m.role === 'user')
+    if (lastUserMsg?.content) {
+      handleSubmitPrompt(lastUserMsg.content)
+    }
+  }
+
   function handleContinue() {
     setShowVoteBar(false)
     setSelectingChoice(null)
@@ -219,6 +233,8 @@ export function ArenaPage() {
                 isBattle={mode === 'battle'}
                 voteResult={msg.voteResult}
                 selectingChoice={isLatest && showVoteBar ? selectingChoice : null}
+                streaming={msg.streaming}
+                onRegenerate={() => handleRegenerate(msg.id)}
               />
             )
           }
@@ -234,6 +250,8 @@ export function ArenaPage() {
                   model={msg.modelA}
                   isBattle={false}
                   onDirectRate={isLatestDirect ? handleDirectRate : undefined}
+                  streaming={msg.streaming}
+                  onRegenerate={() => handleRegenerate(msg.id)}
                 />
               </div>
             )
