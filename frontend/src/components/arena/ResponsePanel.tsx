@@ -37,6 +37,8 @@ interface Props {
   revealModel?: boolean
   /** Called when user submits inline star rating (direct mode only) */
   onDirectRate?: (stars: number, tags: string[]) => void
+  /** Called when user clicks re-generate */
+  onRegenerate?: () => void
 }
 
 function getAvatar(modelId: string): string | undefined {
@@ -108,7 +110,7 @@ function StatusIcon({ state }: { state: PanelVisualState }) {
   return null
 }
 
-export function ResponsePanel({ content, model, isBattle, label, visualState = 'default', revealModel, onDirectRate }: Props) {
+export function ResponsePanel({ content, model, isBattle, label, visualState = 'default', revealModel, onDirectRate, onRegenerate }: Props) {
   const avatar = getAvatar(model.id)
   const showRealName = revealModel || !isBattle
   const displayName = showRealName ? model.name : (label || 'Model')
@@ -117,9 +119,15 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
   const [stars, setStars] = useState(0)
   const [hoverStar, setHoverStar] = useState(0)
   const [tags, setTags] = useState<string[]>([])
+  // Copy feedback
+  const [copied, setCopied] = useState(false)
+  // Fullscreen modal
+  const [fullscreen, setFullscreen] = useState(false)
 
   function handleCopy() {
     navigator.clipboard.writeText(content)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   function toggleTag(tag: string) {
@@ -147,13 +155,15 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <div className="flex items-center gap-2 flex-1">
-          {avatar && (
+          {/* In battle mode before vote: show dashed circle placeholder */}
+          {isBattle && !revealModel ? (
+            <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ border: '1.5px dashed rgba(255,255,255,0.5)' }} />
+          ) : avatar ? (
             <div className="w-6 h-6 rounded-xl bg-white flex items-center justify-center overflow-hidden p-[3px]">
               <img src={avatar} alt="" className="w-[18px] h-[18px] object-contain" />
             </div>
-          )}
-          {!avatar && (
-            <div className="w-6 h-6 rounded-xl bg-white/20 flex items-center justify-center">
+          ) : (
+            <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: model.color || '#6585C5' }}>
               <span className="text-xs font-bold text-white">{displayName[0]}</span>
             </div>
           )}
@@ -175,6 +185,8 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
           {(visualState === 'default' || visualState === 'loser') && (
             <>
               <button
+                onClick={onRegenerate}
+                title="Tạo lại phản hồi"
                 className="flex items-center justify-center overflow-hidden rounded-lg bg-transparent border-none cursor-pointer hover:bg-white/10 transition-all"
                 style={{ padding: '6px', boxShadow: '0px 1px 2px 0px rgba(16,24,40,0.05)' }}
               >
@@ -182,12 +194,19 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
               </button>
               <button
                 onClick={handleCopy}
+                title={copied ? 'Đã sao chép!' : 'Sao chép'}
                 className="flex items-center justify-center overflow-hidden rounded-lg bg-transparent border-none cursor-pointer hover:bg-white/10 transition-all"
-                style={{ padding: '6px', boxShadow: '0px 1px 2px 0px rgba(16,24,40,0.05)' }}
+                style={{ padding: '6px', boxShadow: '0px 1px 2px 0px rgba(16,24,40,0.05)', background: copied ? 'rgba(71, 205, 137, 0.2)' : undefined }}
               >
-                <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                {copied ? (
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M16.6667 5L7.50001 14.1667L3.33334 10" stroke="#75E0A7" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                ) : (
+                  <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                )}
               </button>
               <button
+                onClick={() => setFullscreen(true)}
+                title="Xem toàn màn hình"
                 className="flex items-center justify-center overflow-hidden rounded-lg bg-transparent border-none cursor-pointer hover:bg-white/10 transition-all"
                 style={{ padding: '6px', boxShadow: '0px 1px 2px 0px rgba(16,24,40,0.05)' }}
               >
@@ -287,6 +306,63 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
               Lưu đánh giá
             </button>
           )}
+        </div>
+      )}
+
+      {/* Fullscreen modal */}
+      {fullscreen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
+          style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', background: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setFullscreen(false)}
+        >
+          <div
+            className="w-[90vw] max-w-[900px] max-h-[85vh] rounded-xl overflow-hidden flex flex-col"
+            style={{
+              backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 100%), linear-gradient(90deg, rgb(0,34,102) 0%, rgb(0,34,102) 100%)',
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Fullscreen header */}
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <div className="flex items-center gap-3">
+                {avatar ? (
+                  <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center overflow-hidden p-1">
+                    <img src={avatar} alt="" className="w-6 h-6 object-contain" />
+                  </div>
+                ) : (
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: model.color || '#6585C5' }}>
+                    <span className="text-sm font-bold text-white">{displayName[0]}</span>
+                  </div>
+                )}
+                <span className="text-lg font-semibold text-white">{displayName}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-transparent border border-white/20 text-white text-sm cursor-pointer hover:bg-white/10 transition-all"
+                >
+                  {copied ? (
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16.6667 5L7.50001 14.1667L3.33334 10" stroke="#75E0A7" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  ) : (
+                    <img src={copyIcon} alt="" className="w-4 h-4" />
+                  )}
+                  <span>{copied ? 'Đã sao chép' : 'Sao chép'}</span>
+                </button>
+                <button
+                  onClick={() => setFullscreen(false)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg bg-transparent border-none text-white cursor-pointer hover:bg-white/10 transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5L15 15" stroke="white" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+            {/* Fullscreen body */}
+            <div className="px-6 py-6 text-base leading-7 text-white overflow-y-auto flex-1">
+              {formatResponse(content)}
+            </div>
+          </div>
         </div>
       )}
     </div>
