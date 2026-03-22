@@ -42,9 +42,15 @@ export function ArenaPage() {
   /** Track which vote button is being hovered (selecting state) */
   const [selectingChoice, setSelectingChoice] = useState<VoteChoice | null>(null)
 
+  // Auto-scroll: after responses load or vote bar appears, scroll the bottom into view
+  const bottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight
-  }, [displayMessages, showVoteBar])
+    // Small delay to let DOM render before scrolling
+    const timer = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [displayMessages, showVoteBar, isLoading])
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -284,6 +290,8 @@ export function ArenaPage() {
           <ChatInput onSubmit={handleSubmitPrompt} placeholder="Tiếp tục hỏi..." />
         </div>
       )}
+      {/* Scroll anchor — auto-scroll targets this */}
+      <div ref={bottomRef} />
     </div>
   )
 }

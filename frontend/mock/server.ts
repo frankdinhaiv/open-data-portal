@@ -178,10 +178,12 @@ app.get('/api/arena/pair', async (req, res) => {
     ? (promptsFixture.find(p => p.id === Number(promptIdParam)) ?? randomFrom(promptsFixture))
     : randomFrom(promptsFixture);
 
-  // Coin-flip A/B position
-  const flip = Math.random() > 0.5;
-  const displayA = flip ? modelA : modelB;
-  const displayB = flip ? modelB : modelA;
+  // Coin-flip A/B position — ONLY for battle mode (random pairs)
+  // In SBS mode, user explicitly selected model_a and model_b — don't swap
+  const isSBS = !!(req.query['model_a'] && req.query['model_b']);
+  const flip = !isSBS && Math.random() > 0.5;
+  const displayA = flip ? modelB : modelA;
+  const displayB = flip ? modelA : modelB;
 
   // Find responses
   const rawA = findAnyResponse(prompt.id, displayA.id, displayB.id);

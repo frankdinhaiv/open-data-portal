@@ -47,9 +47,10 @@ export function ChatInput({ onSubmit, placeholder }: Props) {
         boxShadow: '0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)',
       }}
     >
-      {/* Ellipse glow — CSS gradient, NOT SVG */}
+      {/* Ellipse glow — CSS gradient, animates during loading */}
       <div
         aria-hidden="true"
+        className={isLoading ? 'animate-glow-shimmer' : ''}
         style={{
           position: 'absolute',
           height: '48px',
@@ -57,9 +58,12 @@ export function ChatInput({ onSubmit, placeholder }: Props) {
           right: '16px',
           top: '-8px',
           background: 'linear-gradient(90deg, #31C7DB 0%, #349CF4 25.48%, #B68EFF 50%, #349CF4 75.48%, #31C7DB 100%)',
+          backgroundSize: isLoading ? '200% 100%' : '100% 100%',
           filter: 'blur(6px)',
           zIndex: 0,
           borderRadius: '50%',
+          opacity: isLoading ? 1 : 0.6,
+          transition: 'opacity 0.3s ease',
         }}
       />
 

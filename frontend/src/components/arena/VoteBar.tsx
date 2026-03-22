@@ -64,14 +64,23 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, votedChoic
     }
   }
 
-  // Figma: 4 buttons in a row, no wrapping glass container
-  // Each button: border-white, rounded-8, px-10 py-6, gap-4, shadow-xs
+  // Figma node 2:11857: glass wrapper with 4 buttons inside
   const hasVoted = !!votedChoice
   const btnClass = `flex items-center gap-1 bg-transparent transition-all ${hasVoted ? 'cursor-default' : 'cursor-pointer hover:bg-white/10'}`
 
   return (
     <div className="py-4 animate-slide-up shrink-0">
-      <div className="flex items-center justify-center gap-2">
+      <div
+        className="flex items-center justify-center gap-2 mx-auto w-fit"
+        style={{
+          padding: '8px',
+          borderRadius: '16px',
+          background: 'rgba(239, 244, 255, 0.1)',
+          border: '1px solid rgba(209, 224, 255, 0.1)',
+          backdropFilter: 'blur(4px)',
+          boxShadow: '0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06)',
+        }}
+      >
         <button
           onClick={() => !hasVoted && onVote('a')}
           onMouseEnter={() => !hasVoted && onSelectingChange?.('a')}
