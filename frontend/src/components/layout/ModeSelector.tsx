@@ -7,8 +7,13 @@ import scalesIcon from '../../assets/icons/scales.svg'
 import messageCircle from '../../assets/icons/message-circle.svg'
 import chevronDown from '../../assets/icons/chevron-down-white.svg'
 
-import gptAvatar from '../../assets/models/gpt.png'
+import openaiAvatar from '../../assets/models/openai.png'
+import googleAvatar from '../../assets/models/google.png'
+import metaAvatar from '../../assets/models/meta.png'
 import deepseekAvatar from '../../assets/models/deepseek.png'
+import xaiAvatar from '../../assets/models/xai.png'
+import anthropicAvatar from '../../assets/models/anthropic.png'
+import qwenAvatar from '../../assets/models/qwen.png'
 
 const MODES: { id: ArenaMode; icon: string; label: string }[] = [
   { id: 'sbs', icon: scalesIcon, label: 'So sánh song song' },
@@ -17,8 +22,19 @@ const MODES: { id: ArenaMode; icon: string; label: string }[] = [
 ]
 
 const MODEL_AVATARS: Record<string, string> = {
-  'gpt': gptAvatar,
+  'openai': openaiAvatar,
+  'gpt': openaiAvatar,
+  'google': googleAvatar,
+  'gemini': googleAvatar,
+  'meta': metaAvatar,
+  'llama': metaAvatar,
   'deepseek': deepseekAvatar,
+  'xai': xaiAvatar,
+  'grok': xaiAvatar,
+  'anthropic': anthropicAvatar,
+  'claude': anthropicAvatar,
+  'qwen': qwenAvatar,
+  'alibaba': qwenAvatar,
 }
 
 export function ModeSelector() {

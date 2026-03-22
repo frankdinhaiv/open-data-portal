@@ -1,6 +1,36 @@
 import { useEffect, useRef, useState } from 'react'
 import { fetchStats } from '../../api/client'
 
+import openaiAvatar from '../../assets/models/openai.png'
+import googleAvatar from '../../assets/models/google.png'
+import metaAvatar from '../../assets/models/meta.png'
+import deepseekAvatar from '../../assets/models/deepseek.png'
+import xaiAvatar from '../../assets/models/xai.png'
+import anthropicAvatar from '../../assets/models/anthropic.png'
+import qwenAvatar from '../../assets/models/qwen.png'
+
+const MODEL_AVATARS: Record<string, string> = {
+  'openai': openaiAvatar,
+  'gpt': openaiAvatar,
+  'google': googleAvatar,
+  'gemini': googleAvatar,
+  'meta': metaAvatar,
+  'llama': metaAvatar,
+  'deepseek': deepseekAvatar,
+  'xai': xaiAvatar,
+  'grok': xaiAvatar,
+  'anthropic': anthropicAvatar,
+  'claude': anthropicAvatar,
+  'qwen': qwenAvatar,
+  'alibaba': qwenAvatar,
+}
+
+function getModelAvatar(modelName: string): string | undefined {
+  const lower = modelName.toLowerCase()
+  const key = Object.keys(MODEL_AVATARS).find((k) => lower.includes(k))
+  return key ? MODEL_AVATARS[key] : undefined
+}
+
 /*
  * StatCharts — three visualization sections matching Figma 2:10985, 2:11498, 2:11512
  *
@@ -483,7 +513,7 @@ function AvgWinRate() {
                     </span>
                   </div>
 
-                  {/* Model logo placeholder (circle) */}
+                  {/* Model logo */}
                   <div
                     className="shrink-0 flex items-center justify-center"
                     style={{
@@ -495,20 +525,28 @@ function AvgWinRate() {
                       marginLeft: '4px',
                     }}
                   >
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '12px',
-                        background: item.color || '#155EEF',
-                        fontSize: '10px',
-                        fontWeight: 700,
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      {item.model[0]}
-                    </div>
+                    {getModelAvatar(item.model) ? (
+                      <img
+                        src={getModelAvatar(item.model)}
+                        alt=""
+                        style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                      />
+                    ) : (
+                      <div
+                        className="flex items-center justify-center"
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '12px',
+                          background: item.color || '#155EEF',
+                          fontSize: '10px',
+                          fontWeight: 700,
+                          color: '#FFFFFF',
+                        }}
+                      >
+                        {item.model[0]}
+                      </div>
+                    )}
                   </div>
                 </div>
               )

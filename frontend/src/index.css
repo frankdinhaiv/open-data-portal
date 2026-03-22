@@ -81,9 +81,15 @@ body {
   40% { transform: translateY(-4px); }
 }
 
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
 .animate-fade-in { animation: fadeIn 0.3s ease; }
 .animate-slide-up { animation: slideUp 0.3s ease; }
 .animate-scale-in { animation: scaleIn 0.25s ease; }
+.animate-slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
 .typing-dots span {
   width: 6px;

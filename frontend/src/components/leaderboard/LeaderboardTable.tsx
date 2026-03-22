@@ -11,6 +11,36 @@ import starIcon from '../../assets/icons/star.svg'
 import arrowLeftIcon from '../../assets/icons/arrow-left.svg'
 import arrowRightIcon from '../../assets/icons/arrow-right.svg'
 
+import openaiAvatar from '../../assets/models/openai.png'
+import googleAvatar from '../../assets/models/google.png'
+import metaAvatar from '../../assets/models/meta.png'
+import deepseekAvatar from '../../assets/models/deepseek.png'
+import xaiAvatar from '../../assets/models/xai.png'
+import anthropicAvatar from '../../assets/models/anthropic.png'
+import qwenAvatar from '../../assets/models/qwen.png'
+
+const MODEL_AVATARS: Record<string, string> = {
+  'openai': openaiAvatar,
+  'gpt': openaiAvatar,
+  'google': googleAvatar,
+  'gemini': googleAvatar,
+  'meta': metaAvatar,
+  'llama': metaAvatar,
+  'deepseek': deepseekAvatar,
+  'xai': xaiAvatar,
+  'grok': xaiAvatar,
+  'anthropic': anthropicAvatar,
+  'claude': anthropicAvatar,
+  'qwen': qwenAvatar,
+  'alibaba': qwenAvatar,
+}
+
+function getModelAvatar(modelId: string): string | undefined {
+  const lower = modelId.toLowerCase()
+  const key = Object.keys(MODEL_AVATARS).find((k) => lower.includes(k))
+  return key ? MODEL_AVATARS[key] : undefined
+}
+
 const CATEGORIES = [
   { key: 'all', label: 'Tổng hợp', icon: trophyIcon, active: true },
   { key: 'creative', label: 'Sáng tạo', icon: featherIcon },
@@ -242,21 +272,29 @@ export function LeaderboardTable() {
                         padding: '4px',
                       }}
                     >
-                      <div
-                        className="flex items-center justify-center"
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          borderRadius: '12px',
-                          background: m.color || '#155EEF',
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          color: '#FFFFFF',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {m.name[0]}
-                      </div>
+                      {getModelAvatar(m.model_id || m.name) ? (
+                        <img
+                          src={getModelAvatar(m.model_id || m.name)}
+                          alt=""
+                          style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                        />
+                      ) : (
+                        <div
+                          className="flex items-center justify-center"
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '12px',
+                            background: m.color || '#155EEF',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            color: '#FFFFFF',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {m.name[0]}
+                        </div>
+                      )}
                     </div>
                     <span
                       style={{

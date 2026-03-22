@@ -133,7 +133,6 @@ export function ArenaPage() {
   async function handleVote(choice: VoteChoice) {
     if (!currentPair) return
 
-    setShowVoteBar(false)
     setSelectingChoice(null)
     incrementVotes()
 
@@ -185,6 +184,9 @@ export function ArenaPage() {
 
   // Find the last dual message index to apply selecting state only to it
   const lastDualIdx = displayMessages.reduce((acc, msg, i) => msg.role === 'dual' ? i : acc, -1)
+
+  // The vote result of the latest dual message — used to keep VoteBar highlighted after voting
+  const lastDualVoteResult = lastDualIdx >= 0 ? displayMessages[lastDualIdx].voteResult : null
 
   return (
     <div className="flex flex-col" style={{ minHeight: 'calc(100vh - 90px)' }}>
@@ -270,6 +272,7 @@ export function ArenaPage() {
           onDirectRate={handleDirectRate}
           selectingChoice={selectingChoice}
           onSelectingChange={setSelectingChoice}
+          votedChoice={lastDualVoteResult ?? undefined}
           modelAName={currentPair?.model_a?.name}
           modelBName={currentPair?.model_b?.name}
         />

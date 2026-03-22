@@ -7,12 +7,28 @@ import expandIcon from '../../assets/icons/expand.svg'
 import starFilledIcon from '../../assets/icons/star-filled.svg'
 import starEmptyIcon from '../../assets/icons/star-empty.svg'
 
-import gptAvatar from '../../assets/models/gpt.png'
+import openaiAvatar from '../../assets/models/openai.png'
+import googleAvatar from '../../assets/models/google.png'
+import metaAvatar from '../../assets/models/meta.png'
 import deepseekAvatar from '../../assets/models/deepseek.png'
+import xaiAvatar from '../../assets/models/xai.png'
+import anthropicAvatar from '../../assets/models/anthropic.png'
+import qwenAvatar from '../../assets/models/qwen.png'
 
 const MODEL_AVATARS: Record<string, string> = {
-  'gpt': gptAvatar,
+  'openai': openaiAvatar,
+  'gpt': openaiAvatar,
+  'google': googleAvatar,
+  'gemini': googleAvatar,
+  'meta': metaAvatar,
+  'llama': metaAvatar,
   'deepseek': deepseekAvatar,
+  'xai': xaiAvatar,
+  'grok': xaiAvatar,
+  'anthropic': anthropicAvatar,
+  'claude': anthropicAvatar,
+  'qwen': qwenAvatar,
+  'alibaba': qwenAvatar,
 }
 
 /**
@@ -92,10 +108,10 @@ function StatusIcon({ state }: { state: PanelVisualState }) {
     )
   }
   if (state === 'tie-good') {
-    // Handshake icon
+    // Handshake icon (same path data as handshake.svg asset)
     return (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7.5 10L9.16667 11.6667L12.5 8.33333M17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10Z" stroke="#75E0A7" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
+      <svg width="20" height="20" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.93334 13.1946L10.7333 14.9604C10.9106 15.1343 11.1211 15.2723 11.3527 15.3664C11.5844 15.4605 11.8326 15.509 12.0833 15.509C12.3341 15.509 12.5823 15.4605 12.814 15.3664C13.0456 15.2723 13.2561 15.1343 13.4333 14.9604C13.6106 14.7865 13.7513 14.58 13.8472 14.3528C13.9431 14.1255 13.9925 13.882 13.9925 13.636C13.9925 13.3901 13.9431 13.1465 13.8472 12.9193C13.7513 12.692 13.6106 12.4856 13.4333 12.3116M11.6333 10.5458L13.8833 12.7531C14.2414 13.1044 14.727 13.3017 15.2333 13.3017C15.7397 13.3017 16.2253 13.1044 16.5833 12.7531C16.9414 12.4019 17.1425 11.9255 17.1425 11.4287C17.1425 10.932 16.9414 10.4556 16.5833 10.1044L13.0913 6.67867C12.5851 6.18265 11.8988 5.90403 11.1833 5.90403C10.4678 5.90403 9.78157 6.18265 9.27532 6.67867L8.48332 7.45563C8.12528 7.80688 7.63967 8.00421 7.13332 8.00421C6.62697 8.00421 6.14136 7.80688 5.78332 7.45563C5.42528 7.10439 5.22413 6.628 5.22413 6.13126C5.22413 5.63453 5.42528 5.15814 5.78332 4.80689L8.31232 2.3259C9.13334 1.52258 10.204 1.01085 11.3549 0.871718C12.5058 0.732589 13.6711 0.974011 14.6663 1.55777L15.0893 1.80498C15.4725 2.03188 15.9282 2.11057 16.3673 2.02571L17.9333 1.71669M17.9333 0.833763L18.8333 10.5458H17.0333M1.73334 0.833763L0.833338 10.5458L6.68334 16.2848C7.04138 16.636 7.52699 16.8333 8.03334 16.8333C8.53969 16.8333 9.0253 16.636 9.38334 16.2848C9.74138 15.9335 9.94253 15.4571 9.94253 14.9604C9.94253 14.4637 9.74138 13.9873 9.38334 13.636M1.73334 1.71668H8.93334" stroke="#75E0A7" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     )
   }
@@ -309,23 +325,29 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
         </div>
       )}
 
-      {/* Fullscreen modal */}
+      {/* Fullscreen side panel — slides in from the right */}
       {fullscreen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
-          style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', background: 'rgba(0,0,0,0.5)' }}
-          onClick={() => setFullscreen(false)}
-        >
+        <>
+          {/* Dark overlay — click to close */}
           <div
-            className="w-[90vw] max-w-[900px] max-h-[85vh] rounded-xl overflow-hidden flex flex-col"
+            className="fixed inset-0 z-40 animate-fade-in"
+            style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+            onClick={() => setFullscreen(false)}
+          />
+          {/* Side panel */}
+          <div
+            className="fixed top-0 right-0 bottom-0 z-50 flex flex-col animate-slide-in-right"
             style={{
-              backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.1) 100%), linear-gradient(90deg, rgb(0,34,102) 0%, rgb(0,34,102) 100%)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              width: '50vw',
+              minWidth: '400px',
+              maxWidth: '720px',
+              backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%), linear-gradient(180deg, rgb(0,20,70) 0%, rgb(0,34,102) 100%)',
+              borderLeft: '1px solid rgba(255,255,255,0.15)',
+              boxShadow: '-8px 0 32px rgba(0,0,0,0.4)',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            {/* Fullscreen header */}
-            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            {/* Panel header */}
+            <div className="flex items-center justify-between px-6 py-4 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
               <div className="flex items-center gap-3">
                 {avatar ? (
                   <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center overflow-hidden p-1">
@@ -341,6 +363,7 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopy}
+                  title={copied ? 'Đã sao chép!' : 'Sao chép'}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-transparent border border-white/20 text-white text-sm cursor-pointer hover:bg-white/10 transition-all"
                 >
                   {copied ? (
@@ -352,18 +375,19 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
                 </button>
                 <button
                   onClick={() => setFullscreen(false)}
+                  title="Đóng"
                   className="flex items-center justify-center w-8 h-8 rounded-lg bg-transparent border-none text-white cursor-pointer hover:bg-white/10 transition-all"
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5L15 15" stroke="white" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
             </div>
-            {/* Fullscreen body */}
+            {/* Panel body */}
             <div className="px-6 py-6 text-base leading-7 text-white overflow-y-auto flex-1">
               {formatResponse(content)}
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

@@ -14,12 +14,14 @@ interface Props {
   selectingChoice?: VoteChoice | null
   /** Called when the user hovers/unhovers a vote button */
   onSelectingChange?: (choice: VoteChoice | null) => void
+  /** The choice the user already voted for — keeps that button highlighted after voting */
+  votedChoice?: VoteChoice
   /** Model names for SBS mode labels (Figma: "GPT-4.1 tốt hơn" / "DeepSeek V3 tốt hơn") */
   modelAName?: string
   modelBName?: string
 }
 
-export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName, modelBName }: Props) {
+export function VoteBar({ onVote, selectingChoice, onSelectingChange, votedChoice, modelAName, modelBName }: Props) {
   const mode = useStore((s) => s.mode)
 
   // Direct mode: rating is now inline inside ResponsePanel — VoteBar does not render
@@ -32,13 +34,19 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName
   const leftLabel = isBattle ? 'Bên trái tốt hơn' : (modelAName ? `${modelAName} tốt hơn` : 'Mô hình A tốt hơn')
   const rightLabel = isBattle ? 'Bên phải tốt hơn' : (modelBName ? `${modelBName} tốt hơn` : 'Mô hình B tốt hơn')
 
-  // Determine the highlight color for the selecting state
+  // Determine the highlight color for the selecting/voted state
   function getButtonStyle(choice: VoteChoice) {
     const isSelecting = selectingChoice === choice
-    if (!isSelecting) {
+    const isVoted = votedChoice === choice
+    const hasVoted = !!votedChoice
+    const isActive = isSelecting || isVoted
+
+    if (!isActive) {
+      // After voting, non-voted buttons are dimmed
       return {
-        border: '1px solid #FFFFFF',
-        color: '#FFFFFF',
+        border: '1px solid rgba(255,255,255,0.4)',
+        color: 'rgba(255,255,255,0.4)',
+        opacity: hasVoted ? 0.5 : 1,
       }
     }
     // 'bad' uses error color, all others use success color
@@ -46,25 +54,28 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName
       return {
         border: '1px solid #FDA29B',
         color: '#FDA29B',
+        opacity: 1,
       }
     }
     return {
       border: '1px solid #75E0A7',
       color: '#75E0A7',
+      opacity: 1,
     }
   }
 
   // Figma: 4 buttons in a row, no wrapping glass container
   // Each button: border-white, rounded-8, px-10 py-6, gap-4, shadow-xs
-  const btnClass = "flex items-center gap-1 bg-transparent cursor-pointer hover:bg-white/10 transition-all"
+  const hasVoted = !!votedChoice
+  const btnClass = `flex items-center gap-1 bg-transparent transition-all ${hasVoted ? 'cursor-default' : 'cursor-pointer hover:bg-white/10'}`
 
   return (
     <div className="py-4 animate-slide-up shrink-0">
       <div className="flex items-center justify-center gap-2">
         <button
-          onClick={() => onVote('a')}
-          onMouseEnter={() => onSelectingChange?.('a')}
-          onMouseLeave={() => onSelectingChange?.(null)}
+          onClick={() => !hasVoted && onVote('a')}
+          onMouseEnter={() => !hasVoted && onSelectingChange?.('a')}
+          onMouseLeave={() => !hasVoted && onSelectingChange?.(null)}
           className={btnClass}
           style={{
             ...getButtonStyle('a'),
@@ -82,9 +93,9 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName
           <span>{leftLabel}</span>
         </button>
         <button
-          onClick={() => onVote('tie')}
-          onMouseEnter={() => onSelectingChange?.('tie')}
-          onMouseLeave={() => onSelectingChange?.(null)}
+          onClick={() => !hasVoted && onVote('tie')}
+          onMouseEnter={() => !hasVoted && onSelectingChange?.('tie')}
+          onMouseLeave={() => !hasVoted && onSelectingChange?.(null)}
           className={btnClass}
           style={{
             ...getButtonStyle('tie'),
@@ -102,9 +113,9 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName
           <span>Hoà</span>
         </button>
         <button
-          onClick={() => onVote('bad')}
-          onMouseEnter={() => onSelectingChange?.('bad')}
-          onMouseLeave={() => onSelectingChange?.(null)}
+          onClick={() => !hasVoted && onVote('bad')}
+          onMouseEnter={() => !hasVoted && onSelectingChange?.('bad')}
+          onMouseLeave={() => !hasVoted && onSelectingChange?.(null)}
           className={btnClass}
           style={{
             ...getButtonStyle('bad'),
@@ -122,9 +133,9 @@ export function VoteBar({ onVote, selectingChoice, onSelectingChange, modelAName
           <span>Cả hai đều tệ</span>
         </button>
         <button
-          onClick={() => onVote('b')}
-          onMouseEnter={() => onSelectingChange?.('b')}
-          onMouseLeave={() => onSelectingChange?.(null)}
+          onClick={() => !hasVoted && onVote('b')}
+          onMouseEnter={() => !hasVoted && onSelectingChange?.('b')}
+          onMouseLeave={() => !hasVoted && onSelectingChange?.(null)}
           className={btnClass}
           style={{
             ...getButtonStyle('b'),
