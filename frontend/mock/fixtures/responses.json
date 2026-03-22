@@ -1,0 +1,262 @@
+[
+  {
+    "prompt_id": 1,
+    "model_id": "openai/gpt-5.4",
+    "content": "**Lịch sử Việt Nam thế kỷ 20 theo từng thập kỷ**\n\n**1900–1919:** Việt Nam nằm dưới ách đô hộ của thực dân Pháp trong khuôn khổ Liên bang Đông Dương. Phong trào Đông Du do Phan Bội Châu khởi xướng (1904–1908) đưa thanh niên sang Nhật học tập, trong khi Phan Châu Trinh vận động cải cách theo con đường duy tân. Các cuộc nổi dậy như Khởi nghĩa Yên Bái (1930, sớm hơn một thập kỷ) đã hé mở tinh thần kháng Pháp mãnh liệt.\n\n**1920–1939:** Nguyễn Ái Quốc (Hồ Chí Minh) thành lập Việt Nam Thanh niên Cách mạng Đồng chí Hội (1925) tại Quảng Châu. Đảng Cộng sản Đông Dương ra đời ngày 3/2/1930, mở ra kỷ nguyên đấu tranh có tổ chức. Phong trào Xô viết Nghệ Tĩnh (1930–1931) bị Pháp đàn áp đẫm máu nhưng để lại dấu ấn sâu sắc trong lịch sử cách mạng.\n\n**1940–1949:** Nhật Bản chiếm đóng Đông Dương (1940–1945). Nạn đói năm Ất Dậu (1945) cướp đi sinh mạng khoảng 2 triệu người. Cách mạng Tháng Tám năm 1945 thành công, Hồ Chí Minh đọc Tuyên ngôn Độc lập ngày 2/9/1945. Kháng chiến chống Pháp bùng nổ từ cuối 1946.\n\n**1950–1959:** Chiến thắng Điện Biên Phủ ngày 7/5/1954 chấm dứt sự đô hộ của Pháp. Hiệp định Genève chia đôi đất nước tại vĩ tuyến 17. Miền Nam hình thành Việt Nam Cộng hòa dưới sự bảo trợ của Mỹ, trong khi miền Bắc tiến hành cải cách ruộng đất và xây dựng chủ nghĩa xã hội.\n\n**1960–1975:** Mặt trận Giải phóng miền Nam thành lập (1960). Mỹ leo thang can thiệp quân sự trực tiếp từ 1965. Tổng tấn công Tết Mậu Thân 1968 làm thay đổi dư luận Mỹ. Hiệp định Paris (1973) buộc Mỹ rút quân. Ngày 30/4/1975, miền Nam hoàn toàn giải phóng, đất nước thống nhất.\n\n**1975–1999:** Việt Nam thống nhất (1976), nhưng phải đối mặt với bao vây kinh tế và chiến tranh biên giới Tây Nam (1979) cùng xung đột với Trung Quốc. Đổi Mới (1986) mở cửa kinh tế, chuyển từ kế hoạch hóa tập trung sang kinh tế thị trường định hướng xã hội chủ nghĩa. Mỹ bình thường hóa quan hệ năm 1995, Việt Nam gia nhập ASEAN cùng năm."
+  },
+  {
+    "prompt_id": 1,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Tóm tắt lịch sử Việt Nam thế kỷ 20**\n\n**Thập niên 1900–1910:** Thực dân Pháp hoàn thiện bộ máy cai trị Đông Dương. Phan Bội Châu phát động phong trào Đông Du, Phan Châu Trinh kêu gọi duy tân. Các trí thức yêu nước bắt đầu tìm kiếm con đường giải phóng dân tộc.\n\n**Thập niên 1920–1930:** Nguyễn Ái Quốc hoạt động tại Quốc tế Cộng sản, thành lập tổ chức tiền thân của Đảng Cộng sản Đông Dương năm 1930. Phong trào công nông dâng cao, Pháp thẳng tay đàn áp.\n\n**Thập niên 1940:** Nhật đảo chính Pháp (3/1945), nạn đói năm Ất Dậu, Cách mạng Tháng Tám thành công. Nước Việt Nam Dân chủ Cộng hòa ra đời. Pháp quay lại, kháng chiến toàn quốc bắt đầu.\n\n**Thập niên 1950:** Chiến dịch Điện Biên Phủ kết thúc cuộc kháng chiến chống Pháp. Hiệp định Genève 1954 tạm thời chia cắt đất nước. Hai miền đi theo hai con đường chính trị khác nhau.\n\n**Thập niên 1960–1970:** Cuộc kháng chiến chống Mỹ leo thang. Tổng tấn công Mậu Thân 1968 là bước ngoặt. Mỹ từng bước rút quân sau Hiệp định Paris 1973.\n\n**1975 và sau đó:** Thống nhất đất nước 30/4/1975. Đổi Mới 1986 khởi động công cuộc chuyển đổi kinh tế. Cuối thập niên 1990, Việt Nam hội nhập khu vực và quốc tế."
+  },
+  {
+    "prompt_id": 1,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "**Lịch sử Việt Nam thế kỷ 20 — Điểm mốc theo thập kỷ**\n\n**1900–1919:** Phong trào yêu nước bùng phát dưới nhiều hình thức: bạo động vũ trang (Hoàng Hoa Thám, Đề Thám) và cải cách ôn hòa (Phan Châu Trinh, Đông Kinh Nghĩa Thục). Phan Bội Châu vận động ngoại viện từ Nhật Bản.\n\n**1920–1939:** Sự ra đời của Đảng Cộng sản Đông Dương (1930) đánh dấu bước ngoặt trong phong trào cách mạng. Xô Viết Nghệ Tĩnh (1930–1931) là cuộc biểu dương lực lượng đầu tiên của giai cấp công nông.\n\n**1940–1949:** Nhật chiếm Đông Dương, nạn đói kinh hoàng 1945, Cách mạng Tháng Tám, và khai sinh nước Việt Nam Dân chủ Cộng hòa. Pháp tái xâm lược, cuộc kháng chiến 9 năm bắt đầu.\n\n**1950–1959:** Điện Biên Phủ 1954 — thắng lợi quân sự vĩ đại nhất. Đất nước tạm chia cắt. Miền Bắc xây dựng chủ nghĩa xã hội, miền Nam dưới chế độ Ngô Đình Diệm.\n\n**1960–1975:** Chiến tranh Việt Nam — một trong những cuộc chiến dai dẳng nhất thế kỷ 20. Mỹ ném bom miền Bắc, bộ đội miền Nam kiên cường chiến đấu. Đại thắng 30/4/1975.\n\n**1976–1999:** Cộng hòa Xã hội Chủ nghĩa Việt Nam thống nhất. Khủng hoảng kinh tế dẫn đến Đổi Mới 1986. Bình thường hóa quan hệ với Mỹ (1995) và gia nhập WTO (2007) mở ra thời kỳ hội nhập mạnh mẽ."
+  },
+  {
+    "prompt_id": 1,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "Lịch sử Việt Nam thế kỷ 20 có thể chia thành các giai đoạn chính như sau:\n\n**Đầu thế kỷ (1900–1930):** Việt Nam dưới sự cai trị của Pháp. Nhiều phong trào yêu nước nổi lên như Đông Du, Duy Tân. Năm 1930, Đảng Cộng sản Đông Dương thành lập, tạo nền tảng cho cuộc đấu tranh giải phóng dân tộc.\n\n**Giữa thế kỷ (1940–1954):** Cách mạng Tháng Tám 1945 thành công, nước Việt Nam Dân chủ Cộng hòa ra đời. Cuộc kháng chiến chống Pháp kết thúc bằng chiến thắng Điện Biên Phủ lừng lẫy năm 1954. Hiệp định Genève tạm chia đôi đất nước.\n\n**Chiến tranh chống Mỹ (1955–1975):** Đây là giai đoạn khốc liệt nhất. Đại thắng mùa Xuân 1975, đất nước thống nhất sau 30 năm chia cắt.\n\n**Đổi Mới và hội nhập (1986–2000):** Chính sách Đổi Mới 1986 chuyển đổi nền kinh tế, đưa Việt Nam thoát khỏi khủng hoảng và bắt đầu hội nhập quốc tế."
+  },
+  {
+    "prompt_id": 1,
+    "model_id": "xai/grok-3-fast-latest",
+    "content": "Việt Nam thế kỷ 20 trải qua nhiều biến động lịch sử trọng đại:\n\n**1900–1945:** Thuộc địa Pháp, phong trào yêu nước, Đảng Cộng sản ra đời, Cách mạng Tháng Tám thành công.\n\n**1945–1975:** Hai cuộc kháng chiến liên tiếp — chống Pháp (kết thúc 1954) và chống Mỹ (kết thúc 30/4/1975). Đây là giai đoạn đất nước bị chia cắt và chịu tổn thất nặng nề nhất.\n\n**1975–2000:** Thống nhất đất nước, tái thiết sau chiến tranh, Đổi Mới 1986, và từng bước hội nhập kinh tế quốc tế."
+  },
+  {
+    "prompt_id": 1,
+    "model_id": "vinai/phobert-large",
+    "content": "Thế kỷ 20 của Việt Nam có nhiều sự kiện quan trọng. Đầu thế kỷ là thời kỳ thuộc Pháp. Năm 1945 có Cách mạng Tháng Tám. Rồi kháng chiến chống Pháp đến 1954. Tiếp theo là chiến tranh chống Mỹ đến 1975. Năm 1986 có Đổi Mới kinh tế quan trọng."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "openai/gpt-5.4",
+    "content": "**Thơ lục bát — Tình yêu quê hương**\n\nQuê hương là bến đò xưa,\nLà câu hát mẹ ru thưa thuở nào.\nNgàn năm đất mẹ ngọt ngào,\nDù đi muôn nẻo lòng trao nơi này.\n\n*Ghi chú về thể thơ:* Lục bát là thể thơ truyền thống Việt Nam với cặp câu 6 chữ và 8 chữ xen kẽ. Vần điệu được gieo ở tiếng cuối câu 6, tiếng thứ 6 và tiếng cuối câu 8, tạo nên âm điệu du dương, gần gũi với ca dao dân ca."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Bài thơ lục bát về tình yêu quê hương**\n\nQuê tôi có bóng tre xanh,\nCó con sông nhỏ hiền lành chảy qua.\nMỗi lần nhớ tiếng gà xa,\nLòng tôi lại thấy như là về quê.\n\nBài thơ theo đúng quy cách lục bát: câu 1 có 6 chữ, câu 2 có 8 chữ. Tiếng cuối câu 1 (*xanh*) vần với tiếng thứ 6 của câu 2 (*hiền*) và cứ thế luân phiên, tạo nhịp điệu êm ả, gần gũi với tâm hồn người Việt."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "**Thơ lục bát — Tình yêu quê hương**\n\nQuê tôi mưa nắng bốn mùa,\nLúa vàng trải dọc bờ thưa gió đồng.\nNgàn đời cha mẹ mang công,\nCon đi xa vẫn một lòng hướng về.\n\nThể lục bát đòi hỏi sự hài hòa giữa thanh bằng và thanh trắc, cùng với vần chân và vần lưng xen kẽ nhau. Bài thơ trên cố gắng gợi lên hình ảnh cụ thể của làng quê Việt Nam — cánh đồng lúa, gió đồng — thay vì dùng những từ ngữ trừu tượng."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "Đây là bài thơ lục bát về tình yêu quê hương:\n\nQuê hương in dấu trong tim,\nNghe câu hát lại tìm về tuổi thơ.\nBờ tre xanh mát bến đò,\nDù xa nghìn dặm vẫn chờ bóng quê.\n\nThể lục bát có nhịp điệu đặc trưng, câu 6 chữ xen với câu 8 chữ, vần gieo theo quy tắc nhất định, rất phổ biến trong ca dao và thơ dân gian Việt Nam."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "meta-llama/llama-3-70b-instruct",
+    "content": "Bài thơ lục bát về tình yêu quê hương:\n\nQuê hương tôi đó bình yên,\nCó dòng sông nhỏ êm đềm chảy trôi.\nNgày đi xa nhớ mái đồi,\nLòng luôn hướng về quê tôi thân thương.\n\nThể thơ lục bát là thể thơ dân gian đặc trưng của Việt Nam, thường thấy trong ca dao và các tác phẩm như Truyện Kiều."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "openai/gpt-4o-mini",
+    "content": "Thơ lục bát về tình yêu quê hương:\n\nQuê tôi sông núi đẹp tươi,\nCó câu hò hát đất trời bình yên.\nDù đi đâu cũng nhớ miền,\nQuê hương in đậm trong tim mãi còn."
+  },
+  {
+    "prompt_id": 3,
+    "model_id": "vinai/phobert-large",
+    "content": "Bài thơ lục bát ngắn về quê hương:\n\nTôi yêu quê hương đất nước,\nNơi tôi sinh ra lớn lên.\nYêu cây lúa xanh ngoài đồng,\nYêu dòng sông chảy êm đềm."
+  },
+  {
+    "prompt_id": 5,
+    "model_id": "openai/gpt-5.4",
+    "content": "Cầu vồng xuất hiện sau cơn mưa do hiện tượng **tán sắc ánh sáng** trong các giọt nước còn lơ lửng trong không khí. Khi ánh sáng mặt trời (gồm nhiều bước sóng màu sắc khác nhau) đi vào giọt nước cầu, nó bị khúc xạ ở mặt ngoài, phản xạ toàn phần ở mặt trong, rồi khúc xạ lần hai khi thoát ra.\n\nVì mỗi màu sắc có chiết suất khác nhau trong nước, chúng bị bẻ cong ở những góc lệch khác nhau — đỏ lệch ít nhất (~42°), tím lệch nhiều nhất (~40°). Kết quả là các màu tách ra và hiện lên thành dải liên tục từ đỏ ở trên xuống tím ở dưới.\n\nĐể thấy cầu vồng, bạn cần đứng **quay lưng lại mặt trời** và nhìn về phía có mưa — tức là mặt trời phải ở phía sau và đủ thấp (dưới 42° so với đường chân trời). Đó là lý do cầu vồng thường xuất hiện vào buổi sáng sớm hoặc chiều tà sau cơn mưa, không phải giữa trưa."
+  },
+  {
+    "prompt_id": 5,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "Cầu vồng hình thành do ba bước liên tiếp xảy ra bên trong mỗi giọt nước mưa còn lơ lửng trong không khí: ánh sáng mặt trời **khúc xạ** khi vào giọt nước, **phản xạ** ở mặt trong, rồi **khúc xạ lần nữa** khi thoát ra ngoài.\n\nÁnh sáng trắng thực ra là hỗn hợp của nhiều màu sắc với bước sóng khác nhau. Do chiết suất của nước khác nhau theo bước sóng, mỗi màu bị bẻ cong ở góc hơi khác nhau — hiện tượng này gọi là **tán sắc**. Kết quả là các màu sắc tách rời nhau, tạo thành dải màu quen thuộc từ đỏ đến tím.\n\nBạn cần quay lưng về phía mặt trời khi nhìn cầu vồng vì cơ chế phản xạ trong giọt nước khiến ánh sáng bật ngược về phía bạn. Đó cũng là lý do mỗi người nhìn thấy một cầu vồng hơi khác nhau, tùy vào góc mắt của họ so với mặt trời và màn mưa."
+  },
+  {
+    "prompt_id": 5,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "Cầu vồng là kết quả của quá trình **tán sắc ánh sáng** qua các giọt nước mưa. Khi tia sáng mặt trời chiếu vào một giọt nước, nó trải qua ba bước: khúc xạ khi vào giọt nước, phản xạ nội toàn phần ở mặt sau, và khúc xạ lần hai khi thoát ra. Trong quá trình đó, ánh sáng trắng bị phân tách thành các màu riêng lẻ vì mỗi màu có tốc độ truyền khác nhau trong nước.\n\nCầu vồng chỉ xuất hiện khi mặt trời đủ thấp trên đường chân trời và người quan sát đứng giữa mặt trời và màn mưa. Sau cơn mưa, không khí còn nhiều giọt nước lơ lửng — điều kiện lý tưởng để hàng triệu giọt cùng phân tách ánh sáng và tạo nên hiệu ứng cầu vồng rực rỡ mà chúng ta nhìn thấy."
+  },
+  {
+    "prompt_id": 5,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "Cầu vồng xuất hiện sau mưa vì không khí lúc đó còn chứa nhiều giọt nước nhỏ lơ lửng. Khi ánh sáng mặt trời đi vào các giọt nước này, nó bị khúc xạ và phản xạ, đồng thời bị tách ra thành các màu sắc khác nhau (đỏ, cam, vàng, lục, lam, chàm, tím) do mỗi màu có chiết suất khác nhau trong nước. Hiện tượng này gọi là tán sắc ánh sáng.\n\nĐể nhìn thấy cầu vồng, người quan sát cần đứng quay lưng về phía mặt trời và nhìn về phía màn mưa. Mặt trời phải đủ thấp để ánh sáng phản xạ từ giọt nước hướng về mắt người quan sát ở góc phù hợp (khoảng 40–42 độ)."
+  },
+  {
+    "prompt_id": 5,
+    "model_id": "xai/grok-3-fast-latest",
+    "content": "Cầu vồng là kết quả của sự tán sắc ánh sáng. Khi tia sáng mặt trời đi vào giọt nước, nó bị bẻ cong (khúc xạ), phản xạ bên trong giọt nước, rồi bẻ cong thêm lần nữa khi thoát ra. Vì ánh sáng trắng gồm nhiều màu với bước sóng khác nhau, mỗi màu bị bẻ cong ở góc hơi khác nhau, tạo thành dải màu liên tục.\n\nSau mưa, không khí còn đầy giọt nước nhỏ lơ lửng — chúng hoạt động như hàng triệu lăng kính nhỏ cùng lúc tán sắc ánh sáng mặt trời, tạo nên vòng cung màu sắc rực rỡ mà chúng ta gọi là cầu vồng."
+  },
+  {
+    "prompt_id": 5,
+    "model_id": "qwen/qwen-vl-plus",
+    "content": "Cầu vồng xuất hiện sau mưa vì ánh sáng mặt trời chiếu qua các giọt nước còn trong không khí. Ánh sáng bị bẻ cong và tách thành nhiều màu như đỏ, vàng, xanh lá, xanh dương, tím. Điều này gọi là khúc xạ ánh sáng. Vì vậy sau mưa khi vẫn còn nhiều giọt nước trong không khí và mặt trời chiếu sáng, chúng ta thấy cầu vồng."
+  },
+  {
+    "prompt_id": 7,
+    "model_id": "openai/gpt-5.4",
+    "content": "```python\nfrom typing import List\n\n\ndef merge_sort(arr: List[int]) -> List[int]:\n    \"\"\"Sắp xếp danh sách số nguyên bằng thuật toán merge sort.\n\n    Merge sort là thuật toán chia để trị với độ phức tạp O(n log n)\n    trong mọi trường hợp. Không sắp xếp tại chỗ — trả về danh sách mới.\n\n    Args:\n        arr: Danh sách số nguyên cần sắp xếp.\n\n    Returns:\n        Danh sách số nguyên đã được sắp xếp tăng dần.\n\n    Examples:\n        >>> merge_sort([5, 2, 8, 1, 9])\n        [1, 2, 5, 8, 9]\n        >>> merge_sort([])\n        []\n        >>> merge_sort([1])\n        [1]\n    \"\"\"\n    if len(arr) <= 1:\n        return arr\n\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return _merge(left, right)\n\n\ndef _merge(left: List[int], right: List[int]) -> List[int]:\n    \"\"\"Gộp hai danh sách đã sắp xếp thành một danh sách sắp xếp.\n\n    Args:\n        left: Danh sách bên trái đã được sắp xếp.\n        right: Danh sách bên phải đã được sắp xếp.\n\n    Returns:\n        Danh sách gộp, sắp xếp tăng dần.\n    \"\"\"\n    result: List[int] = []\n    i = j = 0\n\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result\n```\n\n**Độ phức tạp:**\n- Thời gian: O(n log n) trong mọi trường hợp (tốt nhất, trung bình, xấu nhất)\n- Không gian: O(n) do cần bộ nhớ bổ sung để lưu các mảng con\n\n**Khi nào dùng merge sort:** Khi cần sắp xếp ổn định (stable sort) hoặc khi làm việc với linked list, vì merge sort không yêu cầu truy cập ngẫu nhiên như quicksort."
+  },
+  {
+    "prompt_id": 7,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "```python\nfrom typing import List\n\n\ndef merge_sort(numbers: List[int]) -> List[int]:\n    \"\"\"Sắp xếp danh sách số nguyên tăng dần bằng thuật toán Merge Sort.\n\n    Sử dụng chiến lược chia để trị: chia danh sách đôi đệ quy cho đến\n    khi còn 1 phần tử, rồi gộp các phần đã sắp xếp lại với nhau.\n\n    Args:\n        numbers: Danh sách số nguyên cần sắp xếp.\n\n    Returns:\n        Danh sách mới chứa các phần tử đã sắp xếp tăng dần.\n\n    Raises:\n        TypeError: Nếu đầu vào không phải danh sách.\n\n    Examples:\n        >>> merge_sort([3, 1, 4, 1, 5, 9, 2, 6])\n        [1, 1, 2, 3, 4, 5, 6, 9]\n    \"\"\"\n    if len(numbers) <= 1:\n        return numbers[:]\n\n    pivot = len(numbers) // 2\n    left_sorted = merge_sort(numbers[:pivot])\n    right_sorted = merge_sort(numbers[pivot:])\n\n    return _merge_sorted_halves(left_sorted, right_sorted)\n\n\ndef _merge_sorted_halves(left: List[int], right: List[int]) -> List[int]:\n    \"\"\"Gộp hai danh sách đã sắp xếp thành một danh sách sắp xếp.\"\"\"\n    merged: List[int] = []\n    left_idx, right_idx = 0, 0\n\n    while left_idx < len(left) and right_idx < len(right):\n        if left[left_idx] <= right[right_idx]:\n            merged.append(left[left_idx])\n            left_idx += 1\n        else:\n            merged.append(right[right_idx])\n            right_idx += 1\n\n    merged.extend(left[left_idx:])\n    merged.extend(right[right_idx:])\n    return merged\n```\n\nMerge sort đảm bảo tính **ổn định** (stable): các phần tử bằng nhau giữ nguyên thứ tự ban đầu, điều mà quicksort không đảm bảo. Độ phức tạp O(n log n) nhất quán không phụ thuộc vào dữ liệu đầu vào."
+  },
+  {
+    "prompt_id": 7,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "```python\nfrom typing import List\n\n\ndef merge_sort(arr: List[int]) -> List[int]:\n    \"\"\"Sắp xếp danh sách số nguyên theo thuật toán Merge Sort.\n\n    Thuật toán chia để trị với độ phức tạp thời gian O(n log n)\n    và không gian O(n). Phù hợp khi cần sắp xếp ổn định.\n\n    Args:\n        arr: Danh sách số nguyên đầu vào.\n\n    Returns:\n        Danh sách số nguyên mới đã sắp xếp tăng dần.\n\n    Examples:\n        >>> merge_sort([64, 34, 25, 12, 22, 11, 90])\n        [11, 12, 22, 25, 34, 64, 90]\n        >>> merge_sort([1])\n        [1]\n        >>> merge_sort([])\n        []\n    \"\"\"\n    n = len(arr)\n    if n <= 1:\n        return list(arr)\n\n    mid = n // 2\n    left_half = merge_sort(arr[:mid])\n    right_half = merge_sort(arr[mid:])\n\n    return _merge(left_half, right_half)\n\n\ndef _merge(left: List[int], right: List[int]) -> List[int]:\n    \"\"\"Gộp hai danh sách đã sắp xếp lại theo thứ tự tăng dần.\"\"\"\n    result: List[int] = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result\n```\n\n**Phân tích thuật toán:**\n- Bước chia: Chia mảng thành 2 nửa bằng nhau, tổng cộng log₂(n) cấp đệ quy\n- Bước gộp: Mỗi cấp xử lý tổng cộng n phần tử\n- Tổng thời gian: O(n log n), không đổi dù dữ liệu đã sắp xếp sẵn hay ngẫu nhiên\n- **Nhược điểm:** Cần O(n) bộ nhớ phụ, không sắp xếp in-place như heapsort"
+  },
+  {
+    "prompt_id": 7,
+    "model_id": "xai/grok-3-fast-latest",
+    "content": "```python\nfrom typing import List\n\n\ndef merge_sort(arr: List[int]) -> List[int]:\n    \"\"\"Sắp xếp danh sách bằng Merge Sort.\n\n    Args:\n        arr: Danh sách số nguyên cần sắp xếp.\n    Returns:\n        Danh sách đã sắp xếp tăng dần (bản sao mới).\n    \"\"\"\n    if len(arr) <= 1:\n        return arr[:]\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\n\ndef merge(left: List[int], right: List[int]) -> List[int]:\n    \"\"\"Gộp hai mảng đã sắp xếp.\"\"\"\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i]); i += 1\n        else:\n            result.append(right[j]); j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result\n```\n\nMerge sort có độ phức tạp O(n log n) trong mọi trường hợp và là thuật toán sắp xếp ổn định."
+  },
+  {
+    "prompt_id": 7,
+    "model_id": "meta-llama/llama-3-70b-instruct",
+    "content": "```python\nfrom typing import List\n\ndef merge_sort(arr: List[int]) -> List[int]:\n    \"\"\"Sắp xếp danh sách số nguyên dùng merge sort.\n    \n    Args:\n        arr: Danh sách đầu vào.\n    Returns:\n        Danh sách đã sắp xếp.\n    \"\"\"\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(left: List[int], right: List[int]) -> List[int]:\n    result, i, j = [], 0, 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i]); i += 1\n        else:\n            result.append(right[j]); j += 1\n    return result + left[i:] + right[j:]\n```\n\nThuật toán merge sort có độ phức tạp O(n log n) và là sắp xếp ổn định, phù hợp khi cần giữ thứ tự tương đối của các phần tử bằng nhau."
+  },
+  {
+    "prompt_id": 9,
+    "model_id": "openai/gpt-5.4",
+    "content": "**Truyện Kiều — Tóm tắt và phân loại thể loại**\n\n**Tóm tắt nội dung:**\nTruyện Kiều (tên đầy đủ: *Đoạn trường tân thanh*) là kiệt tác của đại thi hào Nguyễn Du, được viết vào đầu thế kỷ 19, dựa trên tiểu thuyết chữ Hán *Kim Vân Kiều truyện* của Thanh Tâm Tài Nhân (Trung Quốc) nhưng được Nguyễn Du nâng lên tầm nghệ thuật mới.\n\nCốt truyện kể về Thúy Kiều — người con gái tài sắc vẹn toàn. Để cứu cha và em trai khỏi cảnh tù tội do bị oan ức, nàng bán mình cho Mã Giám Sinh, phụ tình chàng Kim Trọng. Từ đó, Kiều trải qua 15 năm lưu lạc đầy biến cố: hai lần bị đẩy vào lầu xanh (nhà chứa), trốn thoát được nhờ Thúc Sinh rồi lại bị Hoạn Thư hành hạ, sau đó theo Từ Hải lập nghiệp nhưng bị lừa phản bội. Cuối cùng, nàng gieo mình xuống sông Tiền Đường, được cứu và đoàn tụ với Kim Trọng và Thúy Vân — nhưng hạnh phúc chỉ ở mức *tình trong như đã* thay vì trọn vẹn.\n\n**Thể loại:**\nTruyện Kiều thuộc thể loại **truyện thơ Nôm** — thể loại tự sự bằng thơ, viết bằng chữ Nôm (hệ thống chữ viết truyền thống của người Việt trước khi có chữ quốc ngữ). Cụ thể:\n- **Hình thức:** 3.254 câu thơ lục bát\n- **Ngôn ngữ:** Chữ Nôm (văn bản gốc)\n- **Thể thơ:** Lục bát — thể thơ dân gian truyền thống\n- **Nội dung:** Tự sự (kể chuyện) kết hợp trữ tình (biểu cảm)\n\nTruyện Kiều được coi là đỉnh cao của văn học chữ Nôm và là tác phẩm có ảnh hưởng sâu rộng nhất đến ngôn ngữ, văn hóa và tâm thức người Việt."
+  },
+  {
+    "prompt_id": 9,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Truyện Kiều của Nguyễn Du**\n\n**Tóm tắt:**\nTruyện Kiều kể về cuộc đời đầy bi kịch của Thúy Kiều, người con gái tài hoa bậc nhất. Vì cứu cha, nàng phải bán mình làm thiếp cho Mã Giám Sinh, từ đó bắt đầu hành trình lưu lạc 15 năm: hai lần rơi vào lầu xanh, chịu đựng sự ghen tuông tàn nhẫn của Hoạn Thư, nương thân nơi cửa Phật, rồi trở thành phu nhân của người anh hùng Từ Hải. Sau bao thăng trầm, nàng tự trầm xuống sông Tiền Đường và được cứu vớt. Kết thúc tác phẩm, Kiều đoàn tụ với Kim Trọng nhưng chọn tình bạn thay vì tình yêu đôi lứa, để người yêu xưa kết hôn cùng em gái Thúy Vân.\n\nNguyễn Du chuyển thể từ tiểu thuyết Trung Hoa *Kim Vân Kiều truyện* nhưng đã bơm vào đó một tâm hồn Việt sâu sắc — nỗi đồng cảm với người phụ nữ tài hoa mệnh bạc, triết lý về tài mệnh tương đố.\n\n**Phân loại thể loại:**\nTruyện Kiều là **truyện thơ Nôm bác học** — thể loại tự sự dài bằng thơ lục bát, viết bằng chữ Nôm. Với 3.254 câu lục bát, đây là tác phẩm truyện thơ dài nhất và giá trị nghệ thuật cao nhất trong lịch sử văn học Việt Nam. Nó kết hợp tự sự (kể chuyện có cốt truyện, nhân vật) với trữ tình (ngôn ngữ đậm tính biểu cảm, giàu hình ảnh thi ca)."
+  },
+  {
+    "prompt_id": 9,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "**Truyện Kiều — Tóm tắt**\n\nThúy Kiều là cô gái tài sắc song toàn, đang có mối tình trong sáng với Kim Trọng thì gia đình gặp họa. Để cứu cha, nàng bán mình cho Mã Giám Sinh — một kẻ buôn người trá hình thương nhân. Từ đó bắt đầu 15 năm lưu lạc:\n\n- **Lần thứ nhất ở lầu xanh:** Bị Tú Bà ép tiếp khách, Kiều tìm cách trốn thoát nhờ Thúc Sinh chuộc ra làm thiếp.\n- **Nhà Hoạn Thư:** Bị vợ cả Hoạn Thư hành hạ, ép phục dịch, rồi cho vào chùa Quan Âm.\n- **Lần thứ hai ở lầu xanh:** Bị tên Bạc Bà bán vào thanh lâu lần nữa.\n- **Theo Từ Hải:** Kiều được người anh hùng Từ Hải cứu, trở thành phu nhân, báo ân báo oán. Nhưng Từ Hải bị hại chết do Kiều vô tình bị lừa.\n- **Gieo mình xuống sông:** Kiều trầm mình ở sông Tiền Đường, được vãi Giác Duyên cứu. Sau đó đoàn tụ với Kim Trọng và gia đình.\n\n**Thể loại:**\nTruyện Kiều là **truyện thơ Nôm** — thể tự sự thơ viết bằng chữ Nôm, thể thơ lục bát. Về phân loại chi tiết hơn: đây là **truyện thơ Nôm bác học** (phân biệt với truyện thơ Nôm bình dân), thể hiện trình độ nghệ thuật đỉnh cao của Nguyễn Du."
+  },
+  {
+    "prompt_id": 9,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "**Tóm tắt Truyện Kiều:**\nTruyện Kiều của Nguyễn Du (3254 câu thơ lục bát, đầu thế kỷ 19) kể về Thúy Kiều — người con gái tài sắc phải bán mình chuộc cha, trải qua 15 năm lưu lạc đau khổ qua hai lần bị đẩy vào lầu xanh, làm vợ lẽ Thúc Sinh bị Hoạn Thư hành hạ, rồi nương thân nơi cửa Phật, sau đó theo Từ Hải. Cuối cùng Kiều gieo mình xuống sông Tiền Đường được cứu và đoàn tụ với gia đình, Kim Trọng lấy Thúy Vân.\n\n**Thể loại:** Truyện Kiều thuộc thể loại truyện thơ Nôm — tức tác phẩm tự sự viết bằng thơ lục bát, dùng chữ Nôm. Đây là đỉnh cao của thể loại này trong văn học trung đại Việt Nam."
+  },
+  {
+    "prompt_id": 9,
+    "model_id": "xai/grok-3-fast-latest",
+    "content": "**Truyện Kiều — tóm tắt ngắn gọn:**\n\nThúy Kiều, người con gái tài hoa, hy sinh mối tình với Kim Trọng để bán mình cứu cha. Từ đó nàng trải qua 15 năm lưu lạc gian khổ: hai lần bị bán vào thanh lâu, chịu đựng Hoạn Thư, theo Từ Hải rồi mất ông ta. Cuối cùng được cứu và đoàn tụ gia đình, nhưng chọn kết thúc tình cảm trong sáng với Kim Trọng thay vì hôn nhân.\n\n**Thể loại:** Truyện thơ Nôm (tự sự thơ bằng chữ Nôm, viết theo thể lục bát). Đây là thể loại đặc trưng của văn học Việt Nam trung đại, kết hợp tự sự và trữ tình trong hình thức thơ dài."
+  },
+  {
+    "prompt_id": 9,
+    "model_id": "qwen/qwen-vl-plus",
+    "content": "Truyện Kiều do Nguyễn Du viết vào thế kỷ 19. Tác phẩm kể về cuộc đời Thúy Kiều — một cô gái đẹp và tài năng. Cô bán mình để cứu cha, sau đó trải qua nhiều khó khăn như bị bán vào nhà thổ và chịu nhiều đau khổ. Cuối cùng cô được đoàn tụ với gia đình.\n\nThể loại của Truyện Kiều là thơ lục bát — một thể thơ truyền thống của Việt Nam với 3254 câu thơ."
+  },
+  {
+    "prompt_id": 10,
+    "model_id": "openai/gpt-5.4",
+    "content": "**Tết Nguyên Đán — Nguồn gốc, ý nghĩa và phong tục**\n\n**Nguồn gốc:**\nTết Nguyên Đán (chữ Hán: 節元旦, nghĩa là \"tiết đầu tiên của năm mới\") là lễ hội truyền thống quan trọng nhất của người Việt, diễn ra vào ngày mùng 1 tháng Giêng Âm lịch. Lịch sử Tết gắn liền với nền văn minh nông nghiệp lúa nước của cư dân vùng Đông Nam Á — thời điểm kết thúc vụ thu hoạch và chuẩn bị vụ mùa mới. Trải qua hàng nghìn năm giao thoa văn hóa với Trung Hoa, Tết Việt tiếp nhận nhiều yếu tố Tết Âm lịch Trung Quốc nhưng vẫn giữ bản sắc riêng biệt.\n\n**Ý nghĩa:**\nTết mang nhiều tầng ý nghĩa:\n- **Tâm linh:** Tiễn đưa năm cũ, đón chào năm mới với hy vọng may mắn, thịnh vượng; tưởng nhớ tổ tiên\n- **Gia đình:** Dịp đoàn tụ thiêng liêng nhất trong năm — con cháu xa xôi đều cố về nhà\n- **Cộng đồng:** Gắn kết xã hội, xóa bỏ hiểu lầm, chúc tụng nhau\n- **Triết lý:** Khởi đầu mới, trang trang lại bản thân\n\n**Phong tục đặc trưng:**\n- **Dọn dẹp và trang trí nhà:** Quét sạch nhà cửa (xua đuổi điều xui xẻo), trưng hoa đào (miền Bắc) hoặc hoa mai (miền Nam), cây quất\n- **Cúng ông Công ông Táo (23 tháng Chạp):** Tiễn Táo Quân lên trời báo cáo Ngọc Hoàng về việc trong gia đình\n- **Gói bánh chưng/bánh tét:** Bánh vuông (miền Bắc) và bánh tét (miền Nam) — biểu tượng trời đất và lòng biết ơn tổ tiên\n- **Cúng giao thừa:** Lễ trọng lúc chuyển giao năm cũ sang năm mới\n- **Mừng tuổi (lì xì):** Người lớn tặng phong bao đỏ chứa tiền cho trẻ em — biểu trưng cho may mắn và tài lộc\n- **Xông đất:** Người đầu tiên bước vào nhà ngày mùng 1 có ảnh hưởng đến vận may cả năm\n- **Kiêng kỵ:** Không quét nhà (sợ quét đi tài lộc), không nói điều xui, không vay mượn trong những ngày đầu năm"
+  },
+  {
+    "prompt_id": 10,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Tết Nguyên Đán trong văn hóa Việt Nam**\n\n**Nguồn gốc:**\nTết Nguyên Đán bắt nguồn từ nền văn minh nông nghiệp cổ đại của người Việt — lễ tế trời đất để cầu mưa thuận gió hòa và mừng vụ mùa kết thúc. Tên gọi \"Nguyên Đán\" xuất phát từ chữ Hán, nghĩa là buổi sáng đầu tiên của năm mới. Qua hàng nghìn năm, Tết tích hợp thêm nhiều yếu tố từ văn hóa Trung Hoa (lịch âm, Táo Quân) nhưng vẫn duy trì những nét bản địa độc đáo.\n\n**Ý nghĩa sâu xa:**\nTết không chỉ là kỳ nghỉ — đó là cột mốc quan trọng nhất của người Việt để:\n- Kết nối gia đình: con cái dù đi làm xa cũng tìm cách về nhà\n- Tưởng nhớ tổ tiên: bàn thờ được chăm chút kỹ lưỡng, cúng bái chu đáo\n- Khởi đầu mới: thanh toán nợ nần cũ, giải quyết mâu thuẫn, bắt đầu năm với tâm thế tích cực\n\n**Các phong tục chính:**\n- **Cúng ông Táo (23 tháng Chạp):** Phóng sinh cá chép để đưa Táo Quân về trời\n- **Dọn nhà, trang trí:** Hoa đào ở miền Bắc, hoa mai ở miền Nam là biểu tượng Tết\n- **Gói bánh chưng, bánh tét:** Nghi lễ ẩm thực gắn với truyền thuyết Lang Liêu\n- **Cúng giao thừa và đón năm mới**\n- **Lì xì:** Phong bao đỏ trao tặng trẻ em và người lớn tuổi\n- **Thăm hỏi họ hàng:** Mùng 1 thăm nội, mùng 2 thăm ngoại, mùng 3 thăm thầy\n- **Xem bói, hái lộc:** Nhiều người đi chùa đầu năm cầu tài lộc, bình an"
+  },
+  {
+    "prompt_id": 10,
+    "model_id": "meta-llama/llama-3-70b-instruct",
+    "content": "**Tết Nguyên Đán**\n\nTết Nguyên Đán là lễ hội quan trọng nhất trong năm của người Việt Nam, diễn ra vào ngày mùng 1 tháng Giêng theo lịch Âm.\n\n**Nguồn gốc:** Tết có nguồn gốc từ nền văn minh nông nghiệp lâu đời, là dịp đánh dấu kết thúc năm cũ và chào đón năm mới. Tên gọi bắt nguồn từ chữ Hán \"Nguyên Đán\" nghĩa là buổi sáng đầu tiên.\n\n**Ý nghĩa:** Tết là thời gian đoàn tụ gia đình, tưởng nhớ tổ tiên, cầu chúc may mắn và sức khỏe cho năm mới. Đây cũng là dịp để mọi người nghỉ ngơi sau một năm làm việc vất vả.\n\n**Phong tục đặc trưng:**\n- Cúng ông Công ông Táo ngày 23 tháng Chạp\n- Gói bánh chưng (miền Bắc) hoặc bánh tét (miền Nam)\n- Trang trí nhà bằng hoa đào hoặc hoa mai\n- Cúng giao thừa đón năm mới\n- Tặng lì xì (phong bao đỏ) cho trẻ em\n- Thăm hỏi họ hàng trong những ngày đầu năm"
+  },
+  {
+    "prompt_id": 10,
+    "model_id": "xai/grok-3-mini",
+    "content": "Tết Nguyên Đán là lễ tết truyền thống lớn nhất của người Việt Nam, diễn ra vào đầu năm Âm lịch.\n\nNguồn gốc của Tết gắn liền với văn hóa nông nghiệp cổ đại — dịp tổng kết năm cũ, đón năm mới, cảm tạ đất trời và tổ tiên. Theo thời gian, Tết tiếp nhận thêm nhiều ảnh hưởng từ văn hóa Trung Hoa như lịch âm, Táo Quân, nhưng vẫn mang đặc trưng riêng của người Việt.\n\nCác phong tục quen thuộc bao gồm: dọn dẹp nhà cửa, cúng ông Táo, gói bánh chưng, chưng hoa đào hoặc mai, cúng giao thừa, lì xì đầu năm, và đi thăm hỏi họ hàng."
+  },
+  {
+    "prompt_id": 4,
+    "model_id": "openai/gpt-5.4",
+    "content": "**Hoàng hôn trên sông Hương**\n\nKhi mặt trời chầm chậm chìm sau dãy Trường Sơn, sông Hương như khoác lên mình một tấm áo lụa nhuộm hồng. Mặt nước phẳng lặng đến kỳ lạ — chỉ có những chiếc thuyền rồng neo đậu lặng im phản chiếu cả bầu trời đang chuyển màu từ vàng rực sang tím ngắt, như một bức tranh thủy mặc khổng lồ mà người họa sĩ vũ trụ vẽ lại mỗi ngày không biết chán.\n\nMùi hương hoa sứ từ bờ bên kia theo gió mỏng thoảng sang, hòa với tiếng mái chèo của người đánh cá già trở về muộn, tạo nên một thứ âm thanh không thể đặt tên — nửa như tiếng thở của ngàn năm lịch sử, nửa như lời thì thầm của đất cố đô vào giờ khắc chuyển giao ngày và đêm.\n\nCầu Trường Tiền in bóng xuống dòng nước tím, sáu vòm cầu như sáu câu hò Huế nằm sóng đôi nhau, mỗi vòm đong đầy một mảnh hoàng hôn khác nhau. Người Huế không gọi buổi chiều trên sông này là \"hoàng hôn\" — họ gọi đó là giờ \"trời đất giao duyên\", bởi ở đây, mỗi ngày kết thúc đều đẹp như một mối tình đầu."
+  },
+  {
+    "prompt_id": 4,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Chiều sông Hương**\n\nHoàng hôn trên sông Hương không đến ồn ào như ở những dòng sông khác — nó đến như một người khách quen đã ngàn lần gõ cửa, nhẹ nhàng và biết điều. Nước sông đổi màu từ xanh ngọc bích sang một thứ hồng nhạt mà không có tên gọi chính xác trong từ điển màu sắc, chỉ có thể diễn tả bằng cái cảm giác khi lần đầu đọc xong một câu thơ hay.\n\nTrên những chiếc thuyền đơn neo sát bờ, người đàn ông ngồi vá lưới đã không ngẩng đầu lên xem hoàng hôn — ông ta sống trong hoàng hôn này suốt mấy chục năm, quen đến mức không còn thấy nó đẹp nữa, như người Huế quen với câu hò mái nhì từ trong bụng mẹ. Nhưng người lữ khách đứng bên cầu Trường Tiền lại không thể rời mắt — bởi vẻ đẹp lạ là vậy, bao giờ cũng cần người ngoài để nhận ra.\n\nSông Hương về chiều có điều gì đó vừa cổ kính vừa đau — như đang ôm giữ trong lòng quá nhiều ký ức của một cố đô, mà mỗi hoàng hôn là một lần cố đô thở dài nhớ về những triều đại đã qua."
+  },
+  {
+    "prompt_id": 4,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "Khi những tia nắng cuối ngày rải vàng trên mặt sông Hương, cả dòng sông như hóa thành một tấm gương khổng lồ phản chiếu bầu trời đang chuyển màu từ xanh sang cam rồi tím hồng. Phía xa, những chiếc thuyền rồng đặc trưng của xứ Huế in bóng lung linh trên mặt nước yên bình, tạo nên cảnh sắc vừa huyền ảo vừa thơ mộng.\n\nGió chiều thổi nhẹ qua những hàng thông trên núi Ngự Bình, mang theo hương thơm của hoa và đất đai cố đô, khiến lòng người lữ khách bỗng dâng lên một nỗi bâng khuâng khó tả. Sông Hương lúc hoàng hôn không chỉ đẹp về mặt hình thức — nó đẹp bởi cái tĩnh lặng mang chiều sâu văn hóa của một vùng đất đã trải qua hàng trăm năm lịch sử."
+  },
+  {
+    "prompt_id": 4,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "**Hoàng hôn sông Hương — một cảnh chiều không thể quên**\n\nSông Hương buổi chiều có cái đẹp của sự im lặng — loại im lặng không trống rỗng mà đầy ắp, như một cuốn sách mở ra nhưng không cần đọc, chỉ cần ngồi cạnh cũng đủ thấy bình yên. Ánh nắng cuối ngày in vàng mặt nước, rồi từ từ nhạt dần thành một thứ hồng ấm áp lan tỏa từ tâm sông ra hai bờ, như ai đó đang dịu dàng tắt đèn cho cả thành phố.\n\nNhững chiếc đò ngang còn sót lại cuối chuyến chậm chạp sang bờ, khua mái chèo nhịp nhàng tạo những vòng gợn đồng tâm loang rộng rồi tan biến — mỗi vòng gợn như một khoảnh khắc lịch sử Huế đang nhẹ nhàng xóa dấu vết mình trên mặt sông. Cầu Trường Tiền lúc này không còn là công trình kiến trúc nữa — nó là cây cầu dẫn vào ký ức, sáu nhịp vòm soi bóng tạo thành mười hai chiếc cung trăng nằm sóng sánh dưới lòng sông đang chuyển màu tím sậm.\n\nNgười Huế có câu: *sông Hương là điệu slow blues của đất cố đô*. Buổi hoàng hôn này, nhạc đang ở đoạn lắng xuống — không kết thúc, chỉ lặng thêm một nhịp trước khi đêm lên."
+  },
+  {
+    "prompt_id": 6,
+    "model_id": "openai/gpt-5.4",
+    "content": "Đây là bài toán ứng dụng **thuyết tương đối hẹp** của Einstein, cụ thể là hiện tượng **giãn nở thời gian** (time dilation).\n\n**Tính toán:**\nVới vận tốc v = 0,9c, hệ số Lorentz γ được tính như sau:\n\nγ = 1 / √(1 − v²/c²) = 1 / √(1 − 0,81) = 1 / √0,19 ≈ 1 / 0,4359 ≈ **2,294**\n\nNếu đồng hồ trên tàu chạy 10 năm, thì thời gian trôi qua trên Trái Đất là:\n\nt_Trái Đất = γ × t_tàu = 2,294 × 10 ≈ **22,9 năm**\n\n**Giải thích:**\nTrong thuyết tương đối hẹp, thời gian không trôi đồng đều cho mọi quan sát viên. Đồng hồ của người chuyển động nhanh *chạy chậm hơn* so với đồng hồ của người đứng yên — hiện tượng này gọi là giãn nở thời gian. Càng bay nhanh (gần tốc độ ánh sáng), thời gian trên tàu càng chậm so với Trái Đất. Ở v = 0,9c, mỗi 10 năm trên tàu tương ứng với gần 23 năm trên Trái Đất — khi phi hành gia trở về, con cháu của họ có thể đã già hơn họ.\n\nĐây chính là nền tảng của \"nghịch lý cặp sinh đôi\" nổi tiếng trong vật lý học."
+  },
+  {
+    "prompt_id": 6,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Đáp án: khoảng 22,9 năm**\n\nHiện tượng này gọi là **giãn nở thời gian** (*time dilation*) — một trong những hệ quả kỳ lạ nhất của thuyết tương đối hẹp Einstein.\n\nCông thức tính: t_đất = t_tàu × γ, trong đó γ = 1/√(1 − v²/c²)\n\nVới v = 0,9c:\n- γ = 1/√(1 − 0,81) = 1/√0,19 ≈ 2,294\n- t_đất = 10 × 2,294 ≈ **22,9 năm**\n\n**Ý nghĩa vật lý:** Thời gian không phải là hằng số tuyệt đối — nó chạy chậm hơn đối với những vật thể chuyển động nhanh. Phi hành gia trên tàu trải nghiệm 10 năm thực sự, nhưng người ở Trái Đất trải qua gần 23 năm trong cùng khoảng thời gian đó. Đây không phải ảo giác hay sai số đo — đó là thực tế vật lý đã được kiểm chứng bằng đồng hồ nguyên tử trên máy bay và vệ tinh GPS (GPS phải hiệu chỉnh cho giãn nở thời gian để hoạt động chính xác)."
+  },
+  {
+    "prompt_id": 6,
+    "model_id": "google/gemini-3.1-pro-preview",
+    "content": "**Trên Trái Đất đã trôi qua khoảng 22,9 năm.**\n\nĐây là ứng dụng trực tiếp của thuyết tương đối hẹp Einstein — cụ thể là **hiện tượng giãn nở thời gian**.\n\n**Tính toán:**\nHệ số Lorentz: γ = 1/√(1 − 0,9²) = 1/√(0,19) ≈ 2,294\n\nThời gian trên Trái Đất = 10 năm × 2,294 ≈ **22,9 năm**\n\n**Trực giác hóa:** Hãy nghĩ về ánh sáng — nó luôn chuyển động cùng vận tốc c với mọi quan sát viên. Để điều đó xảy ra được, thời gian và không gian phải co giãn theo vận tốc tương đối. Ở 90% tốc độ ánh sáng, mỗi giây trên tàu dài hơn 2,294 giây trên Trái Đất. Kết quả: phi hành gia lão hóa chậm hơn — khi về nhà sau 10 năm tàu, gia đình họ đã già thêm gần 23 năm."
+  },
+  {
+    "prompt_id": 6,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "Đây là bài toán về giãn nở thời gian trong thuyết tương đối hẹp của Einstein.\n\nHệ số Lorentz: γ = 1/√(1 − v²/c²) = 1/√(1 − 0.81) ≈ 2.294\n\nThời gian trên Trái Đất = 10 × 2.294 ≈ **22.9 năm**\n\nGiải thích: Khi tàu di chuyển với vận tốc gần ánh sáng, thời gian trôi chậm hơn trên tàu so với Trái Đất. Phi hành gia trải nghiệm 10 năm nhưng trên Trái Đất đã qua gần 23 năm. Đây là hiện tượng giãn nở thời gian — một dự đoán của thuyết tương đối đã được kiểm chứng thực nghiệm."
+  },
+  {
+    "prompt_id": 6,
+    "model_id": "xai/grok-3-fast-latest",
+    "content": "Trên Trái Đất đã trôi qua khoảng **22,9 năm**.\n\nTheo thuyết tương đối hẹp, khi vật chuyển động nhanh, thời gian trôi chậm hơn — gọi là giãn nở thời gian. Hệ số giãn nở ở v = 0,9c là γ ≈ 2,294. Vì vậy, 10 năm trên tàu tương đương với 22,9 năm trên Trái Đất. Khi phi hành gia trở về, họ sẽ trẻ hơn người thân ở nhà tới 13 năm — đây là cơ sở của \"nghịch lý cặp sinh đôi\" trong vật lý."
+  },
+  {
+    "prompt_id": 2,
+    "model_id": "openai/gpt-5.4",
+    "content": "**So sánh năng lượng mặt trời và năng lượng gió tại Việt Nam**\n\nViệt Nam có lợi thế đặc biệt với cả hai nguồn năng lượng tái tạo này, nhưng mỗi loại phù hợp với những điều kiện địa lý và nhu cầu khác nhau.\n\n**Năng lượng mặt trời (Solar)**\n\n*Ưu điểm:*\n- Việt Nam nằm trong vành đai nhiệt đới, có bức xạ mặt trời cao — miền Trung và miền Nam nhận 4–5 kWh/m²/ngày\n- Chi phí lắp đặt giảm mạnh (tấm pin mặt trời rẻ hơn 90% so với 2010)\n- Phù hợp lắp mái nhà (rooftop solar), không cần đất rộng\n- Vận hành đơn giản, ít bảo trì\n\n*Nhược điểm:*\n- Phụ thuộc hoàn toàn vào thời tiết — mùa mưa dài (đặc biệt miền Bắc) làm giảm sản lượng đáng kể\n- Sản xuất theo giờ ban ngày, cần lưu trữ (pin) để dùng ban đêm\n- Các tấm pin thải ra sau 25 năm gây vấn đề môi trường nếu không tái chế\n\n**Năng lượng gió (Wind)**\n\n*Ưu điểm:*\n- Việt Nam có đường bờ biển hơn 3.200 km với tiềm năng điện gió ngoài khơi (offshore) rất lớn — ước tính 475 GW (GWEC)\n- Gió thổi cả ngày lẫn đêm, bổ sung cho mặt trời\n- Điện gió ngoài khơi không cạnh tranh với đất nông nghiệp\n- Tuổi thọ tua-bin lên tới 25–30 năm\n\n*Nhược điểm:*\n- Chi phí đầu tư ban đầu cao, đặc biệt điện gió ngoài khơi\n- Tác động đến cảnh quan và tiếng ồn (điện gió trên bờ)\n- Lưới điện Việt Nam chưa sẵn sàng tích hợp lượng lớn điện gió biến thiên\n- Điện gió phụ thuộc mùa — gió mạnh thường vào mùa khô Đông Bắc Bộ\n\n**Kết luận:**\nĐối với Việt Nam, tối ưu là **kết hợp cả hai**: mặt trời áp mái cho hộ gia đình và doanh nghiệp, điện gió ngoài khơi cho điện lưới quy mô lớn. Hai nguồn bù trừ nhau về thời gian sản xuất, giúp ổn định hệ thống điện quốc gia."
+  },
+  {
+    "prompt_id": 2,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**Năng lượng mặt trời vs. năng lượng gió ở Việt Nam**\n\nViệt Nam may mắn có tiềm năng lớn với cả hai nguồn — nhưng mỗi loại có điểm mạnh và hạn chế riêng.\n\n**Năng lượng mặt trời — điểm mạnh:**\n- Bức xạ mặt trời cao đều khắp miền Trung và Nam, đặc biệt khu vực Tây Nguyên và đồng bằng sông Cửu Long (4,5–5 kWh/m²/ngày)\n- Dễ triển khai quy mô nhỏ (mái nhà), phù hợp với cả nông thôn lẫn đô thị\n- Chi phí pin mặt trời giảm liên tục, thời gian hoàn vốn xuống còn 6–8 năm\n\n**Năng lượng mặt trời — hạn chế:**\n- Không phát điện ban đêm, sản lượng thấp vào mùa mưa và ở miền Bắc\n- Cần hệ thống lưu trữ hoặc kết nối lưới để dùng ổn định\n- Vấn đề xử lý tấm pin hết tuổi thọ chưa được giải quyết triệt để\n\n**Năng lượng gió — điểm mạnh:**\n- Tiềm năng điện gió ngoài khơi của Việt Nam thuộc hàng đầu Đông Nam Á\n- Hoạt động liên tục ngày đêm, bổ sung cho mặt trời\n- Điện gió quy mô lớn giúp cân bằng lưới điện quốc gia\n\n**Năng lượng gió — hạn chế:**\n- Chi phí đầu tư ngoài khơi rất cao, cần chính sách hỗ trợ mạnh từ nhà nước\n- Tác động sinh thái biển cần đánh giá kỹ\n- Hạ tầng lưới điện cần nâng cấp để truyền tải từ các tỉnh ven biển\n\nHai nguồn năng lượng này không cạnh tranh mà bổ sung cho nhau. Chiến lược năng lượng tái tạo hiệu quả nhất cho Việt Nam là phát triển song song cả hai, kết hợp với hệ thống lưu trữ và lưới điện thông minh."
+  },
+  {
+    "prompt_id": 2,
+    "model_id": "xai/grok-3-fast-latest",
+    "content": "So sánh nhanh giữa hai nguồn năng lượng tái tạo trong bối cảnh Việt Nam:\n\n**Năng lượng mặt trời:**\n- Ưu điểm: chi phí thấp, dễ lắp đặt phân tán, bức xạ cao ở miền Nam và miền Trung, phù hợp điện mái nhà\n- Nhược điểm: chỉ phát ban ngày, sụt giảm vào mùa mưa, cần lưu trữ điện\n\n**Năng lượng gió:**\n- Ưu điểm: hoạt động ngày đêm, bờ biển dài 3.200 km là lợi thế lớn, điện gió ngoài khơi tiềm năng khổng lồ\n- Nhược điểm: chi phí đầu tư cao (đặc biệt offshore), ảnh hưởng tiếng ồn và cảnh quan với điện gió trên bờ\n\nKết luận ngắn: Mặt trời phù hợp hơn cho quy mô nhỏ và phân tán; gió ngoài khơi phù hợp cho quy mô lớn tập trung. Việt Nam nên phát triển cả hai song song."
+  },
+  {
+    "prompt_id": 2,
+    "model_id": "google/gemini-2.5-flash",
+    "content": "Trong bối cảnh Việt Nam, cả năng lượng mặt trời và năng lượng gió đều có tiềm năng lớn nhưng khác nhau về đặc điểm phù hợp.\n\n**Năng lượng mặt trời** có ưu thế rõ ràng ở chi phí ngày càng rẻ, dễ lắp mái nhà, và phù hợp với vùng nắng nhiều như miền Nam, Tây Nguyên. Tuy nhiên, điện mặt trời không phát điện vào ban đêm và sụt giảm vào mùa mưa — điều này đặt ra yêu cầu về lưu trữ điện.\n\n**Năng lượng gió** — đặc biệt điện gió ngoài khơi — là thế mạnh chiến lược của Việt Nam với hơn 3.200 km bờ biển và gió ổn định. Điện gió hoạt động cả ngày lẫn đêm, bổ sung tốt cho điện mặt trời. Hạn chế là vốn đầu tư lớn và cơ sở hạ tầng lưới điện chưa sẵn sàng tiếp nhận điện gió quy mô lớn.\n\nHai nguồn năng lượng này nên được phát triển song song và phối hợp, không phải lựa chọn một trong hai."
+  },
+  {
+    "prompt_id": 8,
+    "model_id": "openai/gpt-5.4",
+    "content": "**`async/await` vs. Promise trong JavaScript**\n\nCả hai đều xử lý bất đồng bộ (*asynchronous*), nhưng cú pháp và cách đọc code rất khác nhau.\n\n**Promise — viết bằng `.then()` chain:**\n```javascript\nfunction layDuLieuNguoiDung(userId) {\n  return fetch(`/api/users/${userId}`)\n    .then(response => response.json())\n    .then(user => fetch(`/api/orders/${user.id}`))\n    .then(response => response.json())\n    .then(orders => {\n      console.log('Đơn hàng:', orders);\n      return orders;\n    })\n    .catch(err => console.error('Lỗi:', err));\n}\n```\n\n**`async/await` — viết như code đồng bộ:**\n```javascript\nasync function layDuLieuNguoiDung(userId) {\n  try {\n    const response = await fetch(`/api/users/${userId}`);\n    const user = await response.json();\n    const ordersResponse = await fetch(`/api/orders/${user.id}`);\n    const orders = await ordersResponse.json();\n    console.log('Đơn hàng:', orders);\n    return orders;\n  } catch (err) {\n    console.error('Lỗi:', err);\n  }\n}\n```\n\n**Sự khác biệt quan trọng:**\n\n| Tiêu chí | Promise `.then()` | `async/await` |\n|---|---|---|  \n| Cú pháp | Chain method | Tuần tự, dễ đọc |\n| Xử lý lỗi | `.catch()` | `try/catch` |\n| Debug | Khó trace stack | Stack trace rõ ràng |\n| Parallel | `Promise.all()` | `await Promise.all()` |\n\n**Khi nào dùng cái nào:**\n- `async/await` cho hầu hết trường hợp — dễ đọc, dễ debug\n- Promise `.then()` khi cần chain ngắn hoặc làm việc với các API trả về Promise\n- `Promise.all()` (hoặc `await Promise.all()`) khi muốn chạy song song nhiều tác vụ độc lập"
+  },
+  {
+    "prompt_id": 8,
+    "model_id": "anthropic/claude-sonnet",
+    "content": "**`async/await` và Promise trong JavaScript**\n\nCả hai đều là cơ chế xử lý bất đồng bộ — `async/await` thực ra là *cú pháp đường* (syntactic sugar) được xây dựng trên nền Promise. Hiểu Promise là hiểu được cả hai.\n\n**Promise — cơ chế nền:**\n```javascript\n// Tạo Promise\nconst layThongTinUser = (id) => new Promise((resolve, reject) => {\n  setTimeout(() => {\n    if (id > 0) resolve({ id, ten: 'Nguyễn Văn A' });\n    else reject(new Error('ID không hợp lệ'));\n  }, 1000);\n});\n\n// Dùng .then() chain\nlayThongTinUser(42)\n  .then(user => console.log('User:', user.ten))\n  .catch(err => console.error('Lỗi:', err.message));\n```\n\n**`async/await` — cú pháp sạch hơn:**\n```javascript\nasync function hienThiUser(id) {\n  try {\n    const user = await layThongTinUser(id);  // đợi Promise resolve\n    console.log('User:', user.ten);\n  } catch (err) {\n    console.error('Lỗi:', err.message);\n  }\n}\n\nhienThiUser(42);\n```\n\n**Điểm khác biệt thực tiễn:**\n- `await` chỉ dùng được bên trong hàm `async`\n- `try/catch` với `async/await` tự nhiên hơn so với `.catch()` rải rác\n- Để chạy song song: `const [a, b] = await Promise.all([taskA(), taskB()])` — ĐỪNG `await` từng cái một khi chúng độc lập, sẽ chậm không cần thiết\n- Debug dễ hơn với `async/await` vì stack trace hiển thị đúng dòng code gây lỗi"
+  },
+  {
+    "prompt_id": 8,
+    "model_id": "google/gemini-2.5-flash",
+    "content": "**Promise và `async/await` trong JavaScript**\n\n`async/await` về bản chất là cú pháp đường bọc quanh Promise, giúp viết code bất đồng bộ trông giống code đồng bộ hơn.\n\n**Ví dụ với Promise:**\n```javascript\nfetch('/api/data')\n  .then(res => res.json())\n  .then(data => console.log(data))\n  .catch(err => console.error(err));\n```\n\n**Ví dụ tương đương với async/await:**\n```javascript\nasync function layData() {\n  try {\n    const res = await fetch('/api/data');\n    const data = await res.json();\n    console.log(data);\n  } catch (err) {\n    console.error(err);\n  }\n}\n```\n\nSự khác biệt chính: `async/await` dễ đọc và dễ debug hơn, đặc biệt khi có nhiều bước bất đồng bộ liên tiếp. Promise phù hợp hơn khi muốn chain ngắn hoặc dùng `Promise.all()` cho parallel requests."
+  },
+  {
+    "prompt_id": 8,
+    "model_id": "deepseek/deepseek-r1",
+    "content": "`async/await` và Promise đều là công cụ xử lý bất đồng bộ trong JavaScript, nhưng có cú pháp khác nhau:\n\n**Promise dùng .then() chain:**\n```javascript\nfetch('/api/users')\n  .then(res => res.json())\n  .then(users => console.log(users))\n  .catch(err => console.error(err));\n```\n\n**async/await viết như code đồng bộ:**\n```javascript\nasync function layUsers() {\n  try {\n    const res = await fetch('/api/users');\n    const users = await res.json();\n    console.log(users);\n  } catch (err) {\n    console.error(err);\n  }\n}\n```\n\n`async/await` là cú pháp đường (syntactic sugar) trên Promise — bên dưới vẫn là Promise. Dùng `async/await` khi cần code dễ đọc; dùng `.then()` khi cần chain ngắn hoặc kết hợp `Promise.all()` để chạy song song."
+  },
+  {
+    "prompt_id": 8,
+    "model_id": "meta-llama/llama-3-70b-instruct",
+    "content": "Sự khác biệt giữa `async/await` và Promise trong JavaScript:\n\n**Promise:** Xử lý bất đồng bộ bằng chuỗi `.then()` và `.catch()`.\n```javascript\nfetch('/api/data')\n  .then(response => response.json())\n  .then(data => console.log(data))\n  .catch(error => console.error(error));\n```\n\n**async/await:** Cú pháp mới giúp code bất đồng bộ trông như đồng bộ.\n```javascript\nasync function getData() {\n  try {\n    const response = await fetch('/api/data');\n    const data = await response.json();\n    console.log(data);\n  } catch (error) {\n    console.error(error);\n  }\n}\n```\n\n`async/await` thực chất là cú pháp đường cho Promise, dễ đọc hơn và xử lý lỗi tự nhiên hơn với `try/catch`."
+  }
+]

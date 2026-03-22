@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "text": "Tóm tắt các sự kiện lịch sử quan trọng của Việt Nam trong thế kỷ 20 theo từng thập kỷ.",
+    "category": "tong-hop"
+  },
+  {
+    "id": 2,
+    "text": "So sánh ưu điểm và nhược điểm của năng lượng mặt trời so với năng lượng gió trong bối cảnh Việt Nam.",
+    "category": "tong-hop"
+  },
+  {
+    "id": 3,
+    "text": "Viết một đoạn thơ ngắn (4 câu) theo phong cách lục bát, chủ đề: tình yêu quê hương.",
+    "category": "sang-tao"
+  },
+  {
+    "id": 4,
+    "text": "Hãy viết một đoạn văn ngắn mô tả cảnh hoàng hôn trên sông Hương, Huế theo phong cách văn xuôi trữ tình.",
+    "category": "sang-tao"
+  },
+  {
+    "id": 5,
+    "text": "Giải thích vì sao cầu vồng thường xuất hiện sau cơn mưa bằng 2–3 câu, dùng ngôn ngữ rõ ràng, dễ hiểu.",
+    "category": "suy-luan"
+  },
+  {
+    "id": 6,
+    "text": "Nếu một con tàu vũ trụ bay với vận tốc bằng 90% tốc độ ánh sáng trong 10 năm (theo đồng hồ trên tàu), thì trên Trái Đất đã trôi qua bao nhiêu năm? Giải thích ngắn gọn.",
+    "category": "suy-luan"
+  },
+  {
+    "id": 7,
+    "text": "Viết một hàm Python nhận vào danh sách các số nguyên và trả về danh sách đã được sắp xếp theo thuật toán merge sort. Thêm docstring và type hints.",
+    "category": "lap-trinh"
+  },
+  {
+    "id": 8,
+    "text": "Giải thích sự khác biệt giữa `async/await` và Promise trong JavaScript, kèm ví dụ minh họa thực tế.",
+    "category": "lap-trinh"
+  },
+  {
+    "id": 9,
+    "text": "Tóm tắt tác phẩm Truyện Kiều của Nguyễn Du và phân loại thể loại văn học của tác phẩm này.",
+    "category": "van-hoa"
+  },
+  {
+    "id": 10,
+    "text": "Giải thích nguồn gốc và ý nghĩa của Tết Nguyên Đán trong văn hóa Việt Nam, bao gồm các phong tục đặc trưng.",
+    "category": "van-hoa"
+  }
+]
