@@ -1,0 +1,134 @@
+[
+  {
+    "id": "deepseek/deepseek-r1",
+    "name": "DeepSeek R1",
+    "org": "DeepSeek",
+    "license": "open",
+    "color": "#4f8ef7",
+    "elo_rating": 1387,
+    "ci": 22,
+    "win_rate": 0.57,
+    "total_votes": 248
+  },
+  {
+    "id": "google/gemini-2.5-flash",
+    "name": "Gemini 2.5 Flash",
+    "org": "Google",
+    "license": "prop",
+    "color": "#4285f4",
+    "elo_rating": 1352,
+    "ci": 26,
+    "win_rate": 0.53,
+    "total_votes": 213
+  },
+  {
+    "id": "google/gemini-3.1-pro-preview",
+    "name": "Gemini 3.1 Pro",
+    "org": "Google",
+    "license": "prop",
+    "color": "#4285f4",
+    "elo_rating": 1421,
+    "ci": 18,
+    "win_rate": 0.64,
+    "total_votes": 295
+  },
+  {
+    "id": "meta-llama/llama-3-70b-instruct",
+    "name": "Llama 3 70B",
+    "org": "Meta",
+    "license": "open",
+    "color": "#0668e1",
+    "elo_rating": 1298,
+    "ci": 33,
+    "win_rate": 0.46,
+    "total_votes": 165
+  },
+  {
+    "id": "openai/gpt-4o-mini",
+    "name": "GPT-4o Mini",
+    "org": "OpenAI",
+    "license": "prop",
+    "color": "#10a37f",
+    "elo_rating": 1335,
+    "ci": 28,
+    "win_rate": 0.51,
+    "total_votes": 198
+  },
+  {
+    "id": "openai/gpt-5-mini",
+    "name": "GPT-5 Mini",
+    "org": "OpenAI",
+    "license": "prop",
+    "color": "#10a37f",
+    "elo_rating": 1412,
+    "ci": 19,
+    "win_rate": 0.62,
+    "total_votes": 284
+  },
+  {
+    "id": "openai/gpt-5.4",
+    "name": "GPT-5.4",
+    "org": "OpenAI",
+    "license": "prop",
+    "color": "#10a37f",
+    "elo_rating": 1445,
+    "ci": 15,
+    "win_rate": 0.68,
+    "total_votes": 334
+  },
+  {
+    "id": "qwen/qwen-vl-plus",
+    "name": "Qwen VL Plus",
+    "org": "Alibaba",
+    "license": "open",
+    "color": "#6f42c1",
+    "elo_rating": 1275,
+    "ci": 38,
+    "win_rate": 0.43,
+    "total_votes": 134
+  },
+  {
+    "id": "xai/grok-3-mini",
+    "name": "Grok 3 Mini",
+    "org": "xAI",
+    "license": "prop",
+    "color": "#1d9bf0",
+    "elo_rating": 1310,
+    "ci": 31,
+    "win_rate": 0.48,
+    "total_votes": 178
+  },
+  {
+    "id": "xai/grok-3-fast-latest",
+    "name": "Grok 3 Fast",
+    "org": "xAI",
+    "license": "prop",
+    "color": "#1d9bf0",
+    "elo_rating": 1368,
+    "ci": 24,
+    "win_rate": 0.55,
+    "total_votes": 231
+  },
+  {
+    "id": "anthropic/claude-sonnet",
+    "name": "Claude Sonnet",
+    "org": "Anthropic",
+    "license": "prop",
+    "color": "#d97706",
+    "elo_rating": 1432,
+    "ci": 16,
+    "win_rate": 0.66,
+    "total_votes": 318
+  },
+  {
+    "id": "vinai/phobert-large",
+    "name": "PhoBERT Large",
+    "org": "VinAI",
+    "license": "open",
+    "color": "#e11d48",
+    "elo_rating": 1245,
+    "ci": 42,
+    "win_rate": 0.42,
+    "total_votes": 112
+  }
+]
