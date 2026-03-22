@@ -1,0 +1,90 @@
+{
+  "rankings": [
+    { "rank": 1, "model_id": "openai/gpt-5.4", "name": "GPT-5.4", "org": "OpenAI", "license": "prop", "color": "#10a37f", "elo_rating": 1445, "ci": 15, "win_rate": 0.68, "total_votes": 334 },
+    { "rank": 2, "model_id": "anthropic/claude-sonnet", "name": "Claude Sonnet", "org": "Anthropic", "license": "prop", "color": "#d97706", "elo_rating": 1432, "ci": 16, "win_rate": 0.66, "total_votes": 318 },
+    { "rank": 3, "model_id": "google/gemini-3.1-pro-preview", "name": "Gemini 3.1 Pro", "org": "Google", "license": "prop", "color": "#4285f4", "elo_rating": 1421, "ci": 18, "win_rate": 0.64, "total_votes": 295 },
+    { "rank": 4, "model_id": "openai/gpt-5-mini", "name": "GPT-5 Mini", "org": "OpenAI", "license": "prop", "color": "#10a37f", "elo_rating": 1412, "ci": 19, "win_rate": 0.62, "total_votes": 284 },
+    { "rank": 5, "model_id": "deepseek/deepseek-r1", "name": "DeepSeek R1", "org": "DeepSeek", "license": "open", "color": "#4f8ef7", "elo_rating": 1387, "ci": 22, "win_rate": 0.57, "total_votes": 248 },
+    { "rank": 6, "model_id": "xai/grok-3-fast-latest", "name": "Grok 3 Fast", "org": "xAI", "license": "prop", "color": "#1d9bf0", "elo_rating": 1368, "ci": 24, "win_rate": 0.55, "total_votes": 231 },
+    { "rank": 7, "model_id": "google/gemini-2.5-flash", "name": "Gemini 2.5 Flash", "org": "Google", "license": "prop", "color": "#4285f4", "elo_rating": 1352, "ci": 26, "win_rate": 0.53, "total_votes": 213 },
+    { "rank": 8, "model_id": "openai/gpt-4o-mini", "name": "GPT-4o Mini", "org": "OpenAI", "license": "prop", "color": "#10a37f", "elo_rating": 1335, "ci": 28, "win_rate": 0.51, "total_votes": 198 },
+    { "rank": 9, "model_id": "xai/grok-3-mini", "name": "Grok 3 Mini", "org": "xAI", "license": "prop", "color": "#1d9bf0", "elo_rating": 1310, "ci": 31, "win_rate": 0.48, "total_votes": 178 },
+    { "rank": 10, "model_id": "meta-llama/llama-3-70b-instruct", "name": "Llama 3 70B", "org": "Meta", "license": "open", "color": "#0668e1", "elo_rating": 1298, "ci": 33, "win_rate": 0.46, "total_votes": 165 },
+    { "rank": 11, "model_id": "qwen/qwen-vl-plus", "name": "Qwen VL Plus", "org": "Alibaba", "license": "open", "color": "#6f42c1", "elo_rating": 1275, "ci": 38, "win_rate": 0.43, "total_votes": 134 },
+    { "rank": 12, "model_id": "vinai/phobert-large", "name": "PhoBERT Large", "org": "VinAI", "license": "open", "color": "#e11d48", "elo_rating": 1245, "ci": 42, "win_rate": 0.42, "total_votes": 112 }
+  ],
+  "win_fraction_matrix": {
+    "models": [
+      "deepseek/deepseek-r1",
+      "google/gemini-2.5-flash",
+      "google/gemini-3.1-pro-preview",
+      "meta-llama/llama-3-70b-instruct",
+      "openai/gpt-4o-mini",
+      "openai/gpt-5-mini",
+      "openai/gpt-5.4",
+      "qwen/qwen-vl-plus",
+      "xai/grok-3-mini",
+      "xai/grok-3-fast-latest",
+      "anthropic/claude-sonnet",
+      "vinai/phobert-large"
+    ],
+    "data": [
+      [0.50, 0.54, 0.42, 0.61, 0.56, 0.44, 0.38, 0.64, 0.59, 0.52, 0.40, 0.66],
+      [0.46, 0.50, 0.40, 0.58, 0.52, 0.42, 0.36, 0.62, 0.57, 0.49, 0.38, 0.63],
+      [0.58, 0.60, 0.50, 0.64, 0.62, 0.53, 0.46, 0.68, 0.63, 0.57, 0.48, 0.71],
+      [0.39, 0.42, 0.36, 0.50, 0.45, 0.37, 0.32, 0.54, 0.48, 0.41, 0.34, 0.57],
+      [0.44, 0.48, 0.38, 0.55, 0.50, 0.41, 0.35, 0.58, 0.53, 0.46, 0.37, 0.60],
+      [0.56, 0.58, 0.47, 0.63, 0.59, 0.50, 0.44, 0.65, 0.61, 0.55, 0.46, 0.68],
+      [0.62, 0.64, 0.54, 0.68, 0.65, 0.56, 0.50, 0.71, 0.66, 0.60, 0.52, 0.73],
+      [0.36, 0.38, 0.32, 0.46, 0.42, 0.35, 0.29, 0.50, 0.44, 0.38, 0.31, 0.53],
+      [0.41, 0.43, 0.37, 0.52, 0.47, 0.39, 0.34, 0.56, 0.50, 0.44, 0.36, 0.58],
+      [0.48, 0.51, 0.43, 0.59, 0.54, 0.45, 0.40, 0.62, 0.56, 0.50, 0.42, 0.64],
+      [0.60, 0.62, 0.52, 0.66, 0.63, 0.54, 0.48, 0.69, 0.64, 0.58, 0.50, 0.70],
+      [0.34, 0.37, 0.29, 0.43, 0.40, 0.32, 0.27, 0.47, 0.42, 0.36, 0.30, 0.50]
+    ]
+  },
+  "battle_count_matrix": {
+    "models": [
+      "deepseek/deepseek-r1",
+      "google/gemini-2.5-flash",
+      "google/gemini-3.1-pro-preview",
+      "meta-llama/llama-3-70b-instruct",
+      "openai/gpt-4o-mini",
+      "openai/gpt-5-mini",
+      "openai/gpt-5.4",
+      "qwen/qwen-vl-plus",
+      "xai/grok-3-mini",
+      "xai/grok-3-fast-latest",
+      "anthropic/claude-sonnet",
+      "vinai/phobert-large"
+    ],
+    "data": [
+      [0,   182, 210, 143, 168, 195, 228, 112, 134, 176, 214, 98],
+      [182, 0,   198, 137, 159, 185, 217, 106, 128, 169, 203, 93],
+      [210, 198, 0,   158, 182, 212, 248, 122, 146, 194, 233, 107],
+      [143, 137, 158, 0,   119, 138, 162, 81,  97,  128, 154, 71],
+      [168, 159, 182, 119, 0,   161, 188, 94,  113, 149, 179, 82],
+      [195, 185, 212, 138, 161, 0,   219, 109, 131, 173, 208, 95],
+      [228, 217, 248, 162, 188, 219, 0,   128, 153, 202, 243, 111],
+      [112, 106, 122, 81,  94,  109, 128, 0,   75,  99,  119, 55],
+      [134, 128, 146, 97,  113, 131, 153, 75,  0,   118, 142, 65],
+      [176, 169, 194, 128, 149, 173, 202, 99,  118, 0,   188, 86],
+      [214, 203, 233, 154, 179, 208, 243, 119, 142, 188, 0,   103],
+      [98,  93,  107, 71,  82,  95,  111, 55,  65,  86,  103, 0]
+    ]
+  },
+  "avg_win_rate": [
+    { "model_id": "openai/gpt-5.4", "name": "GPT-5.4", "org": "OpenAI", "color": "#10a37f", "win_rate": 0.68 },
+    { "model_id": "anthropic/claude-sonnet", "name": "Claude Sonnet", "org": "Anthropic", "color": "#d97706", "win_rate": 0.66 },
+    { "model_id": "google/gemini-3.1-pro-preview", "name": "Gemini 3.1 Pro", "org": "Google", "color": "#4285f4", "win_rate": 0.64 },
+    { "model_id": "openai/gpt-5-mini", "name": "GPT-5 Mini", "org": "OpenAI", "color": "#10a37f", "win_rate": 0.62 },
+    { "model_id": "deepseek/deepseek-r1", "name": "DeepSeek R1", "org": "DeepSeek", "color": "#4f8ef7", "win_rate": 0.57 },
+    { "model_id": "xai/grok-3-fast-latest", "name": "Grok 3 Fast", "org": "xAI", "color": "#1d9bf0", "win_rate": 0.55 },
+    { "model_id": "google/gemini-2.5-flash", "name": "Gemini 2.5 Flash", "org": "Google", "color": "#4285f4", "win_rate": 0.53 },
+    { "model_id": "openai/gpt-4o-mini", "name": "GPT-4o Mini", "org": "OpenAI", "color": "#10a37f", "win_rate": 0.51 },
+    { "model_id": "xai/grok-3-mini", "name": "Grok 3 Mini", "org": "xAI", "color": "#1d9bf0", "win_rate": 0.48 },
+    { "model_id": "meta-llama/llama-3-70b-instruct", "name": "Llama 3 70B", "org": "Meta", "color": "#0668e1", "win_rate": 0.46 },
+    { "model_id": "qwen/qwen-vl-plus", "name": "Qwen VL Plus", "org": "Alibaba", "color": "#6f42c1", "win_rate": 0.43 },
+    { "model_id": "vinai/phobert-large", "name": "PhoBERT Large", "org": "VinAI", "color": "#e11d48", "win_rate": 0.42 }
+  ]
+}
