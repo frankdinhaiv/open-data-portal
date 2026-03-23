@@ -242,6 +242,22 @@ export async function fetchPairwiseStats() {
   return handleResponse<{ stats: Array<Record<string, unknown>> }>(res)
 }
 
+/**
+ * Legacy: fetchStats — used by StatCharts for win-fraction, battle-count, avg-win-rate.
+ * Maps to the pairwise endpoint or leaderboard depending on stat type.
+ */
+export async function fetchStats(statType: string) {
+  if (statType === 'win-fraction' || statType === 'battle-count') {
+    const data = await fetchPairwiseStats()
+    return data.stats
+  }
+  if (statType === 'avg-win-rate') {
+    const data = await fetchLeaderboard()
+    return data.entries
+  }
+  return []
+}
+
 // ---------------------------------------------------------------------------
 // Auth
 // ---------------------------------------------------------------------------

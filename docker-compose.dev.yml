@@ -1,0 +1,40 @@
+version: "3.9"
+
+# Development dependencies for Arena backend.
+# Usage: docker compose -f docker-compose.dev.yml up -d
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: arena-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: arena_root
+      MYSQL_DATABASE: arena
+      MYSQL_USER: arena
+      MYSQL_PASSWORD: arena_dev
+    ports:
+      - "3306:3306"
+    volumes:
+      - arena-mysql-data:/var/lib/mysql
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "arena", "-parena_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: arena-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  arena-mysql-data:
