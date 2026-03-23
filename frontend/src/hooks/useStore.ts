@@ -71,6 +71,12 @@ interface AppState {
   // Sidebar
   sidebarCollapsed: boolean
   setSidebarCollapsed: (v: boolean) => void
+
+  // Mobile/responsive
+  mobileMenuOpen: boolean
+  setMobileMenuOpen: (v: boolean) => void
+  sidebarDrawerOpen: boolean
+  setSidebarDrawerOpen: (v: boolean) => void
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -140,4 +146,9 @@ export const useStore = create<AppState>((set) => ({
 
   sidebarCollapsed: false,
   setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
+
+  mobileMenuOpen: false,
+  setMobileMenuOpen: (v) => set({ mobileMenuOpen: v }),
+  sidebarDrawerOpen: false,
+  setSidebarDrawerOpen: (v) => set({ sidebarDrawerOpen: v }),
 }))

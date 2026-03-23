@@ -400,7 +400,9 @@ export function ResponsePanel({ content, model, isBattle, label, visualState = '
               width: '50vw',
               minWidth: '400px',
               maxWidth: '720px',
-              backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%), linear-gradient(180deg, rgb(0,20,70) 0%, rgb(0,34,102) 100%)',
+              background: 'rgba(0, 20, 70, 0.75)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
               borderLeft: '1px solid rgba(255,255,255,0.15)',
               boxShadow: '-8px 0 32px rgba(0,0,0,0.4)',
             }}

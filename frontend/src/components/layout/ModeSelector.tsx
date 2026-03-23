@@ -108,8 +108,10 @@ export function ModeSelector() {
     )
   }
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
   return (
-    <div className="flex items-center gap-4 px-6 py-3">
+    <div className="flex items-center py-3" style={{ gap: isMobile ? '8px' : '16px', padding: isMobile ? '12px 8px' : '12px 24px', overflowX: 'auto', flexWrap: 'nowrap' }}>
       {/* Mode dropdown */}
       <div className="relative" ref={modeRef}>
         <button
@@ -164,17 +166,21 @@ export function ModeSelector() {
 
             {modelAOpen && (
               <div className="absolute top-[calc(100%+4px)] left-0 min-w-[200px] rounded-xl p-1 z-50 animate-fade-in" style={{ background: 'rgba(0,34,102,0.95)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                {models.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => { setSelectedModelA(m.id); setModelAOpen(false) }}
-                    className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg cursor-pointer transition-all border-none text-left
-                      ${selectedModelA === m.id ? 'bg-white/15' : 'bg-transparent hover:bg-white/10'}`}
-                  >
-                    <ModelAvatar modelId={m.id} size={20} />
-                    <span className="text-sm text-white">{m.name}</span>
-                  </button>
-                ))}
+                {models.map((m) => {
+                  const isOtherSide = m.id === selectedModelB
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => { if (isOtherSide) setSelectedModelB(selectedModelA); setSelectedModelA(m.id); setModelAOpen(false) }}
+                      className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg cursor-pointer transition-all border-none text-left
+                        ${selectedModelA === m.id ? 'bg-white/15' : 'bg-transparent hover:bg-white/10'}`}
+                    >
+                      <ModelAvatar modelId={m.id} size={20} />
+                      <span className={`text-sm ${isOtherSide ? 'text-white/40' : 'text-white'}`}>{m.name}</span>
+                      {isOtherSide && <span className="text-xs text-white/30 ml-auto">Model B</span>}
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -195,17 +201,21 @@ export function ModeSelector() {
 
             {modelBOpen && (
               <div className="absolute top-[calc(100%+4px)] left-0 min-w-[200px] rounded-xl p-1 z-50 animate-fade-in" style={{ background: 'rgba(0,34,102,0.95)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                {models.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => { setSelectedModelB(m.id); setModelBOpen(false) }}
-                    className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg cursor-pointer transition-all border-none text-left
-                      ${selectedModelB === m.id ? 'bg-white/15' : 'bg-transparent hover:bg-white/10'}`}
-                  >
-                    <ModelAvatar modelId={m.id} size={20} />
-                    <span className="text-sm text-white">{m.name}</span>
-                  </button>
-                ))}
+                {models.map((m) => {
+                  const isOtherSide = m.id === selectedModelA
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => { if (isOtherSide) setSelectedModelA(selectedModelB); setSelectedModelB(m.id); setModelBOpen(false) }}
+                      className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg cursor-pointer transition-all border-none text-left
+                        ${selectedModelB === m.id ? 'bg-white/15' : 'bg-transparent hover:bg-white/10'}`}
+                    >
+                      <ModelAvatar modelId={m.id} size={20} />
+                      <span className={`text-sm ${isOtherSide ? 'text-white/40' : 'text-white'}`}>{m.name}</span>
+                      {isOtherSide && <span className="text-xs text-white/30 ml-auto">Model A</span>}
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>

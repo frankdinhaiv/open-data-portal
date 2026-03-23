@@ -25,9 +25,10 @@ import arrowUp from '../../assets/icons/arrow-up.svg'
 interface Props {
   onSubmit: (text: string) => void
   placeholder?: string
+  autoFocus?: boolean
 }
 
-export function ChatInput({ onSubmit, placeholder }: Props) {
+export function ChatInput({ onSubmit, placeholder, autoFocus }: Props) {
   const [text, setText] = useState('')
   const { isLoading } = useStore()
 
@@ -98,6 +99,7 @@ export function ChatInput({ onSubmit, placeholder }: Props) {
             }}
             placeholder={placeholder || 'Bạn muốn hỏi gì hôm nay?'}
             disabled={isLoading}
+            autoFocus={autoFocus}
             rows={1}
             style={{
               width: '100%',

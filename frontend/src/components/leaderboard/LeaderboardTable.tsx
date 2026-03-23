@@ -121,10 +121,10 @@ export function LeaderboardTable() {
 
   return (
     <div>
-      {/* Category filter tabs */}
+      {/* Category filter tabs — scrollable on mobile */}
       <div
         className="flex items-start"
-        style={{ padding: '8px 0' }}
+        style={{ padding: '8px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
       >
         <div className="flex items-center gap-[8px] flex-1 min-w-0">
           {CATEGORIES.map((cat) => (
@@ -160,10 +160,11 @@ export function LeaderboardTable() {
         </div>
       </div>
 
-      {/* Table */}
-      <div style={{ marginTop: '32px' }}>
+      {/* Table — horizontal scroll on small screens */}
+      <div style={{ marginTop: '32px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
         <table
           className="w-full"
+          style={{ minWidth: '700px' }} /* prevent column collapse */
           style={{
             borderCollapse: 'separate',
             borderSpacing: 0,

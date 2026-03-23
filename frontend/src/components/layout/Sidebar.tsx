@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useStore } from '../../hooks/useStore'
+import { useBreakpoint } from './Topbar'
 import { fetchHistory } from '../../api/client'
 import type { HistoryEntry } from '../../types'
 
@@ -19,22 +20,14 @@ import battleIcon from '../../assets/icons/battle.svg'
 import scalesIcon from '../../assets/icons/scales.svg'
 import messageCircle from '../../assets/icons/message-circle.svg'
 
-/*
- * Sidebar — matches Figma node 2:10666 (280×620)
- *
- * Structure:
- *   Frame (280×620, px-8, flex-col gap-32)
- *   ├── Search (px-4 py-8) — 40×40 glass button, icon 20×20
- *   ├── Navigation (gap-4)
- *   │   └── Nav item (264×40, px-12 py-8, rounded-6, icon 24×24, gap-12, 16px SemiBold #F2F4F7)
- *   └── History (px-16, gap-16)
- *       ├── Label "Lịch sử" (16px Medium #FFF)
- *       └── Items (gap-16, each: gap-8, icon 20×20 opacity-50, text 14px Regular opacity-75)
- */
-
 export function Sidebar() {
-  const { view, clearMessages, resetTurn, totalVotes, userId, isLoggedIn, setView, sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed } = useStore()
+  const {
+    view, clearMessages, resetTurn, totalVotes, userId, isLoggedIn, setView,
+    sidebarCollapsed: collapsed, setSidebarCollapsed: setCollapsed,
+    sidebarDrawerOpen, setSidebarDrawerOpen, setMobileMenuOpen,
+  } = useStore()
   const [history, setHistory] = useState<HistoryEntry[]>([])
+  const bp = useBreakpoint()
 
   const loadHistory = useCallback(() => {
     if (!isLoggedIn || !userId) {
@@ -48,10 +41,16 @@ export function Sidebar() {
     loadHistory()
   }, [loadHistory, totalVotes])
 
+  // Close drawer on breakpoint change to desktop
+  useEffect(() => {
+    if (bp === 'desktop') setSidebarDrawerOpen(false)
+  }, [bp, setSidebarDrawerOpen])
+
   function handleNewChat() {
     clearMessages()
     resetTurn()
     setView('arena')
+    setSidebarDrawerOpen(false)
   }
 
   function modeIcon(mode: string): string {
@@ -60,7 +59,136 @@ export function Sidebar() {
     return messageCircle
   }
 
-  // Glass button style shared between collapsed and expanded
+  function handleToggleDrawer() {
+    setMobileMenuOpen(false)
+    setSidebarDrawerOpen(!sidebarDrawerOpen)
+  }
+
+  const isCompact = bp !== 'desktop'
+
+  // --- Tablet/Mobile: Drawer overlay ---
+  if (isCompact) {
+    return (
+      <>
+        {/* Sidebar toggle button — tablet only (mobile uses bottom nav) */}
+        {bp === 'tablet' && (
+          <button
+            onClick={handleToggleDrawer}
+            className="fixed z-40 flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all"
+            style={{
+              left: '8px',
+              top: '72px',
+              width: '40px',
+              height: '40px',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(255,255,255,0.1)',
+              padding: '10px',
+              boxShadow: '0px 1px 2px rgba(16,24,40,0.05)',
+            }}
+          >
+            <img src={sidebarToggle} alt="Toggle sidebar" style={{ width: '20px', height: '20px' }} />
+          </button>
+        )}
+
+        {/* Drawer overlay */}
+        {sidebarDrawerOpen && (
+          <div
+            className="fixed inset-0 z-40"
+            style={{ background: 'rgba(0,0,0,0.5)', top: bp === 'mobile' ? '64px' : '64px' }}
+            onClick={() => setSidebarDrawerOpen(false)}
+          />
+        )}
+
+        {/* Drawer panel */}
+        <aside
+          className="fixed left-0 z-45 flex flex-col transition-transform duration-300"
+          style={{
+            top: bp === 'mobile' ? '64px' : '64px',
+            bottom: bp === 'mobile' ? '64px' : '0',
+            width: '280px',
+            background: 'rgba(0, 20, 70, 0.98)',
+            backdropFilter: 'blur(16px)',
+            borderRight: '1px solid rgba(255,255,255,0.1)',
+            padding: '16px 8px',
+            gap: '24px',
+            transform: sidebarDrawerOpen ? 'translateX(0)' : 'translateX(-100%)',
+            zIndex: 45,
+            overflowY: 'auto',
+          }}
+        >
+          {/* Navigation */}
+          <nav className="flex flex-col" style={{ gap: '4px' }}>
+            {[
+              { icon: newChat, label: 'Cuộc trò chuyện mới', onClick: handleNewChat, activeView: 'arena' as const },
+              { icon: barChart, label: 'Bảng xếp hạng', onClick: () => { setView('leaderboard'); setSidebarDrawerOpen(false) }, activeView: 'leaderboard' as const },
+              { icon: searchIcon, label: 'Tìm kiếm cuộc trò chuyện', onClick: undefined, activeView: null },
+            ].map((item) => {
+              const isActive = item.activeView !== null && view === item.activeView
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.onClick}
+                  className="flex items-start w-full border-none bg-transparent cursor-pointer"
+                  style={{ height: '40px' }}
+                >
+                  <div
+                    className="flex flex-1 items-center self-stretch overflow-hidden hover:bg-white/10 transition-all"
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      gap: '12px',
+                      background: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    }}
+                  >
+                    <div className="shrink-0 overflow-hidden" style={{ width: '24px', height: '24px' }}>
+                      <img src={item.icon} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
+                    </div>
+                    <span
+                      className="shrink-0 whitespace-nowrap"
+                      style={{
+                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                        fontSize: '16px',
+                        lineHeight: '24px',
+                        fontWeight: 600,
+                        color: '#F2F4F7',
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                </button>
+              )
+            })}
+          </nav>
+
+          {/* History */}
+          <div className="flex flex-col" style={{ padding: '0 16px', gap: '16px' }}>
+            <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: '16px', lineHeight: '24px', fontWeight: 500, color: '#FFFFFF' }}>
+              Lịch sử
+            </span>
+            <div className="flex flex-col overflow-y-auto" style={{ gap: '16px' }}>
+              {history.map((entry) => (
+                <div key={entry.id} className="flex items-center shrink-0 w-full" style={{ gap: '8px' }}>
+                  <div className="shrink-0 overflow-hidden" style={{ width: '20px', height: '20px', opacity: 0.5 }}>
+                    <img src={modeIcon(entry.mode)} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
+                  </div>
+                  <p className="flex-1 overflow-hidden" style={{
+                    fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: '14px', lineHeight: '20px', fontWeight: 400,
+                    color: 'rgba(255,255,255,0.75)', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, minWidth: 0,
+                  }}>
+                    {entry.prompt_text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+      </>
+    )
+  }
+
+  // --- Desktop: Original sidebar ---
   const glassButtonStyle: React.CSSProperties = {
     width: '40px',
     height: '40px',
@@ -77,7 +205,6 @@ export function Sidebar() {
         className="fixed left-0 top-[90px] z-40 flex flex-col"
         style={{ width: '56px', padding: '0 8px', gap: '32px', height: '620px' }}
       >
-        {/* Toggle button — same position as expanded */}
         <div style={{ padding: '8px 4px 0' }}>
           <button
             onClick={() => setCollapsed(false)}
@@ -88,7 +215,6 @@ export function Sidebar() {
           </button>
         </div>
 
-        {/* Icon-only nav buttons — Figma: 48×128, 3 buttons 40×40, gap-4 */}
         <nav className="flex flex-col" style={{ padding: '0 4px', gap: '4px' }}>
           <button
             onClick={handleNewChat}
@@ -115,7 +241,6 @@ export function Sidebar() {
           </button>
         </nav>
 
-        {/* Gradient divider — Figma: Rectangle 4667, 1×620px */}
         <div
           className="absolute right-0 top-0 w-px pointer-events-none"
           style={{
@@ -132,26 +257,16 @@ export function Sidebar() {
       className="w-[280px] fixed left-0 top-[90px] z-40 flex flex-col"
       style={{ padding: '0 8px', gap: '32px', height: '620px' }}
     >
-      {/* Search section — Figma: px-4 py-8, contains 40×40 glass button */}
       <div style={{ padding: '8px 4px 0' }}>
         <button
           onClick={() => setCollapsed(true)}
           className="flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all"
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '8px',
-            border: '1px solid rgba(255,255,255,0.1)',
-            background: 'rgba(255,255,255,0.1)',
-            padding: '10px',
-            boxShadow: '0px 1px 2px rgba(16,24,40,0.05)',
-          }}
+          style={glassButtonStyle}
         >
           <img src={sidebarToggle} alt="Collapse" style={{ width: '20px', height: '20px' }} />
         </button>
       </div>
 
-      {/* Navigation — Figma: gap-4, each item 264×40 */}
       <nav className="flex flex-col cursor-pointer" style={{ gap: '4px' }}>
         {[
           { icon: newChat, label: 'Cuộc trò chuyện mới', onClick: handleNewChat, activeView: 'arena' as const },
@@ -197,49 +312,22 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* History section — Figma: px-16, gap-16 */}
       <div className="flex flex-col" style={{ padding: '0 16px', gap: '16px' }}>
-        {/* Label */}
         <div className="flex items-center shrink-0">
-          <span
-            className="shrink-0 whitespace-nowrap"
-            style={{
-              fontFamily: "'Be Vietnam Pro', sans-serif",
-              fontSize: '16px',
-              lineHeight: '24px',
-              fontWeight: 500,
-              color: '#FFFFFF',
-            }}
-          >
+          <span style={{ fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: '16px', lineHeight: '24px', fontWeight: 500, color: '#FFFFFF' }}>
             Lịch sử
           </span>
         </div>
-
-        {/* History items — Figma: gap-16, each item gap-8 */}
         <div className="flex flex-col overflow-y-auto" style={{ gap: '16px' }}>
           {history.map((entry) => (
-            <div
-              key={entry.id}
-              className="flex items-center shrink-0 w-full"
-              style={{ gap: '8px' }}
-            >
+            <div key={entry.id} className="flex items-center shrink-0 w-full" style={{ gap: '8px' }}>
               <div className="shrink-0 overflow-hidden" style={{ width: '20px', height: '20px', opacity: 0.5 }}>
                 <img src={modeIcon(entry.mode)} alt="" aria-hidden="true" style={{ width: '100%', height: '100%' }} />
               </div>
-              <p
-                className="flex-1 overflow-hidden"
-                style={{
-                  fontFamily: "'Be Vietnam Pro', sans-serif",
-                  fontSize: '14px',
-                  lineHeight: '20px',
-                  fontWeight: 400,
-                  color: 'rgba(255, 255, 255, 0.75)',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  margin: 0,
-                  minWidth: 0,
-                }}
-              >
+              <p className="flex-1 overflow-hidden" style={{
+                fontFamily: "'Be Vietnam Pro', sans-serif", fontSize: '14px', lineHeight: '20px', fontWeight: 400,
+                color: 'rgba(255, 255, 255, 0.75)', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, minWidth: 0,
+              }}>
                 {entry.prompt_text}
               </p>
             </div>
@@ -247,7 +335,6 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Right edge gradient divider — Figma: Rectangle 4667, 1×620px */}
       <div
         className="absolute right-0 top-0 w-px pointer-events-none"
         style={{

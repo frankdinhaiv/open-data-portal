@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { useStore } from './hooks/useStore'
-import { Topbar } from './components/layout/Topbar'
+import { Topbar, useBreakpoint } from './components/layout/Topbar'
 import { Sidebar } from './components/layout/Sidebar'
+import { BottomNav } from './components/layout/BottomNav'
 import { Footer } from './components/layout/Footer'
 import { ArenaPage } from './pages/ArenaPage'
 import { LeaderboardPage } from './pages/LeaderboardPage'
@@ -29,6 +30,7 @@ const FALLBACK_MODELS: Model[] = [
 
 function App() {
   const { view, sidebarCollapsed, showCTAModal, setShowCTAModal, setModels, setSelectedModelA, setSelectedModelB, setSelectedModelDirect } = useStore()
+  const bp = useBreakpoint()
 
   useEffect(() => {
     fetchModels()
@@ -49,55 +51,63 @@ function App() {
       })
   }, [setModels, setSelectedModelA, setSelectedModelB, setSelectedModelDirect])
 
+  const isCompact = bp !== 'desktop'
+  const topOffset = isCompact ? '64px' : '90px'
+  const sidebarWidth = isCompact ? '0px' : (sidebarCollapsed ? '56px' : '280px')
+  const footerNegMargin = isCompact ? '0px' : (sidebarCollapsed ? '-56px' : '-280px')
+
   return (
     <div className="min-h-screen flex flex-col relative" style={{ background: '#002266' }}>
-      {/* Trong Dong — page-level decorative background
-          Figma: x:314 y:-118, 1126×1126
-          The SVG already contains: opacity 0.25, radial gradient mask, clip-path, and vector styling
-          So we just position it and let the SVG handle everything internally */}
-      <div
-        aria-hidden="true"
-        className="fixed pointer-events-none z-0"
-        style={{
-          left: '314px',
-          top: '-118px',
-          width: '1126px',
-          height: '1126px',
-        }}
-      >
-        <img
-          src={trongDong}
-          alt=""
+      {/* Trong Dong decorative background — hide on mobile for performance */}
+      {bp !== 'mobile' && (
+        <div
+          aria-hidden="true"
+          className="fixed pointer-events-none z-0"
           style={{
-            display: 'block',
+            left: '314px',
+            top: '-118px',
             width: '1126px',
             height: '1126px',
           }}
-        />
-      </div>
+        >
+          <img
+            src={trongDong}
+            alt=""
+            style={{
+              display: 'block',
+              width: '1126px',
+              height: '1126px',
+            }}
+          />
+        </div>
+      )}
 
-      {/* Fixed topbar */}
       <Topbar />
-
-      {/* Fixed sidebar */}
       <Sidebar />
 
-      {/* Scrollable main content (offset for topbar + sidebar) */}
-      <div className="pt-[90px] flex-1 flex flex-col relative z-10 transition-all" style={{ marginLeft: sidebarCollapsed ? '56px' : '280px' }}>
+      {/* Main content — responsive offset */}
+      <div
+        className="flex-1 flex flex-col relative z-10 transition-all"
+        style={{
+          paddingTop: topOffset,
+          marginLeft: sidebarWidth,
+          paddingBottom: bp === 'mobile' ? '64px' : '0',
+        }}
+      >
         <main className="flex-1 flex flex-col">
           {view === 'arena' ? <ArenaPage /> : <LeaderboardPage />}
         </main>
 
-        {/* Footer — full viewport width, breaks out of sidebar margin */}
-        <div style={{ marginLeft: sidebarCollapsed ? '-56px' : '-280px', position: 'relative', zIndex: 50 }}>
+        {/* Footer — full viewport width */}
+        <div style={{ marginLeft: footerNegMargin, position: 'relative', zIndex: 50 }}>
           <Footer />
         </div>
       </div>
 
-      {/* CTA modal (guest battle limit) */}
-      <CTAModal show={showCTAModal} onClose={() => setShowCTAModal(false)} />
+      {/* Mobile bottom navigation */}
+      {bp === 'mobile' && <BottomNav />}
 
-      {/* Auth modal overlay */}
+      <CTAModal show={showCTAModal} onClose={() => setShowCTAModal(false)} />
       <AuthModal />
     </div>
   )

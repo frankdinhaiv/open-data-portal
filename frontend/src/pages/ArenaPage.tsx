@@ -185,13 +185,54 @@ export function ArenaPage() {
     }])
   }
 
-  function handleRegenerate(msgId: number) {
-    // Remove the response message that triggered regenerate
-    setDisplayMessages((prev) => prev.filter((m) => m.id !== msgId))
-    // Find the last user message before this response and re-submit it
-    const lastUserMsg = displayMessages.slice().reverse().find((m) => m.role === 'user')
-    if (lastUserMsg?.content) {
-      handleSubmitPrompt(lastUserMsg.content)
+  async function handleRegenerate(msgId: number) {
+    // Find the message to regenerate
+    const msg = displayMessages.find((m) => m.id === msgId)
+    if (!msg) return
+
+    // Hide vote bar during regeneration
+    setShowVoteBar(false)
+    setSelectingChoice(null)
+
+    // For dual messages: re-fetch pair and replace content in-place
+    if (msg.role === 'dual' && msg.pairData) {
+      const pair = msg.pairData
+      try {
+        const newPair = await api.fetchPair(pair.prompt.id, pair.model_a.id, pair.model_b.id)
+        if (!newPair.error) {
+          setDisplayMessages((prev) => prev.map((m) =>
+            m.id === msgId ? {
+              ...m,
+              responseA: newPair.response_a.content,
+              responseB: newPair.response_b.content,
+              pairData: newPair,
+              voteResult: null,
+              streaming: true,
+            } : m
+          ))
+          setCurrentPair(newPair)
+          setShowVoteBar(true)
+        }
+      } catch { /* ignore */ }
+    }
+
+    // For direct messages: re-fetch response and replace content in-place
+    if (msg.role === 'direct' && msg.modelA) {
+      try {
+        const promptsData = await api.fetchPrompts()
+        const promptId = promptsData[0]?.id || 1
+        const data = await api.fetchResponse(msg.modelA.id, promptId)
+        if (data.response) {
+          setDisplayMessages((prev) => prev.map((m) =>
+            m.id === msgId ? {
+              ...m,
+              content: data.response.content,
+              streaming: true,
+            } : m
+          ))
+          setShowVoteBar(true)
+        }
+      } catch { /* ignore */ }
     }
   }
 
@@ -305,7 +346,7 @@ export function ArenaPage() {
       {/* Chat input (post-submit) */}
       {hasMessages && (
         <div className="shrink-0 px-6 py-4">
-          <ChatInput onSubmit={handleSubmitPrompt} placeholder="Tiếp tục hỏi..." />
+          <ChatInput onSubmit={handleSubmitPrompt} placeholder="Tiếp tục hỏi..." autoFocus />
         </div>
       )}
       {/* Scroll anchor — auto-scroll targets this */}
