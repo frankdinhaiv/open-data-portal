@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # HaiMaker
-    HAIMAKER_API_URL: str = "https://app.haimaker.ai/api"
+    HAIMAKER_API_URL: str = "https://api.haimaker.ai"
     HAIMAKER_API_KEY: str = ""
 
     # Direct API fallbacks

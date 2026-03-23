@@ -38,7 +38,7 @@ async def get_leaderboard(
                         (SELECT COUNT(*) FROM votes v
                          JOIN conversations c ON c.id = v.conversation_id
                          JOIN turns t ON t.conversation_id = c.id AND t.turn_number = v.turn_number
-                         JOIN prompts p ON p.text = t.prompt
+                         JOIN prompts p ON p.text = t.user_prompt
                          WHERE p.category = :category
                          AND (v.model_a_id = m.id OR v.model_b_id = m.id)
                          AND (

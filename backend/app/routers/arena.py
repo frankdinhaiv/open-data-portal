@@ -90,7 +90,7 @@ async def create_conversation(
     await db.execute(
         text("""
             INSERT INTO turns
-                (conversation_id, turn_number, prompt, created_at)
+                (conversation_id, turn_number, user_prompt, created_at)
             VALUES
                 (:conv_id, 1, :prompt, NOW())
         """),
@@ -373,7 +373,7 @@ async def append_turn(
     # Insert the new turn
     await db.execute(
         text("""
-            INSERT INTO turns (conversation_id, turn_number, prompt, created_at)
+            INSERT INTO turns (conversation_id, turn_number, user_prompt, created_at)
             VALUES (:conv_id, :turn, :prompt, NOW())
         """),
         {"conv_id": conversation_id, "turn": next_turn, "prompt": req.prompt},
@@ -414,7 +414,7 @@ async def _build_history(
     history = []
     result = await db.execute(
         text("""
-            SELECT t.turn_number, t.prompt, r.content, r.position
+            SELECT t.turn_number, t.user_prompt, r.content, r.position
             FROM turns t
             LEFT JOIN responses r ON r.conversation_id = t.conversation_id
                 AND r.turn_number = t.turn_number
@@ -508,14 +508,13 @@ async def _store_response(
             await session.execute(
                 text("""
                     INSERT INTO responses
-                        (id, conversation_id, turn_number, model_id, position,
+                        (conversation_id, turn_number, model_id, position,
                          content, latency_ms, token_count, created_at)
                     VALUES
-                        (:id, :conv_id, :turn, :model_id, :position,
+                        (:conv_id, :turn, :model_id, :position,
                          :content, :latency_ms, :token_count, NOW())
                 """),
                 {
-                    "id": str(uuid.uuid4()),
                     "conv_id": conversation_id,
                     "turn": turn_number,
                     "model_id": model_id,

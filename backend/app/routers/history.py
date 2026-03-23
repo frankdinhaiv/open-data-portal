@@ -43,7 +43,7 @@ async def get_history(
                 c.model_b_id,
                 c.model_id,
                 c.created_at,
-                t.prompt as first_prompt,
+                t.user_prompt as first_prompt,
                 (SELECT COUNT(*) FROM votes v WHERE v.conversation_id = c.id) > 0 as voted
             FROM conversations c
             LEFT JOIN turns t ON t.conversation_id = c.id AND t.turn_number = 1
