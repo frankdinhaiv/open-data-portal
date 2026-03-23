@@ -111,7 +111,7 @@ export function ModeSelector() {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
 
   return (
-    <div className="flex items-center py-3" style={{ gap: isMobile ? '8px' : '16px', padding: isMobile ? '12px 8px' : '12px 24px', overflowX: 'auto', flexWrap: 'nowrap' }}>
+    <div className="flex items-center py-3 relative" style={{ gap: isMobile ? '8px' : '16px', padding: isMobile ? '12px 8px' : '12px 24px', flexWrap: 'nowrap' }}>
       {/* Mode dropdown */}
       <div className="relative" ref={modeRef}>
         <button
