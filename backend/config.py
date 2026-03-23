@@ -1,9 +1,0 @@
-import os
-
-DATABASE_PATH = os.getenv("DATABASE_PATH", "arena.db")
-JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-in-prod")
-JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = 24
-ELO_K = 32
-ELO_INITIAL = 1000
-BOOTSTRAP_PERMUTATIONS = 1000
