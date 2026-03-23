@@ -34,7 +34,16 @@ export function Sidebar() {
       setHistory(SAMPLE_HISTORY)
       return
     }
-    fetchHistory(userId).then((data) => setHistory(data.length > 0 ? data : SAMPLE_HISTORY)).catch(() => setHistory(SAMPLE_HISTORY))
+    fetchHistory().then((data) => {
+      const convs = (data.conversations || []) as Array<Record<string, unknown>>
+      const mapped = convs.map((c) => ({
+        id: Number(c.conversation_id) || 0,
+        prompt_text: (c.first_prompt || '') as string,
+        mode: (c.mode || 'battle') as string,
+        created_at: (c.created_at || '') as string,
+      }))
+      setHistory(mapped.length > 0 ? mapped : SAMPLE_HISTORY)
+    }).catch(() => setHistory(SAMPLE_HISTORY))
   }, [userId, isLoggedIn])
 
   useEffect(() => {

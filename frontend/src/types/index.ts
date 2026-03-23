@@ -1,6 +1,9 @@
 export interface Model {
   id: string
   name: string
+  provider: string
+  display_name: string
+  // Legacy fields for backward compat with existing components
   org: string
   license: 'open' | 'prop'
   color: string
@@ -12,67 +15,98 @@ export interface Prompt {
   category: string
 }
 
-export interface Response {
-  id: number
-  prompt_id: number
+export interface ResponseItem {
   model_id: string
+  model_display_name: string
+  position: 'a' | 'b' | 'single'
   content: string
+  latency_ms: number | null
+  token_count: number | null
   turn_number: number
 }
 
+/** Legacy pair structure — adapted from conversation responses */
 export interface PairData {
+  conversation_id: string
   prompt: Prompt
-  response_a: Response
-  response_b: Response
+  response_a: ResponseItem
+  response_b: ResponseItem
   model_a: Model
   model_b: Model
 }
 
-export interface VoteCreate {
-  mode: 'battle' | 'sbs' | 'direct'
-  prompt_text: string
-  prompt_id?: number
-  model_a_id: string
-  model_b_id?: string
-  response_a_id?: number
-  response_b_id?: number
-  choice: string
-  quality_tags?: string
-  conversation_history?: string
-  turn_number: number
-}
-
 export interface EloReveal {
-  model_a_name: string
-  model_a_org: string
-  model_a_elo: number
-  model_a_delta: number
-  model_b_name: string
-  model_b_org: string
-  model_b_elo: number
-  model_b_delta: number
+  model_a: string
+  model_a_display_name: string
+  model_b: string
+  model_b_display_name: string
+  elo_change_a: number | null
+  elo_change_b: number | null
 }
 
 export interface VoteResponse {
-  vote_id: number
-  elo_reveal: EloReveal | null
+  conversation_id: string
+  choice: string
+  model_a: string
+  model_a_display_name: string
+  model_b: string
+  model_b_display_name: string
+  elo_change_a: number | null
+  elo_change_b: number | null
+}
+
+export interface DirectRatingResponse {
+  conversation_id: string
+  model_id: string
+  rating: number
 }
 
 export interface LeaderboardEntry {
   rank: number
   model_id: string
+  display_name: string
+  provider: string
+  elo_rating: number
+  total_battles: number
+  win_rate: number
+  ci_lower: number | null
+  ci_upper: number | null
+  // Legacy fields used by LeaderboardTable
   name: string
   org: string
   license: string
   color: string
-  elo_rating: number
   ci: number
-  win_rate: number
   total_votes: number
 }
 
+export interface PairwiseStat {
+  model_a: string
+  model_b: string
+  wins_a: number
+  wins_b: number
+  ties: number
+  total: number
+  win_rate_a: number
+}
+
+export interface HistoryEntry {
+  conversation_id: string
+  mode: string
+  first_prompt: string
+  model_a: string | null
+  model_b: string | null
+  model_id: string | null
+  voted: boolean
+  created_at: string
+  // Legacy fields
+  id: number
+  prompt_text: string
+}
+
 export interface ChatMessage {
-  role: 'user' | 'system'
+  id?: number
+  role: 'user' | 'system' | 'dual' | 'direct'
   content: string
   type?: 'text' | 'dual' | 'direct' | 'vote-result'
   responseA?: string
@@ -80,20 +114,32 @@ export interface ChatMessage {
   modelA?: Model
   modelB?: Model
   pairData?: PairData
+  voteResult?: string | null
+  streaming?: boolean
 }
 
-export interface HistoryEntry {
-  id: number
+export interface ConversationCreateResponse {
+  conversation_id: string
   mode: string
-  prompt_text: string
-  choice: string
-  model_a_name: string
-  model_b_name: string | null
-  model_a_color: string
-  model_b_color: string | null
-  created_at: string
+  model_a: string | null
+  model_b: string | null
+  model_id: string | null
+}
+
+export interface StreamChunk {
+  position: 'a' | 'b' | 'single'
+  content: string
+  done: boolean
+  error: string | null
+}
+
+export interface EloSnapshot {
+  model_id: string
+  elo_rating: number
+  total_battles: number
+  snapshot_at: string
 }
 
 export type ArenaMode = 'battle' | 'sbs' | 'direct'
 export type ViewType = 'arena' | 'leaderboard'
-export type VoteChoice = 'a' | 'b' | 'tie' | 'bad'
+export type VoteChoice = 'model_a' | 'model_b' | 'tie' | 'both_bad'

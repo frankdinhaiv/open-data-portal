@@ -150,34 +150,31 @@ export function ArenaPage() {
       i === prev.length - 1 && msg.role === 'dual' ? { ...msg, voteResult: choice } : msg
     ))
 
-    const result = await api.submitVote({
-      mode,
-      prompt_text: currentPair.prompt.text,
-      prompt_id: currentPair.prompt.id,
-      model_a_id: currentPair.model_a.id,
-      model_b_id: currentPair.model_b.id,
-      response_a_id: currentPair.response_a.id,
-      response_b_id: currentPair.response_b.id,
-      choice,
-      turn_number: turnCount,
-    }, sessionId)
+    // Map legacy VoteChoice ('a'/'b'/'tie'/'bad') to backend format
+    const choiceMap: Record<string, string> = { a: 'model_a', b: 'model_b', tie: 'tie', bad: 'both_bad' }
+    const backendChoice = (choiceMap[choice] || choice) as 'model_a' | 'model_b' | 'tie' | 'both_bad'
+    const conversationId = (currentPair as Record<string, unknown>).conversation_id as string | undefined
+
+    if (conversationId) {
+      await api.submitVote(conversationId, backendChoice, turnCount)
+    }
 
     // Vote result is shown via DualResponsePanel visual states (winner/loser/tie)
     // No system message needed
   }
 
-  function handleDirectRate(stars: number, tags: string[]) {
+  function handleDirectRate(stars: number, _tags: string[]) {
     setShowVoteBar(false)
     incrementVotes()
 
-    api.submitVote({
-      mode: 'direct',
-      prompt_text: 'direct',
-      model_a_id: selectedModelDirect || 'claude-opus',
-      choice: String(stars),
-      quality_tags: JSON.stringify(tags),
-      turn_number: turnCount,
-    }, sessionId)
+    // Find the conversation_id from the last direct message's response data
+    const lastDirect = [...displayMessages].reverse().find(m => m.role === 'direct')
+    const convId = (lastDirect?.pairData as Record<string, unknown>)?.conversation_id as string | undefined
+      || (lastDirect as Record<string, unknown>)?.conversationId as string | undefined
+
+    if (convId) {
+      api.submitRating(convId, stars, turnCount)
+    }
 
     setDisplayMessages((prev) => [...prev, {
       id: ++msgIdRef.current, role: 'system',

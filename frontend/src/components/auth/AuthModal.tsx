@@ -43,11 +43,11 @@ export function AuthModal() {
     try {
       let data
       if (tab === 'register') {
-        data = await api.register(email, password, displayName || undefined)
+        data = await api.register(displayName || email.split('@')[0], email, password)
       } else {
         data = await api.login(email, password)
       }
-      loginUser(data.user_id, data.email, data.display_name, data.token)
+      loginUser(data.user_id, email, displayName || data.username, data.access_token)
 
       try {
         await linkSession(data.token)
