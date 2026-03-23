@@ -91,12 +91,23 @@ MODELS: list[ModelDef] = [
         display_name="Claude Sonnet 4.6",
         api_type="anthropic",
     ),
+    # --- Inactive: HaiMaker key has non-chat variants of these ---
+    # Ask Sonny to add chat-capable gpt-5.4 and gpt-4o-mini to the key
     ModelDef(
-        id="mistral/mistral-large",
-        name="mistral-large",
-        provider="mistral",
-        display_name="Mistral Large",
+        id="openai/gpt-5.4-pro-2026-03-05",
+        name="gpt-5.4",
+        provider="openai",
+        display_name="GPT-5.4",
         api_type="haimaker",
+        is_active=False,  # "not a chat model" on current HaiMaker key
+    ),
+    ModelDef(
+        id="openai/gpt-4o-mini-transcribe-2025-12-15",
+        name="gpt-4o-mini",
+        provider="openai",
+        display_name="GPT-4o Mini",
+        api_type="haimaker",
+        is_active=False,  # "not a chat model" on current HaiMaker key
     ),
 ]
 
