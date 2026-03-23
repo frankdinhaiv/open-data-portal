@@ -57,7 +57,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
 export async function fetchModels() {
   const res = await fetch(`${BASE}/models`)
   const data = await handleResponse<{ models: Array<Record<string, unknown>> }>(res)
-  return data.models
+
+  // Normalize: backend returns display_name, frontend expects name
+  return (data.models || []).map((m: Record<string, unknown>) => ({
+    ...m,
+    name: m.display_name || m.name || m.id || '',
+    org: m.provider || '',
+    license: (m.id as string || '').includes('llama') || (m.id as string || '').includes('deepseek') || (m.id as string || '').includes('qwen') || (m.id as string || '').includes('phobert') || (m.id as string || '').includes('mistral') ? 'open' : 'prop',
+    color: '#6585C5',
+  }))
 }
 
 // ---------------------------------------------------------------------------
@@ -234,7 +242,22 @@ export async function submitRating(
 export async function fetchLeaderboard(category?: string) {
   const params = category && category !== 'all' ? `?category=${category}` : ''
   const res = await fetch(`${BASE}/leaderboard${params}`)
-  return handleResponse<{ entries: Array<Record<string, unknown>>; total_votes: number }>(res)
+  const data = await handleResponse<{ entries: Array<Record<string, unknown>>; total_votes: number }>(res)
+
+  // Normalize backend response to match frontend LeaderboardEntry shape
+  const entries = (data.entries || []).map((e: Record<string, unknown>, i: number) => ({
+    ...e,
+    rank: e.rank || i + 1,
+    name: e.display_name || e.model_id || '',
+    org: e.provider || '',
+    license: (e.model_id as string || '').includes('llama') || (e.model_id as string || '').includes('deepseek') || (e.model_id as string || '').includes('qwen') || (e.model_id as string || '').includes('phobert') ? 'open' : 'prop',
+    color: '#6585C5',
+    ci: e.ci_upper && e.ci_lower ? Number(e.ci_upper) - Number(e.ci_lower) : 0,
+    total_votes: e.total_battles || 0,
+    win_rate: e.win_rate || 0,
+  }))
+
+  return entries
 }
 
 export async function fetchPairwiseStats() {
@@ -249,11 +272,43 @@ export async function fetchPairwiseStats() {
 export async function fetchStats(statType: string) {
   if (statType === 'win-fraction' || statType === 'battle-count') {
     const data = await fetchPairwiseStats()
-    return data.stats
+    const stats = data.stats || []
+    if (stats.length === 0) return null // Triggers "Chưa có dữ liệu" in StatCharts
+
+    // Build matrix from pairwise stats for heatmap components
+    const modelSet = new Set<string>()
+    stats.forEach((s: Record<string, unknown>) => {
+      modelSet.add(s.model_a as string)
+      modelSet.add(s.model_b as string)
+    })
+    const models = [...modelSet].sort()
+    const size = models.length
+    const matrix = Array.from({ length: size }, () => Array(size).fill(0))
+    const modelIdx = Object.fromEntries(models.map((m, i) => [m, i]))
+
+    stats.forEach((s: Record<string, unknown>) => {
+      const ai = modelIdx[s.model_a as string]
+      const bi = modelIdx[s.model_b as string]
+      const total = Number(s.total) || 1
+      if (statType === 'win-fraction') {
+        matrix[ai][bi] = Number(s.wins_a) / total
+        matrix[bi][ai] = Number(s.wins_b) / total
+      } else {
+        matrix[ai][bi] = Number(s.total)
+        matrix[bi][ai] = Number(s.total)
+      }
+    })
+
+    return { models, matrix }
   }
   if (statType === 'avg-win-rate') {
-    const data = await fetchLeaderboard()
-    return data.entries
+    const entries = await fetchLeaderboard()
+    // Transform to AvgWinRate expected shape: { model, avg_win_rate, color }
+    return entries.map((e: Record<string, unknown>) => ({
+      model: e.name || e.display_name || e.model_id || '',
+      avg_win_rate: Number(e.win_rate) || 0,
+      color: e.color || '#6585C5',
+    }))
   }
   return []
 }
