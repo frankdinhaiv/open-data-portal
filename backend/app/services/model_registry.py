@@ -50,10 +50,10 @@ MODELS: list[ModelDef] = [
         api_type="haimaker",
     ),
     ModelDef(
-        id="openai/gpt-4o-mini-transcribe-2025-12-15",
-        name="gpt-4o-mini",
-        provider="openai",
-        display_name="GPT-4o Mini",
+        id="anthropic/claude-opus-4-6-20260205",
+        name="claude-opus",
+        provider="anthropic",
+        display_name="Claude Opus",
         api_type="haimaker",
     ),
     ModelDef(
@@ -62,13 +62,6 @@ MODELS: list[ModelDef] = [
         provider="openai",
         display_name="GPT-5 Mini",
         api_type="openai",
-    ),
-    ModelDef(
-        id="openai/gpt-5.4-pro-2026-03-05",
-        name="gpt-5.4",
-        provider="openai",
-        display_name="GPT-5.4 Pro",
-        api_type="haimaker",
     ),
     ModelDef(
         id="qwen/qwen-vl-plus",

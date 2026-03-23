@@ -469,7 +469,13 @@ class LLMClient:
     def _extract_content(api_type: str, data: dict) -> str:
         """Extract text content from various API response formats."""
         if api_type in ("openai", "haimaker"):
-            return data["choices"][0]["message"]["content"]
+            msg = data["choices"][0]["message"]
+            content = msg.get("content") or ""
+            # Reasoning models (DeepSeek R1, Gemini 3.1 Pro) may put response
+            # in reasoning_content when content is empty
+            if not content and msg.get("reasoning_content"):
+                content = msg["reasoning_content"]
+            return content
         elif api_type == "anthropic":
             # Anthropic Messages API
             blocks = data.get("content", [])
