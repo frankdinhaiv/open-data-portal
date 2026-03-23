@@ -28,6 +28,14 @@ class Settings(BaseSettings):
     # Auth
     JWT_SECRET: str = ""
     JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRY_DAYS: int = 30
+
+    # CORS
+    CORS_ORIGINS: str = ""  # Comma-separated origins, e.g. "https://vieteval.ai,http://localhost:5173"
+
+    # Google OAuth
+    GOOGLE_OAUTH_CLIENT_ID: str = ""
+    GOOGLE_OAUTH_CLIENT_SECRET: str = ""
 
     # Feature flags
     EVENT_MODE: bool = False

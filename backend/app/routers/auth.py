@@ -67,11 +67,19 @@ async def signup(
         },
     )
 
-    # Link guest conversations if provided
+    # Link guest conversations AND votes if provided
     if req.guest_session_id:
         await db.execute(
             text("""
                 UPDATE conversations
+                SET user_id = :user_id
+                WHERE user_id = :guest_id
+            """),
+            {"user_id": user_id, "guest_id": req.guest_session_id},
+        )
+        await db.execute(
+            text("""
+                UPDATE votes
                 SET user_id = :user_id
                 WHERE user_id = :guest_id
             """),

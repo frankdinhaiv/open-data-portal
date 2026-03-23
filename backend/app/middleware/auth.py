@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import time
 import uuid
 from typing import Optional
@@ -23,7 +22,7 @@ def create_access_token(user_id: str, username: str) -> str:
         "sub": user_id,
         "username": username,
         "iat": int(time.time()),
-        "exp": int(time.time()) + 86400 * 7,  # 7 days
+        "exp": int(time.time()) + 86400 * settings.JWT_EXPIRY_DAYS,
     }
     return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
@@ -41,18 +40,15 @@ def decode_token(token: str) -> dict:
 
 
 def hash_password(password: str) -> str:
-    """Hash a password using SHA-256 + salt.
-
-    Note: In production, use bcrypt. SHA-256 is used here to avoid
-    adding bcrypt as a dependency for the initial build.
-    """
-    salt = settings.JWT_SECRET[:16]
-    return hashlib.sha256(f"{salt}{password}".encode()).hexdigest()
+    """Hash a password using bcrypt."""
+    import bcrypt
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, hashed: str) -> bool:
-    """Verify a password against its hash."""
-    return hash_password(password) == hashed
+    """Verify a password against its bcrypt hash."""
+    import bcrypt
+    return bcrypt.checkpw(password.encode(), hashed.encode())
 
 
 class CurrentUser:
@@ -87,14 +83,12 @@ async def get_current_user(
             is_guest=False,
         )
 
-    # Guest session — check header first
+    # Guest session — must come from frontend's vigen_guest_sessionId via header
     guest_id = request.headers.get("X-Guest-Session")
     if not guest_id:
-        # Generate deterministic guest ID from IP + User-Agent
-        client_ip = request.client.host if request.client else "unknown"
-        ua = request.headers.get("user-agent", "")
-        fingerprint = f"{client_ip}:{ua}"
-        guest_id = f"guest_{hashlib.sha256(fingerprint.encode()).hexdigest()[:16]}"
+        # No session header and no JWT — generate a random guest ID
+        # (frontend should always send X-Guest-Session, but fallback safely)
+        guest_id = f"guest_{uuid.uuid4().hex[:16]}"
 
     return CurrentUser(user_id=guest_id, is_guest=True)
 

@@ -67,10 +67,17 @@ class VoteWorker:
         if not redis_pool:
             return
 
-        # Atomic drain: get all items, then trim
+        # Atomic drain: LRANGE + LTRIM in a pipeline to prevent vote loss
+        # LTRIM keeps elements from len..0 (i.e., nothing), effectively clearing
+        # only the elements we just read. New items pushed between LRANGE and LTRIM
+        # are preserved because LTRIM removes by index, not by deleting the key.
+        queue_len = await redis_pool.llen(VOTE_QUEUE_KEY)
+        if queue_len == 0:
+            return
+
         pipe = redis_pool.pipeline()
-        pipe.lrange(VOTE_QUEUE_KEY, 0, -1)
-        pipe.delete(VOTE_QUEUE_KEY)
+        pipe.lrange(VOTE_QUEUE_KEY, 0, queue_len - 1)
+        pipe.ltrim(VOTE_QUEUE_KEY, queue_len, -1)
         results = await pipe.execute()
 
         raw_votes: list[str] = results[0]
@@ -124,7 +131,29 @@ class VoteWorker:
                     )
 
                     # Update pairwise stats
+                    # Determine the winner model ID from the positional choice,
+                    # then map to the sorted pair key for consistent storage.
                     pair_key = tuple(sorted([vote["model_a_id"], vote["model_b_id"]]))
+                    choice = vote["choice"]
+                    is_tie = choice in ("tie", "both_bad")
+
+                    if is_tie:
+                        pk_wins_a, pk_wins_b, pk_ties = 0, 0, 1
+                    elif choice == "model_a":
+                        # User picked position A → winner is model_a_id
+                        winner = vote["model_a_id"]
+                        pk_wins_a = 1 if winner == pair_key[0] else 0
+                        pk_wins_b = 1 if winner == pair_key[1] else 0
+                        pk_ties = 0
+                    elif choice == "model_b":
+                        # User picked position B → winner is model_b_id
+                        winner = vote["model_b_id"]
+                        pk_wins_a = 1 if winner == pair_key[0] else 0
+                        pk_wins_b = 1 if winner == pair_key[1] else 0
+                        pk_ties = 0
+                    else:
+                        pk_wins_a, pk_wins_b, pk_ties = 0, 0, 0
+
                     await session.execute(
                         text("""
                             INSERT INTO pairwise_stats
@@ -141,13 +170,9 @@ class VoteWorker:
                         {
                             "model_a": pair_key[0],
                             "model_b": pair_key[1],
-                            "wins_a": 1 if vote["choice"] == "model_a" and vote["model_a_id"] == pair_key[0] else (
-                                1 if vote["choice"] == "model_b" and vote["model_b_id"] == pair_key[0] else 0
-                            ),
-                            "wins_b": 1 if vote["choice"] == "model_a" and vote["model_a_id"] == pair_key[1] else (
-                                1 if vote["choice"] == "model_b" and vote["model_b_id"] == pair_key[1] else 0
-                            ),
-                            "ties": 1 if vote["choice"] in ("tie", "both_bad") else 0,
+                            "wins_a": pk_wins_a,
+                            "wins_b": pk_wins_b,
+                            "ties": pk_ties,
                         },
                     )
 
@@ -198,23 +223,23 @@ class VoteWorker:
                         {"rating": new_b, "id": model_b},
                     )
 
-                    # Record Elo snapshot
-                    await session.execute(
-                        text("""
-                            INSERT INTO elo_snapshots
-                                (model_id, elo_rating, total_battles, snapshot_at)
-                            VALUES (:id, :rating, 0, NOW())
-                        """),
-                        {"id": model_a, "rating": new_a},
-                    )
-                    await session.execute(
-                        text("""
-                            INSERT INTO elo_snapshots
-                                (model_id, elo_rating, total_battles, snapshot_at)
-                            VALUES (:id, :rating, 0, NOW())
-                        """),
-                        {"id": model_b, "rating": new_b},
-                    )
+                    # Record Elo snapshot with actual battle counts
+                    for mid, rating in [(model_a, new_a), (model_b, new_b)]:
+                        battles_result = await session.execute(
+                            text("SELECT total_battles FROM models WHERE id = :id"),
+                            {"id": mid},
+                        )
+                        battles_row = battles_result.fetchone()
+                        total_battles = battles_row[0] if battles_row else 0
+
+                        await session.execute(
+                            text("""
+                                INSERT INTO elo_snapshots
+                                    (model_id, elo_rating, total_battles, snapshot_at)
+                                VALUES (:id, :rating, :battles, NOW())
+                            """),
+                            {"id": mid, "rating": rating, "battles": total_battles},
+                        )
 
     async def _publish_leaderboard_update(self) -> None:
         """Notify all WebSocket listeners that the leaderboard changed."""
