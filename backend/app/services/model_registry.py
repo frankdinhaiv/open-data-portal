@@ -50,11 +50,12 @@ MODELS: list[ModelDef] = [
         api_type="haimaker",
     ),
     ModelDef(
-        id="anthropic/claude-opus-4-6-20260205",
+        id="anthropic/claude-opus-4-6-20250205",
         name="claude-opus",
         provider="anthropic",
         display_name="Claude Opus",
         api_type="haimaker",
+        is_active=False,  # HaiMaker returns 404 — model ID may be wrong, check with Sonny
     ),
     ModelDef(
         id="openai/gpt-5-mini",

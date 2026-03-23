@@ -399,8 +399,16 @@ export async function fetchPair(
     prompt: { id: prompt.id, text: prompt.text, category: prompt.category },
     response_a: respA || { content: '', model_id: conv.model_a },
     response_b: respB || { content: '', model_id: conv.model_b },
-    model_a: { id: conv.model_a, name: respA?.model_display_name || conv.model_a },
-    model_b: { id: conv.model_b, name: respB?.model_display_name || conv.model_b },
+    model_a: {
+      id: conv.model_a || '',
+      name: respA?.model_display_name || conv.model_a || '',
+      org: '', license: 'prop' as const, color: '#6585C5',
+    },
+    model_b: {
+      id: conv.model_b || '',
+      name: respB?.model_display_name || conv.model_b || '',
+      org: '', license: 'prop' as const, color: '#6585C5',
+    },
   }
 }
 
@@ -423,6 +431,10 @@ export async function fetchResponse(
   return {
     conversation_id: conv.conversation_id,
     response: resp || { content: '', model_id: modelId },
-    model: { id: modelId, name: resp?.model_display_name || modelId },
+    model: {
+      id: modelId,
+      name: resp?.model_display_name || modelId,
+      org: '', license: 'prop' as const, color: '#6585C5',
+    },
   }
 }
